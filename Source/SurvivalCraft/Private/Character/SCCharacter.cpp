@@ -13,6 +13,8 @@ ASCCharacter::ASCCharacter()
 	bHasRifle = false;
 	
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
+
+	GetMesh()->SetOwnerNoSee(true);
 		
 	FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
 	FirstPersonCameraComponent->SetupAttachment(GetCapsuleComponent());
