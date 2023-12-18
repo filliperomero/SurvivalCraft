@@ -5,6 +5,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Inventory/SCPlayerInventoryComponent.h"
 
 DEFINE_LOG_CATEGORY(LogSCCharacter);
 
@@ -28,6 +29,8 @@ ASCCharacter::ASCCharacter()
 	Mesh1P->CastShadow = false;
 	Mesh1P->SetRelativeRotation(FRotator(0.f, -90.0f, 0.f));
 	Mesh1P->SetRelativeLocation(FVector(00.f, 0.f, -160.f));
+
+	InventoryComponent = CreateDefaultSubobject<USCPlayerInventoryComponent>(TEXT("InventoryComponent"));
 }
 
 void ASCCharacter::BeginPlay()
@@ -42,6 +45,9 @@ void ASCCharacter::BeginPlay()
 		}
 	}
 
+	// Initialize Inventory
+	const FItemInformation Item = FItemInformation();
+	InventoryComponent->InitializeItems(Item, 30);
 }
 
 void ASCCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

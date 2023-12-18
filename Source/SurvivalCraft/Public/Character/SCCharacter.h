@@ -7,6 +7,7 @@
 #include "Logging/LogMacros.h"
 #include "SCCharacter.generated.h"
 
+class USCPlayerInventoryComponent;
 class UInputComponent;
 class USkeletalMeshComponent;
 class UCameraComponent;
@@ -59,6 +60,9 @@ private:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UCameraComponent> FirstPersonCameraComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USCPlayerInventoryComponent> InventoryComponent;
 
 public:
 	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
