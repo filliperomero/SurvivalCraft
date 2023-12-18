@@ -6,13 +6,13 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Inventory/SCPlayerInventoryComponent.h"
+#include "Player/SCPlayerController.h"
+#include "UI/HUD/SCHUD.h"
 
 DEFINE_LOG_CATEGORY(LogSCCharacter);
 
 ASCCharacter::ASCCharacter()
 {
-	bHasRifle = false;
-	
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
 
 	GetMesh()->SetOwnerNoSee(true);
@@ -66,6 +66,21 @@ void ASCCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	}
 }
 
+void ASCCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	// In multiplayer, the PlayerController will be invalid in other people computers, since I can only get my PlayerController but not others
+	if (ASCPlayerController* SCPlayerController = Cast<ASCPlayerController>(GetController()))
+	{
+		// The HUD is only valid to locally controller player
+		if (ASCHUD* HUD = Cast<ASCHUD>(SCPlayerController->GetHUD()))
+		{
+			HUD->InitOverlay(SCPlayerController);
+		}
+	}
+}
+
 void ASCCharacter::Move(const FInputActionValue& Value)
 {
 	// input is a Vector2D
@@ -91,14 +106,3 @@ void ASCCharacter::Look(const FInputActionValue& Value)
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
 }
-
-void ASCCharacter::SetHasRifle(bool bNewHasRifle)
-{
-	bHasRifle = bNewHasRifle;
-}
-
-bool ASCCharacter::GetHasRifle()
-{
-	return bHasRifle;
-}
-

@@ -28,16 +28,7 @@ public:
 protected:
 	virtual void BeginPlay();
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
-
-public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
-	bool bHasRifle;
-	
-	UFUNCTION(BlueprintCallable, Category = Weapon)
-	void SetHasRifle(bool bNewHasRifle);
-	
-	UFUNCTION(BlueprintCallable, Category = Weapon)
-	bool GetHasRifle();
+	virtual void PossessedBy(AController* NewController) override;
 
 private:
 	void Move(const FInputActionValue& Value);
