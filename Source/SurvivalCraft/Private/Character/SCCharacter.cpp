@@ -1,6 +1,5 @@
 ﻿// Copyright Fillipe Romero
 
-
 #include "SurvivalCraft/Public/Character/SCCharacter.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -25,8 +24,8 @@ ASCCharacter::ASCCharacter()
 	Mesh1P->SetupAttachment(FirstPersonCameraComponent);
 	Mesh1P->bCastDynamicShadow = false;
 	Mesh1P->CastShadow = false;
-	//Mesh1P->SetRelativeRotation(FRotator(0.9f, -19.19f, 5.2f));
-	Mesh1P->SetRelativeLocation(FVector(-30.f, 0.f, -150.f));
+	Mesh1P->SetRelativeRotation(FRotator(0.f, -90.0f, 0.f));
+	Mesh1P->SetRelativeLocation(FVector(00.f, 0.f, -160.f));
 }
 
 void ASCCharacter::BeginPlay()
