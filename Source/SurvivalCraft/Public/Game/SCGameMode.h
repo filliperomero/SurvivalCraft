@@ -10,7 +10,4 @@ UCLASS()
 class SURVIVALCRAFT_API ASCGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
-	
-public:
-	ASCGameMode();
 };
