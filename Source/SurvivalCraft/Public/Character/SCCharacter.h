@@ -26,26 +26,10 @@ public:
 	ASCCharacter();
 
 protected:
-	virtual void BeginPlay();
-	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
+	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
 
 private:
-	void Move(const FInputActionValue& Value);
-	void Look(const FInputActionValue& Value);
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UInputMappingContext> DefaultMappingContext;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> JumpAction;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> MoveAction;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> LookAction;
-
 	UPROPERTY(VisibleDefaultsOnly, Category=Mesh)
 	TObjectPtr<USkeletalMeshComponent> Mesh1P;
 	
