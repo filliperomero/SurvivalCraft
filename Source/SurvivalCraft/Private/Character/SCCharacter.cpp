@@ -31,6 +31,12 @@ ASCCharacter::ASCCharacter()
 	InventoryComponent = CreateDefaultSubobject<USCPlayerInventoryComponent>(TEXT("InventoryComponent"));
 }
 
+ASCPlayerController* ASCCharacter::GetSCPlayerController_Implementation()
+{
+	// TODO: create a variable for it and return it
+	return GetController<ASCPlayerController>();
+}
+
 void ASCCharacter::BeginPlay()
 {
 	Super::BeginPlay();

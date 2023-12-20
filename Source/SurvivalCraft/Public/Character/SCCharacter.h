@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Interfaces/PlayerInterface.h"
 #include "Logging/LogMacros.h"
 #include "SCCharacter.generated.h"
 
@@ -18,12 +19,16 @@ struct FInputActionValue;
 DECLARE_LOG_CATEGORY_EXTERN(LogSCCharacter, Log, All);
 
 UCLASS(config=Game)
-class SURVIVALCRAFT_API ASCCharacter : public ACharacter
+class SURVIVALCRAFT_API ASCCharacter : public ACharacter, public IPlayerInterface
 {
 	GENERATED_BODY()
 
 public:
 	ASCCharacter();
+
+	/** Player Interface */
+	virtual ASCPlayerController* GetSCPlayerController_Implementation() override;
+	/** Player Interface */
 
 protected:
 	virtual void BeginPlay() override;
