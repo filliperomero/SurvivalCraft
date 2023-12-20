@@ -1,6 +1,8 @@
 ﻿// Copyright Fillipe Romero
 
 #include "Inventory/SCItemsContainerComponent.h"
+#include "Interfaces/PlayerInterface.h"
+#include "Player/SCPlayerController.h"
 
 USCItemsContainerComponent::USCItemsContainerComponent()
 {
@@ -36,6 +38,31 @@ void USCItemsContainerComponent::FindEmptySlot(bool& bSuccess, int32& OutEmptyIn
 	}
 }
 
+void USCItemsContainerComponent::UpdateUI(int32 Index, const FItemInformation& Item, bool bShouldResetSlot)
+{
+	if (bShouldResetSlot)
+	{
+		
+	}
+	else
+	{
+		ASCPlayerController* PC = IPlayerInterface::Execute_GetSCPlayerController(GetOwner());
+		
+		switch (ContainerType)
+		{
+			case EContainerType::ECT_PlayerInventory:
+				PC->UpdateItemSlot(ContainerType, Index, Item);
+				break;
+			case EContainerType::ECT_PlayerHotbar:
+				break;
+			case EContainerType::ECT_PlayerStorage:
+				break;
+			case EContainerType::ECT_PlayerArmor:
+				break;
+		}
+	}
+}
+
 // Suppose to be a bool, lets see if we need to fix it in the future
 void USCItemsContainerComponent::AddItem(FItemInformation Item)
 {
@@ -52,6 +79,8 @@ void USCItemsContainerComponent::ServerAddItem_Implementation(FItemInformation I
 	if (bSuccess) 
 	{
 		Items[EmptyIndex] = Item;
+
+		UpdateUI(EmptyIndex, Item, false);
 
 		return;
 		// return true

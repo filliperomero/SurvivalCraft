@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Enums/ContainerType.h"
 #include "Items/Data/SCItemData.h"
 #include "SCItemsContainerComponent.generated.h"
 
@@ -22,10 +23,14 @@ public:
 	
 	TArray<FItemInformation> Items;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Items Container Properties")
+	EContainerType ContainerType = EContainerType::ECT_PlayerInventory;
+
 protected:
 	virtual void BeginPlay() override;
 	
 	virtual void FindEmptySlot(bool& bSuccess, int32& OutEmptyIndex);
+	virtual void UpdateUI(int32 Index, const FItemInformation& Item, bool bShouldResetSlot);
 	
 	UFUNCTION(Server, Reliable)
 	void ServerAddItem(FItemInformation Item);

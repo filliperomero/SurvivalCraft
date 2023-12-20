@@ -6,6 +6,7 @@
 #include "GameFramework/HUD.h"
 #include "SCHUD.generated.h"
 
+class USCInventoryMenuWidgetController;
 struct FWidgetControllerParams;
 class USCOverlayWidgetController;
 class USCUserWidget;
@@ -19,6 +20,7 @@ public:
 	void InitOverlay(APlayerController* PC, APlayerState* PS);
 
 	USCOverlayWidgetController* GetOverlayWidgetController(const FWidgetControllerParams& WCParams);
+	USCInventoryMenuWidgetController* GetInventoryMenuWidgetController(const FWidgetControllerParams& WCParams);
 
 private:
 	UPROPERTY()
@@ -33,4 +35,10 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<USCOverlayWidgetController> OverlayWidgetControllerClass;
+
+	UPROPERTY()
+	TObjectPtr<USCInventoryMenuWidgetController> InventoryMenuWidgetController;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<USCInventoryMenuWidgetController> InventoryMenuWidgetControllerClass;
 };

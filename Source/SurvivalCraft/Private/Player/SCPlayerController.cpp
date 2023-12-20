@@ -4,6 +4,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/Character.h"
+#include "Items/Data/SCItemData.h"
 
 void ASCPlayerController::BeginPlay()
 {
@@ -31,6 +32,11 @@ void ASCPlayerController::SetupInputComponent()
 	{
 		UE_LOG(LogTemp, Error, TEXT("'%s' Failed to find an Enhanced Input Component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
 	}
+}
+
+void ASCPlayerController::UpdateItemSlot(EContainerType ContainerType, int32 SlotIndex, const FItemInformation& Item)
+{
+	OnUpdateItemSlotDelegate.Broadcast(ContainerType, SlotIndex, Item);
 }
 
 void ASCPlayerController::Move(const FInputActionValue& Value)

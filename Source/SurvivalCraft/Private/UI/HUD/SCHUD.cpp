@@ -1,9 +1,9 @@
 ﻿// Copyright Fillipe Romero
 
-
 #include "UI/HUD/SCHUD.h"
 #include "Blueprint/UserWidget.h"
 #include "UI/Widget/SCUserWidget.h"
+#include "UI/WidgetController/SCInventoryMenuWidgetController.h"
 #include "UI/WidgetController/SCOverlayWidgetController.h"
 #include "UI/WidgetController/SCWidgetController.h"
 
@@ -36,4 +36,16 @@ USCOverlayWidgetController* ASCHUD::GetOverlayWidgetController(const FWidgetCont
 	}
 
 	return OverlayWidgetController;
+}
+
+USCInventoryMenuWidgetController* ASCHUD::GetInventoryMenuWidgetController(const FWidgetControllerParams& WCParams)
+{
+	if (InventoryMenuWidgetController == nullptr)
+	{
+		InventoryMenuWidgetController = NewObject<USCInventoryMenuWidgetController>(this, InventoryMenuWidgetControllerClass);
+		InventoryMenuWidgetController->SetWidgetControllerParams(WCParams);
+		InventoryMenuWidgetController->BindCallbacksToDependencies();
+	}
+
+	return InventoryMenuWidgetController;
 }

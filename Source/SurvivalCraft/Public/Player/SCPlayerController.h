@@ -3,10 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Enums/ContainerType.h"
 #include "GameFramework/PlayerController.h"
 #include "SCPlayerController.generated.h"
 
+struct FItemInformation;
 DECLARE_MULTICAST_DELEGATE(FOnToggleInventorySignature)
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnUpdateItemSlotSignature, EContainerType/*ContainerType*/, int32/*SlotIndex*/, const FItemInformation&/*Item*/);
 
 struct FInputActionValue;
 class UInputAction;
@@ -18,7 +21,10 @@ class SURVIVALCRAFT_API ASCPlayerController : public APlayerController
 	GENERATED_BODY()
 
 public:
+	void UpdateItemSlot(EContainerType ContainerType, int32 SlotIndex, const FItemInformation& Item);
+	
 	FOnToggleInventorySignature OnToggleInventoryDelegate;
+	FOnUpdateItemSlotSignature OnUpdateItemSlotDelegate;
 
 protected:
 	virtual void BeginPlay() override;
