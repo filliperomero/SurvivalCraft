@@ -16,4 +16,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Mesh)
+	TObjectPtr<UStaticMeshComponent> BaseMesh;
 };
