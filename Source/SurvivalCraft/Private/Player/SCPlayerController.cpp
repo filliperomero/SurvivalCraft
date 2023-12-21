@@ -39,6 +39,11 @@ void ASCPlayerController::UpdateItemSlot(EContainerType ContainerType, int32 Slo
 	OnUpdateItemSlotDelegate.Broadcast(ContainerType, SlotIndex, Item);
 }
 
+void ASCPlayerController::ResetItemSlot(EContainerType ContainerType, int32 SlotIndex)
+{
+	OnResetItemSlotDelegate.Broadcast(ContainerType, SlotIndex);
+}
+
 void ASCPlayerController::Move(const FInputActionValue& Value)
 {
 	const FVector2D MovementVector = Value.Get<FVector2D>();

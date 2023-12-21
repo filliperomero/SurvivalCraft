@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Enums/ContainerType.h"
+#include "Items/Data/SCItemData.h"
 #include "UObject/Interface.h"
 #include "PlayerInterface.generated.h"
 
@@ -21,4 +23,7 @@ class SURVIVALCRAFT_API IPlayerInterface
 public:
 	UFUNCTION(BlueprintNativeEvent)
 	ASCPlayerController* GetSCPlayerController();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void OnSlotDrop(EContainerType TargetContainer, EContainerType FromContainer, int32 FromIndex, int32 ToIndex, EArmorType ArmorType);
 };

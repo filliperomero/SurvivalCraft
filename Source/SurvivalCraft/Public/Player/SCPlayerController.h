@@ -10,6 +10,7 @@
 struct FItemInformation;
 DECLARE_MULTICAST_DELEGATE(FOnToggleInventorySignature)
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnUpdateItemSlotSignature, EContainerType/*ContainerType*/, int32/*SlotIndex*/, const FItemInformation&/*Item*/);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnResetItemSlotSignature, EContainerType/*ContainerType*/, int32/*SlotIndex*/);
 
 struct FInputActionValue;
 class UInputAction;
@@ -22,9 +23,11 @@ class SURVIVALCRAFT_API ASCPlayerController : public APlayerController
 
 public:
 	void UpdateItemSlot(EContainerType ContainerType, int32 SlotIndex, const FItemInformation& Item);
+	void ResetItemSlot(EContainerType ContainerType, int32 SlotIndex);
 	
 	FOnToggleInventorySignature OnToggleInventoryDelegate;
 	FOnUpdateItemSlotSignature OnUpdateItemSlotDelegate;
+	FOnResetItemSlotSignature OnResetItemSlotDelegate;
 
 protected:
 	virtual void BeginPlay() override;

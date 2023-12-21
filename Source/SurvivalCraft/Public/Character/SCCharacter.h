@@ -28,6 +28,7 @@ public:
 
 	/** Player Interface */
 	virtual ASCPlayerController* GetSCPlayerController_Implementation() override;
+	virtual void OnSlotDrop_Implementation(EContainerType TargetContainer, EContainerType FromContainer, int32 FromIndex, int32 ToIndex, EArmorType ArmorType) override;
 	/** Player Interface */
 
 protected:

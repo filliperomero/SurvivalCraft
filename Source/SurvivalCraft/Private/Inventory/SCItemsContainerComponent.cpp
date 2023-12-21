@@ -38,13 +38,33 @@ void USCItemsContainerComponent::FindEmptySlot(bool& bSuccess, int32& OutEmptyIn
 	}
 }
 
+FItemInformation USCItemsContainerComponent::GetItemByIndex(int32 Index)
+{
+	if (Items.IsValidIndex(Index)) return Items[Index];
+
+	return FItemInformation();
+}
+
+bool USCItemsContainerComponent::RemoveItemByIndex(int32 Index)
+{
+	if (!Items.IsValidIndex(Index)) return false;
+	
+	Items[Index] = FItemInformation();
+
+	return true;
+}
+
+bool USCItemsContainerComponent::IsSlotEmpty(int32 SlotIndex)
+{
+	if (Items.IsValidIndex(SlotIndex) && Items[SlotIndex].ItemID == 0)
+		return true;
+
+	return false;
+}
+
 void USCItemsContainerComponent::UpdateUI(int32 Index, const FItemInformation& Item, bool bShouldResetSlot)
 {
-	if (bShouldResetSlot)
-	{
-		
-	}
-	else
+	if (bShouldResetSlot == false)
 	{
 		ASCPlayerController* PC = IPlayerInterface::Execute_GetSCPlayerController(GetOwner());
 		
@@ -67,6 +87,38 @@ void USCItemsContainerComponent::UpdateUI(int32 Index, const FItemInformation& I
 void USCItemsContainerComponent::AddItem(FItemInformation Item)
 {
 	ServerAddItem(Item);
+}
+
+void USCItemsContainerComponent::OnSlotDrop(USCItemsContainerComponent* FromContainer, int32 FromIndex, int32 ToIndex)
+{
+	HandleSlotDrop(FromContainer, FromIndex, ToIndex);
+}
+
+void USCItemsContainerComponent::TransferItem(USCItemsContainerComponent* ToComponent, int32 FromIndex, int32 ToIndex)
+{
+	if (!IsValid(ToComponent)) return;
+
+	const FItemInformation& ItemToTransfer = GetItemByIndex(FromIndex);
+
+	const bool bIsSuccess = ToComponent->AddItemToIndex(ItemToTransfer, ToIndex);
+
+	if (bIsSuccess) RemoveItemByIndex(FromIndex);
+}
+
+bool USCItemsContainerComponent::AddItemToIndex(const FItemInformation& Item, int32 Index)
+{
+	if (IsSlotEmpty(Index) && Items.IsValidIndex(Index))
+	{
+		Items[Index] = Item;
+
+		return true;
+	}
+
+	return false;
+}
+
+void USCItemsContainerComponent::HandleSlotDrop(USCItemsContainerComponent* FromContainer, int32 FromIndex, int32 ToIndex)
+{
 }
 
 void USCItemsContainerComponent::ServerAddItem_Implementation(FItemInformation Item)

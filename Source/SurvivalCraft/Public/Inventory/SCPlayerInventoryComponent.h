@@ -14,6 +14,10 @@ class SURVIVALCRAFT_API USCPlayerInventoryComponent : public USCItemsContainerCo
 public:
 	USCPlayerInventoryComponent();
 
+	virtual bool AddItemToIndex(const FItemInformation& Item, int32 Index) override;
+
 protected:
 	virtual void BeginPlay() override;
+	virtual void HandleSlotDrop(USCItemsContainerComponent* FromContainer, int32 FromIndex, int32 ToIndex) override;
+	virtual bool RemoveItemByIndex(int32 Index) override;
 };

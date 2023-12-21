@@ -37,6 +37,23 @@ ASCPlayerController* ASCCharacter::GetSCPlayerController_Implementation()
 	return GetController<ASCPlayerController>();
 }
 
+void ASCCharacter::OnSlotDrop_Implementation(EContainerType TargetContainer, EContainerType FromContainer, int32 FromIndex, int32 ToIndex, EArmorType ArmorType)
+{
+	// TODO: should we put a HasAuthority here?
+	
+	switch (TargetContainer) {
+	case EContainerType::ECT_PlayerInventory:
+		InventoryComponent->OnSlotDrop(InventoryComponent, FromIndex, ToIndex);
+		break;
+	case EContainerType::ECT_PlayerHotbar:
+		break;
+	case EContainerType::ECT_PlayerStorage:
+		break;
+	case EContainerType::ECT_PlayerArmor:
+		break;
+	}
+}
+
 void ASCCharacter::BeginPlay()
 {
 	Super::BeginPlay();

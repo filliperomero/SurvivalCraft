@@ -20,6 +20,10 @@ public:
 	
 	UFUNCTION(BlueprintCallable) // Provisory UFUNCTION
 	virtual void AddItem(FItemInformation Item);
+
+	void OnSlotDrop(USCItemsContainerComponent* FromContainer, int32 FromIndex, int32 ToIndex);
+	void TransferItem(USCItemsContainerComponent* ToComponent, int32 FromIndex, int32 ToIndex);
+	virtual bool AddItemToIndex(const FItemInformation& Item, int32 Index);
 	
 	TArray<FItemInformation> Items;
 
@@ -30,7 +34,12 @@ protected:
 	virtual void BeginPlay() override;
 	
 	virtual void FindEmptySlot(bool& bSuccess, int32& OutEmptyIndex);
+	FItemInformation GetItemByIndex(int32 Index);
+	virtual bool RemoveItemByIndex(int32 Index);
+	virtual bool IsSlotEmpty(int32 SlotIndex);
 	virtual void UpdateUI(int32 Index, const FItemInformation& Item, bool bShouldResetSlot);
+	// Override in child classes
+	virtual void HandleSlotDrop(USCItemsContainerComponent* FromContainer, int32 FromIndex, int32 ToIndex);
 	
 	UFUNCTION(Server, Reliable)
 	void ServerAddItem(FItemInformation Item);

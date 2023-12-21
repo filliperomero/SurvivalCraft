@@ -8,6 +8,7 @@
 #include "SCInventoryMenuWidgetController.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnUpdateItemSlotWidgetSignature, EContainerType, ContainerType, int32, SlotIndex, const FItemInformation&, Item);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnResetItemSlotWidgetSignature, EContainerType, ContainerType, int32, SlotIndex);
 
 UCLASS(BlueprintType, Blueprintable)
 class SURVIVALCRAFT_API USCInventoryMenuWidgetController : public USCWidgetController
@@ -19,4 +20,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnUpdateItemSlotWidgetSignature OnUpdateItemSlotWidgetDelegate;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnResetItemSlotWidgetSignature OnResetItemSlotWidgetDelegate;
 };
