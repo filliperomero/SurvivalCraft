@@ -8,6 +8,7 @@
 #include "Logging/LogMacros.h"
 #include "SCCharacter.generated.h"
 
+class USCPlayerHotbarComponent;
 class USCPlayerInventoryComponent;
 class UInputComponent;
 class USkeletalMeshComponent;
@@ -44,6 +45,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USCPlayerInventoryComponent> InventoryComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USCPlayerHotbarComponent> HotbarComponent;
 
 public:
 	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }

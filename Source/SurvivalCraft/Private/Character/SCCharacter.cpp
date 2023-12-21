@@ -3,6 +3,7 @@
 #include "SurvivalCraft/Public/Character/SCCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Inventory/SCPlayerHotbarComponent.h"
 #include "Inventory/SCPlayerInventoryComponent.h"
 #include "Player/SCPlayerController.h"
 #include "UI/HUD/SCHUD.h"
@@ -29,6 +30,10 @@ ASCCharacter::ASCCharacter()
 	Mesh1P->SetRelativeLocation(FVector(00.f, 0.f, -160.f));
 
 	InventoryComponent = CreateDefaultSubobject<USCPlayerInventoryComponent>(TEXT("InventoryComponent"));
+	InventoryComponent->ContainerType = EContainerType::ECT_PlayerInventory;
+	
+	HotbarComponent = CreateDefaultSubobject<USCPlayerHotbarComponent>(TEXT("HotbarComponent"));
+	HotbarComponent->ContainerType = EContainerType::ECT_PlayerHotbar;
 }
 
 ASCPlayerController* ASCCharacter::GetSCPlayerController_Implementation()
@@ -58,9 +63,11 @@ void ASCCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	// Initialize Inventory
 	const FItemInformation Item = FItemInformation();
+	// Initialize Inventory
 	InventoryComponent->InitializeItems(Item, 30);
+	// Initialize Hotbar
+	HotbarComponent->InitializeItems(Item, 8);
 }
 
 void ASCCharacter::PossessedBy(AController* NewController)
