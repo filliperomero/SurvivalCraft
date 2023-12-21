@@ -4,7 +4,7 @@
 
 ASCItemMaster::ASCItemMaster()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 }
 
 void ASCItemMaster::BeginPlay()
