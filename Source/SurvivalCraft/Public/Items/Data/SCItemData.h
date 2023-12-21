@@ -7,7 +7,7 @@
 class ASCItemMaster;
 
 UENUM(BlueprintType)
-enum class EItemType
+enum class EItemType : uint8
 {
 	EIT_Resource UMETA(DisplayName = "Resource"),
 	EIT_Equipable UMETA(DisplayName = "Equipable"),
@@ -17,7 +17,7 @@ enum class EItemType
 };
 
 UENUM(BlueprintType)
-enum class EItemRarity
+enum class EItemRarity : uint8
 {
 	EIR_Common UMETA(DisplayName = "Common"),
 	EIR_Uncommon UMETA(DisplayName = "Uncommon"),
@@ -27,7 +27,7 @@ enum class EItemRarity
 };
 
 UENUM(BlueprintType)
-enum class EArmorType
+enum class EArmorType : uint8
 {
 	EAT_Helmet UMETA(DisplayName = "Helmet"),
 	EAT_Chest UMETA(DisplayName = "Chest Plate"),
