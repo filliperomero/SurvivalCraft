@@ -125,6 +125,10 @@ void ASCCharacter::ServerUseHotBar_Implementation(const int32 Index)
 		case EItemType::EIT_Equipable:
 			if (IsValid(EquippedItem))
 			{
+				EquippedItem->Destroy();
+				EquipableState = EEquipableState::EES_Default;
+
+				ClientUnequipEquipable();
 			}
 			else
 			{
@@ -156,8 +160,15 @@ void ASCCharacter::SpawnEquipable(TSubclassOf<AActor> EquipableItemClass, FItemI
 
 void ASCCharacter::ClientSpawnEquipable_Implementation(TSubclassOf<ASCEquipableItem> EquipableItemClass, FName SocketName)
 {
-	ASCEquipableItem* FP_EquippedItem = GetWorld()->SpawnActor<ASCEquipableItem>(EquipableItemClass);
+	FP_EquippedItem = GetWorld()->SpawnActor<ASCEquipableItem>(EquipableItemClass);
 	FP_EquippedItem->AttachToComponent(GetMesh1P(), FAttachmentTransformRules::SnapToTargetIncludingScale, SocketName);
+}
+
+void ASCCharacter::ClientUnequipEquipable_Implementation()
+{
+	if (!IsValid(FP_EquippedItem)) return;
+
+	FP_EquippedItem->Destroy();
 }
 
 // TODO: Removed because the EquippedItem (ItemMaster) is already replicated.

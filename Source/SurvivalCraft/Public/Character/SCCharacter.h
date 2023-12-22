@@ -62,6 +62,9 @@ private:
 	UPROPERTY()
 	TObjectPtr<ASCEquipableItem> EquippedItem;
 
+	UPROPERTY()
+	TObjectPtr<ASCEquipableItem> FP_EquippedItem;
+
 	UFUNCTION(Server, Reliable)
 	void ServerUseHotBar(const int32 Index);
 	
@@ -72,6 +75,9 @@ private:
 
 	UFUNCTION(Client, Reliable)
 	void ClientSpawnEquipable(TSubclassOf<ASCEquipableItem> EquipableItemClass, FName SocketName);
+
+	UFUNCTION(Client, Reliable)
+	void ClientUnequipEquipable();
 
 public:
 	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
