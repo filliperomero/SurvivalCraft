@@ -5,9 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Interfaces/PlayerInterface.h"
+#include "Items/Data/EquipableData.h"
 #include "Logging/LogMacros.h"
 #include "SCCharacter.generated.h"
 
+class ASCEquipableItem;
 class USCPlayerHotbarComponent;
 class USCPlayerInventoryComponent;
 class UInputComponent;
@@ -32,9 +34,14 @@ public:
 	virtual void OnSlotDrop_Implementation(EContainerType TargetContainer, EContainerType FromContainer, int32 FromIndex, int32 ToIndex, EArmorType ArmorType) override;
 	/** Player Interface */
 
+	UFUNCTION(BlueprintCallable)
+	void UseHotBar(const int32 Index);
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
+	virtual void OnRep_PlayerState() override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 private:
 	UPROPERTY(VisibleDefaultsOnly, Category=Mesh)
@@ -48,6 +55,23 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USCPlayerHotbarComponent> HotbarComponent;
+
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = "true"))
+	EEquipableState EquipableState = EEquipableState::EES_Default;
+
+	UPROPERTY()
+	TObjectPtr<ASCEquipableItem> EquippedItem;
+
+	UFUNCTION(Server, Reliable)
+	void ServerUseHotBar(const int32 Index);
+	
+	void SpawnEquipable(TSubclassOf<AActor> EquipableItemClass, FItemInformation ItemInformation, int32 EquippedIndex);
+
+	// UFUNCTION(NetMulticast, Reliable)
+	// void MulticastEquipItem(AActor* Target, FName SocketName, EEquipableState InEquippedState);
+
+	UFUNCTION(Client, Reliable)
+	void ClientSpawnEquipable(TSubclassOf<ASCEquipableItem> EquipableItemClass, FName SocketName);
 
 public:
 	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }

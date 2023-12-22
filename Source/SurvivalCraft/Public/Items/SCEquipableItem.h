@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "SCItemMaster.h"
+#include "Data/EquipableData.h"
 #include "SCEquipableItem.generated.h"
 
 UCLASS()
@@ -16,4 +17,10 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipable Properties")
+	FEquipableItemInfo EquipableItemInfo;
+
+public:
+	FORCEINLINE FEquipableItemInfo GetEquipableItemInfo() { return EquipableItemInfo; }
 };

@@ -5,6 +5,7 @@
 ASCItemMaster::ASCItemMaster()
 {
 	PrimaryActorTick.bCanEverTick = false;
+	bReplicates = true;
 
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneComponent"));
 

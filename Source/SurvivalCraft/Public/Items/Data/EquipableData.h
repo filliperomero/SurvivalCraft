@@ -4,10 +4,10 @@
 
 #include "EquipableData.generated.h"
 
-class ASCFirstPersonEquipable;
+class ASCEquipableItem;
 
 UENUM(BlueprintType)
-enum class EEquippableState : uint8
+enum class EEquipableState : uint8
 {
 	EES_Default UMETA(DisplayName = "Default"),
 	EES_Hatchet UMETA(DisplayName = "Hatchet"),
@@ -30,9 +30,9 @@ struct FEquipableItemInfo
 	FName SocketName = FName();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	EEquippableState EquipableState = EEquippableState::EES_Default;
+	EEquipableState EquipableState = EEquipableState::EES_Default;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	TSubclassOf<ASCFirstPersonEquipable> FirsPersonEquipClass;
+	TSubclassOf<ASCEquipableItem> FirsPersonEquipClass;
 	
 };

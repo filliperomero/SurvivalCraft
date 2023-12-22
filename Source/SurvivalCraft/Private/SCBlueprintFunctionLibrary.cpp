@@ -47,3 +47,16 @@ USCInventoryMenuWidgetController* USCBlueprintFunctionLibrary::GetInventoryMenuW
 	
 	return nullptr;
 }
+
+USCHotbarMenuWidgetController* USCBlueprintFunctionLibrary::GetHotbarMenuWidgetController(const UObject* WorldContextObject)
+{
+	FWidgetControllerParams WCParams;
+	ASCHUD* SCHUD = nullptr;
+	
+	if (MakeWidgetControllerParams(WorldContextObject, WCParams, SCHUD))
+	{
+		return SCHUD->GetHotbarMenuWidgetController(WCParams);
+	}
+	
+	return nullptr;
+}

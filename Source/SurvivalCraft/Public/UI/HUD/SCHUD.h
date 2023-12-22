@@ -6,6 +6,7 @@
 #include "GameFramework/HUD.h"
 #include "SCHUD.generated.h"
 
+class USCHotbarMenuWidgetController;
 class USCInventoryMenuWidgetController;
 struct FWidgetControllerParams;
 class USCOverlayWidgetController;
@@ -21,6 +22,7 @@ public:
 
 	USCOverlayWidgetController* GetOverlayWidgetController(const FWidgetControllerParams& WCParams);
 	USCInventoryMenuWidgetController* GetInventoryMenuWidgetController(const FWidgetControllerParams& WCParams);
+	USCHotbarMenuWidgetController* GetHotbarMenuWidgetController(const FWidgetControllerParams& WCParams);
 
 private:
 	UPROPERTY()
@@ -41,4 +43,10 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<USCInventoryMenuWidgetController> InventoryMenuWidgetControllerClass;
+
+	UPROPERTY()
+	TObjectPtr<USCHotbarMenuWidgetController> HotbarMenuWidgetController;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<USCHotbarMenuWidgetController> HotbarMenuWidgetControllerClass;
 };

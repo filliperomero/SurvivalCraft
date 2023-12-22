@@ -3,6 +3,7 @@
 #include "UI/HUD/SCHUD.h"
 #include "Blueprint/UserWidget.h"
 #include "UI/Widget/SCUserWidget.h"
+#include "UI/WidgetController/SCHotbarMenuWidgetController.h"
 #include "UI/WidgetController/SCInventoryMenuWidgetController.h"
 #include "UI/WidgetController/SCOverlayWidgetController.h"
 #include "UI/WidgetController/SCWidgetController.h"
@@ -48,4 +49,16 @@ USCInventoryMenuWidgetController* ASCHUD::GetInventoryMenuWidgetController(const
 	}
 
 	return InventoryMenuWidgetController;
+}
+
+USCHotbarMenuWidgetController* ASCHUD::GetHotbarMenuWidgetController(const FWidgetControllerParams& WCParams)
+{
+	if (HotbarMenuWidgetController == nullptr)
+	{
+		HotbarMenuWidgetController = NewObject<USCHotbarMenuWidgetController>(this, HotbarMenuWidgetControllerClass);
+		HotbarMenuWidgetController->SetWidgetControllerParams(WCParams);
+		HotbarMenuWidgetController->BindCallbacksToDependencies();
+	}
+
+	return HotbarMenuWidgetController;
 }

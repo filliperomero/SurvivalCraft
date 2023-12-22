@@ -6,6 +6,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "SCBlueprintFunctionLibrary.generated.h"
 
+class USCHotbarMenuWidgetController;
 class USCInventoryMenuWidgetController;
 class USCOverlayWidgetController;
 class ASCHUD;
@@ -24,4 +25,7 @@ public:
 	
 	UFUNCTION(BlueprintPure, Category = "SCBlueprintFunctionLibrary|WidgetController", meta = (DefaultToSelf = "WorldContextObject"))
 	static USCInventoryMenuWidgetController* GetInventoryMenuWidgetController(const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintPure, Category = "SCBlueprintFunctionLibrary|WidgetController", meta = (DefaultToSelf = "WorldContextObject"))
+	static USCHotbarMenuWidgetController* GetHotbarMenuWidgetController(const UObject* WorldContextObject);
 };
