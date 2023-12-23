@@ -14,6 +14,7 @@ class SURVIVALCRAFT_API ASCHatchet : public ASCFirstPersonEquipable
 public:
 	ASCHatchet();
 
-protected:
-	virtual void BeginPlay() override;
+	/** EquipableInterface */
+	virtual void UseItem_Implementation(ASCCharacter* SCCharacter) override;
+	/** EquipableInterface */
 };

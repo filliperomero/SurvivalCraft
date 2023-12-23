@@ -5,10 +5,11 @@
 #include "CoreMinimal.h"
 #include "SCItemMaster.h"
 #include "Data/EquipableData.h"
+#include "Interfaces/EquipableInterface.h"
 #include "SCEquipableItem.generated.h"
 
 UCLASS()
-class SURVIVALCRAFT_API ASCEquipableItem : public ASCItemMaster
+class SURVIVALCRAFT_API ASCEquipableItem : public ASCItemMaster, public IEquipableInterface
 {
 	GENERATED_BODY()
 

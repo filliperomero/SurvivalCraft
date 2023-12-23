@@ -10,8 +10,6 @@
 #include "Player/SCPlayerController.h"
 #include "UI/HUD/SCHUD.h"
 
-DEFINE_LOG_CATEGORY(LogSCCharacter);
-
 ASCCharacter::ASCCharacter()
 {
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
@@ -114,6 +112,22 @@ void ASCCharacter::UseHotBar(const int32 Index)
 	ServerUseHotBar(Index);
 }
 
+void ASCCharacter::UseEquipable()
+{
+	// Improvement: We should replicate bCanUseEquipable so we can check this locally instead of checking in the server. This would save improve the lag
+	ServerUseEquipable();
+}
+
+void ASCCharacter::FinishEquipable()
+{
+	bCanUseEquipable = true;
+}
+
+void ASCCharacter::EquipableHit()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Equipable Hit Test"));
+}
+
 void ASCCharacter::ServerUseHotBar_Implementation(const int32 Index)
 {
 	EItemType ItemType;
@@ -170,6 +184,43 @@ void ASCCharacter::ClientUnequipEquipable_Implementation()
 
 	FP_EquippedItem->Destroy();
 }
+
+void ASCCharacter::ServerUseEquipable_Implementation()
+{
+	if (!IsValid(EquippedItem) || !bCanUseEquipable) return;
+
+	bCanUseEquipable = false;
+
+	// TODO: since useItem for now only play the montage, we can have a interface to get the MontageName and just call the RPC's from here.
+	EquippedItem->UseItem_Implementation(this);
+}
+
+void ASCCharacter::PlayEquipableMontage(FName SectionName)
+{
+	// TODO: We can refactor this later by using a state as a enum type. Then using it with a OnRep so it'll run in other client's
+	MulticastPlayEquipableMontage(SectionName);
+}
+
+void ASCCharacter::MulticastPlayEquipableMontage_Implementation(FName SectionName)
+{
+	if (!EquipableMontage) return;
+	
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	UAnimInstance* AnimInstance1P = GetMesh1P()->GetAnimInstance();
+
+	if (AnimInstance)
+	{
+		AnimInstance->Montage_Play(EquipableMontage);
+		AnimInstance->Montage_JumpToSection(SectionName);
+	}
+
+	if (AnimInstance1P)
+	{
+		AnimInstance1P->Montage_Play(EquipableMontage);
+		AnimInstance1P->Montage_JumpToSection(SectionName);
+	}
+}
+
 
 // TODO: Removed because the EquippedItem (ItemMaster) is already replicated.
 // void ASCCharacter::MulticastEquipItem_Implementation(AActor* Target, FName SocketName, EEquipableState InEquippedState)

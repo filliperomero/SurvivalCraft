@@ -3,6 +3,7 @@
 #include "SurvivalCraft/Public/Player/SCPlayerController.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Character/SCCharacter.h"
 #include "GameFramework/Character.h"
 #include "Items/Data/SCItemData.h"
 
@@ -27,6 +28,7 @@ void ASCPlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::Move);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ThisClass::Look);
 		EnhancedInputComponent->BindAction(InventoryAction, ETriggerEvent::Started, this, &ThisClass::ToggleInventory);
+		EnhancedInputComponent->BindAction(LeftMouseAction, ETriggerEvent::Started, this, &ThisClass::OnLeftMouse);
 	}
 	else
 	{
@@ -79,4 +81,12 @@ void ASCPlayerController::StopJump()
 void ASCPlayerController::ToggleInventory()
 {
 	OnToggleInventoryDelegate.Broadcast();
+}
+
+void ASCPlayerController::OnLeftMouse()
+{
+	SCCharacter = SCCharacter == nullptr ? Cast<ASCCharacter>(GetCharacter()) : SCCharacter;
+
+	// TODO: Create a interface for the Character so I don't need to cast.
+	SCCharacter->UseEquipable();
 }

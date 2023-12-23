@@ -37,6 +37,17 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UseHotBar(const int32 Index);
 
+	UFUNCTION()
+	void UseEquipable();
+	
+	UFUNCTION(BlueprintCallable)
+	void FinishEquipable();
+	
+	UFUNCTION(BlueprintCallable)
+	void EquipableHit();
+
+	void PlayEquipableMontage(FName SectionName);
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
@@ -59,6 +70,9 @@ private:
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = "true"))
 	EEquipableState EquipableState = EEquipableState::EES_Default;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Animations, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UAnimMontage> EquipableMontage;
+
 	UPROPERTY()
 	TObjectPtr<ASCEquipableItem> EquippedItem;
 
@@ -79,7 +93,16 @@ private:
 	UFUNCTION(Client, Reliable)
 	void ClientUnequipEquipable();
 
+	UFUNCTION(Server, Reliable)
+	void ServerUseEquipable();
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastPlayEquipableMontage(FName SectionName);
+
+	bool bCanUseEquipable = true;
+
 public:
 	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
+	FORCEINLINE ASCEquipableItem* GetEquippedItem() const { return EquippedItem; }
 };

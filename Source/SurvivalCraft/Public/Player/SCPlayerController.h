@@ -7,6 +7,7 @@
 #include "GameFramework/PlayerController.h"
 #include "SCPlayerController.generated.h"
 
+class ASCCharacter;
 struct FItemInformation;
 DECLARE_MULTICAST_DELEGATE(FOnToggleInventorySignature)
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnUpdateItemSlotSignature, EContainerType/*ContainerType*/, int32/*SlotIndex*/, const FItemInformation&/*Item*/);
@@ -39,6 +40,10 @@ private:
 	void Jump();
 	void StopJump();
 	void ToggleInventory();
+	void OnLeftMouse();
+
+	UPROPERTY()
+	ASCCharacter* SCCharacter;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> MoveAction;
@@ -51,6 +56,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> InventoryAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> LeftMouseAction;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UInputMappingContext> InputMappingContext;
