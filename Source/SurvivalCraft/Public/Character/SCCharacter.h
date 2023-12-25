@@ -32,7 +32,7 @@ public:
 
 	/** Player Interface */
 	virtual ASCPlayerController* GetSCPlayerController_Implementation() override;
-	virtual void OnSlotDrop_Implementation(EContainerType TargetContainer, EContainerType FromContainer, int32 FromIndex, int32 ToIndex, EArmorType ArmorType) override;
+	virtual void OnSlotDrop_Implementation(EContainerType TargetContainerType, EContainerType FromContainerType, int32 FromIndex, int32 ToIndex, EArmorType ArmorType) override;
 	/** Player Interface */
 
 	UFUNCTION(BlueprintCallable)
@@ -51,6 +51,12 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void ServerAddHarvestedItem(const FResourceInfo& Resource);
+
+	UFUNCTION(Server, Reliable)
+	void ServerUnequipCurrentItem(int32 Index);
+
+	UFUNCTION(Server, Reliable)
+	void ServerOnSlotDrop(EContainerType TargetContainerType, EContainerType FromContainerType, int32 FromIndex, int32 ToIndex, EArmorType ArmorType);
 
 protected:
 	virtual void BeginPlay() override;
@@ -85,6 +91,8 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<ASCEquipableItem> EquippedItem;
+
+	int32 EquippedItemIndex = -1;
 
 	UPROPERTY()
 	TObjectPtr<ASCEquipableItem> FP_EquippedItem;

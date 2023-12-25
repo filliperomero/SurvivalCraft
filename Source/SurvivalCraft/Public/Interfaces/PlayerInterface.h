@@ -25,5 +25,5 @@ public:
 	ASCPlayerController* GetSCPlayerController();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void OnSlotDrop(EContainerType TargetContainer, EContainerType FromContainer, int32 FromIndex, int32 ToIndex, EArmorType ArmorType);
+	void OnSlotDrop(EContainerType TargetContainerType, EContainerType FromContainerType, int32 FromIndex, int32 ToIndex, EArmorType ArmorType);
 };

@@ -22,7 +22,7 @@ bool USCPlayerInventoryComponent::AddItemToIndex(const FItemInformation& Item, i
 	{
 		ASCPlayerController* PC = IPlayerInterface::Execute_GetSCPlayerController(GetOwner());
 		
-		PC->UpdateItemSlot(ContainerType, Index, Item);
+		PC->ClientUpdateItemSlot(ContainerType, Index, Item);
 	}
 
 	return bIsSuccess;
@@ -35,9 +35,8 @@ void USCPlayerInventoryComponent::HandleSlotDrop(USCItemsContainerComponent* Fro
 	switch (FromContainer->ContainerType)
 	{
 	case EContainerType::ECT_PlayerInventory:
-		FromContainer->TransferItem(this, FromIndex, ToIndex);
-		break;
 	case EContainerType::ECT_PlayerHotbar:
+		FromContainer->TransferItem(this, FromIndex, ToIndex);
 		break;
 	case EContainerType::ECT_PlayerStorage:
 		break;
@@ -54,7 +53,7 @@ bool USCPlayerInventoryComponent::RemoveItemByIndex(int32 Index)
 	{
 		ASCPlayerController* PC = IPlayerInterface::Execute_GetSCPlayerController(GetOwner());
 		
-		PC->ResetItemSlot(ContainerType, Index);
+		PC->ClientResetItemSlot(ContainerType, Index);
 	}
 
 	return bIsSuccess;

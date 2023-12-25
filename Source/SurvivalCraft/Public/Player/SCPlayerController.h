@@ -24,8 +24,12 @@ class SURVIVALCRAFT_API ASCPlayerController : public APlayerController
 	GENERATED_BODY()
 
 public:
-	void UpdateItemSlot(EContainerType ContainerType, int32 SlotIndex, const FItemInformation& Item);
-	void ResetItemSlot(EContainerType ContainerType, int32 SlotIndex);
+	UFUNCTION(Client, Reliable)
+	void ClientUpdateItemSlot(EContainerType ContainerType, int32 SlotIndex, const FItemInformation& Item);
+	
+	UFUNCTION(Client, Reliable)
+	void ClientResetItemSlot(EContainerType ContainerType, int32 SlotIndex);
+	
 	void ShowItemAdded(UTexture2D* ItemIcon, int32 ItemQuantity, FText ItemName);
 	
 	FOnToggleInventorySignature OnToggleInventoryDelegate;

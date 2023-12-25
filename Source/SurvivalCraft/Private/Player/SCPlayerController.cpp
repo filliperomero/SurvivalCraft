@@ -36,12 +36,12 @@ void ASCPlayerController::SetupInputComponent()
 	}
 }
 
-void ASCPlayerController::UpdateItemSlot(EContainerType ContainerType, int32 SlotIndex, const FItemInformation& Item)
+void ASCPlayerController::ClientUpdateItemSlot_Implementation(EContainerType ContainerType, int32 SlotIndex, const FItemInformation& Item)
 {
 	OnUpdateItemSlotDelegate.Broadcast(ContainerType, SlotIndex, Item);
 }
 
-void ASCPlayerController::ResetItemSlot(EContainerType ContainerType, int32 SlotIndex)
+void ASCPlayerController::ClientResetItemSlot_Implementation(EContainerType ContainerType, int32 SlotIndex)
 {
 	OnResetItemSlotDelegate.Broadcast(ContainerType, SlotIndex);
 }

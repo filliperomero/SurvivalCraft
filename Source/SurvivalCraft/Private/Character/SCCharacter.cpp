@@ -48,15 +48,34 @@ ASCPlayerController* ASCCharacter::GetSCPlayerController_Implementation()
 	return GetController<ASCPlayerController>();
 }
 
-void ASCCharacter::OnSlotDrop_Implementation(EContainerType TargetContainer, EContainerType FromContainer, int32 FromIndex, int32 ToIndex, EArmorType ArmorType)
+void ASCCharacter::OnSlotDrop_Implementation(EContainerType TargetContainerType, EContainerType FromContainerType, int32 FromIndex, int32 ToIndex, EArmorType ArmorType)
 {
-	// TODO: should we put a HasAuthority here?
-	
-	switch (TargetContainer) {
+	ServerOnSlotDrop(TargetContainerType, FromContainerType, FromIndex, ToIndex, ArmorType);
+}
+
+void ASCCharacter::ServerOnSlotDrop_Implementation(EContainerType TargetContainerType, EContainerType FromContainerType, int32 FromIndex, int32 ToIndex, EArmorType ArmorType)
+{
+	USCItemsContainerComponent* FromContainer = nullptr;
+
+	switch (FromContainerType) {
 	case EContainerType::ECT_PlayerInventory:
-		InventoryComponent->OnSlotDrop(InventoryComponent, FromIndex, ToIndex);
+		FromContainer = InventoryComponent;
 		break;
 	case EContainerType::ECT_PlayerHotbar:
+		FromContainer = HotbarComponent;
+		break;
+	case EContainerType::ECT_PlayerStorage:
+		break;
+	case EContainerType::ECT_PlayerArmor:
+		break;
+	}
+	
+	switch (TargetContainerType) {
+	case EContainerType::ECT_PlayerInventory:
+		InventoryComponent->OnSlotDrop(FromContainer, FromIndex, ToIndex);
+		break;
+	case EContainerType::ECT_PlayerHotbar:
+		HotbarComponent->OnSlotDrop(FromContainer, FromIndex, ToIndex);
 		break;
 	case EContainerType::ECT_PlayerStorage:
 		break;
@@ -148,13 +167,15 @@ void ASCCharacter::ServerUseHotBar_Implementation(const int32 Index)
 			if (IsValid(EquippedItem))
 			{
 				EquippedItem->Destroy();
+				EquippedItemIndex = -1;
 				EquipableState = EEquipableState::EES_Default;
 
 				ClientUnequipEquipable();
 			}
 			else
 			{
-				const FItemInformation& Item = HotbarComponent->Items[Index]; 
+				const FItemInformation& Item = HotbarComponent->Items[Index];
+				EquippedItemIndex = Index;
 				SpawnEquipable(Item.ItemClass, Item, Index);
 			}
 			break;
@@ -178,6 +199,16 @@ void ASCCharacter::SpawnEquipable(TSubclassOf<AActor> EquipableItemClass, FItemI
 	
 	// MulticastEquipItem(EquippedItem, EquippedItem->GetEquipableItemInfo().SocketName, EquippedItem->GetEquipableItemInfo().EquipableState);
 	ClientSpawnEquipable(EquippedItem->GetEquipableItemInfo().FirsPersonEquipClass, EquippedItem->GetEquipableItemInfo().SocketName);
+}
+
+void ASCCharacter::ServerUnequipCurrentItem_Implementation(int32 Index)
+{
+	if (Index != EquippedItemIndex || !IsValid(EquippedItem)) return;
+
+	EquippedItem->Destroy();
+	EquipableState = EEquipableState::EES_Default;
+	EquippedItemIndex = -1;
+	ClientUnequipEquipable();
 }
 
 void ASCCharacter::ClientShowItemAdded_Implementation(UTexture2D* ItemIcon, int32 ItemQuantity, const FText& ItemName)

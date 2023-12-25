@@ -71,10 +71,8 @@ void USCItemsContainerComponent::UpdateUI(int32 Index, const FItemInformation& I
 		switch (ContainerType)
 		{
 			case EContainerType::ECT_PlayerInventory:
-				PC->UpdateItemSlot(ContainerType, Index, Item);
-				break;
 			case EContainerType::ECT_PlayerHotbar:
-				PC->UpdateItemSlot(ContainerType, Index, Item);
+				PC->ClientUpdateItemSlot(ContainerType, Index, Item);
 				break;
 			case EContainerType::ECT_PlayerStorage:
 				break;
