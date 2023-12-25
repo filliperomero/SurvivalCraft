@@ -21,4 +21,7 @@ class SURVIVALCRAFT_API IEquipableInterface
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void UseItem(ASCCharacter* SCCharacter);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void Interact(const FVector& LocationToCheck);
 };

@@ -9,6 +9,7 @@
 #include "Logging/LogMacros.h"
 #include "SCCharacter.generated.h"
 
+struct FResourceInfo;
 class ASCEquipableItem;
 class USCPlayerHotbarComponent;
 class USCPlayerInventoryComponent;
@@ -48,6 +49,9 @@ public:
 
 	void PlayEquipableMontage(FName SectionName);
 
+	UFUNCTION(Server, Reliable)
+	void ServerAddHarvestedItem(const FResourceInfo& Resource);
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
@@ -59,7 +63,10 @@ private:
 	TObjectPtr<USkeletalMeshComponent> Mesh1P;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UCameraComponent> FirstPersonCameraComponent;
+	TObjectPtr<UCameraComponent> Camera;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UArrowComponent> PlayerArrow;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USCPlayerInventoryComponent> InventoryComponent;
@@ -72,6 +79,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Animations, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UAnimMontage> EquipableMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Resources", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UDataTable> ItemsDataTable;
 
 	UPROPERTY()
 	TObjectPtr<ASCEquipableItem> EquippedItem;
@@ -103,6 +113,6 @@ private:
 
 public:
 	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
-	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
+	UCameraComponent* GetFirstPersonCameraComponent() const { return Camera; }
 	FORCEINLINE ASCEquipableItem* GetEquippedItem() const { return EquippedItem; }
 };

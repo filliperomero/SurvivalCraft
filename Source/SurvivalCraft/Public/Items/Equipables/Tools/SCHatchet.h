@@ -16,5 +16,11 @@ public:
 
 	/** EquipableInterface */
 	virtual void UseItem_Implementation(ASCCharacter* SCCharacter) override;
+	virtual void Interact_Implementation(const FVector& LocationToCheck) override;
 	/** EquipableInterface */
+	
+	void HarvestFoliage(float Damage, AActor* Target);
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Resources")
+	TObjectPtr<UDataTable> LargeItemsResourceDataTable;
 };

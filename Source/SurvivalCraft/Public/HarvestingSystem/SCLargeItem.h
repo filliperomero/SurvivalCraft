@@ -14,6 +14,8 @@ class SURVIVALCRAFT_API ASCLargeItem : public ASCHarvesting
 public:
 	ASCLargeItem();
 
+	void ReceiveDamage(float InDamage);
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -22,4 +24,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Properties")
 	float Health = 50.f;
+
+public:
+	FORCEINLINE float GetHealth() const { return Health; }
 };

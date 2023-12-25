@@ -2,10 +2,12 @@
 
 #include "SurvivalCraft/Public/Character/SCCharacter.h"
 #include "Camera/CameraComponent.h"
+#include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Inventory/SCPlayerHotbarComponent.h"
 #include "Inventory/SCPlayerInventoryComponent.h"
 #include "Items/SCEquipableItem.h"
+#include "Items/Data/ResourceData.h"
 #include "Net/UnrealNetwork.h"
 #include "Player/SCPlayerController.h"
 #include "UI/HUD/SCHUD.h"
@@ -16,14 +18,18 @@ ASCCharacter::ASCCharacter()
 
 	GetMesh()->SetOwnerNoSee(true);
 		
-	FirstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
-	FirstPersonCameraComponent->SetupAttachment(GetCapsuleComponent());
-	FirstPersonCameraComponent->SetRelativeLocation(FVector(-10.f, 0.f, 60.f));
-	FirstPersonCameraComponent->bUsePawnControlRotation = true;
+	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+	Camera->SetupAttachment(GetCapsuleComponent());
+	Camera->SetRelativeLocation(FVector(-10.f, 0.f, 60.f));
+	Camera->bUsePawnControlRotation = true;
+
+	PlayerArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("PlayerArrow"));
+	PlayerArrow->SetupAttachment(Camera);
+	PlayerArrow->SetRelativeLocation(FVector(100.f, 0.f, -10.f));
 	
 	Mesh1P = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CharacterMesh1P"));
 	Mesh1P->SetOnlyOwnerSee(true);
-	Mesh1P->SetupAttachment(FirstPersonCameraComponent);
+	Mesh1P->SetupAttachment(Camera);
 	Mesh1P->bCastDynamicShadow = false;
 	Mesh1P->CastShadow = false;
 	Mesh1P->SetRelativeRotation(FRotator(0.f, -90.0f, 0.f));
@@ -125,7 +131,9 @@ void ASCCharacter::FinishEquipable()
 
 void ASCCharacter::EquipableHit()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Equipable Hit Test"));
+	if (!HasAuthority()) return;
+
+	IEquipableInterface::Execute_Interact(EquippedItem, PlayerArrow->GetComponentLocation());
 }
 
 void ASCCharacter::ServerUseHotBar_Implementation(const int32 Index)
@@ -199,6 +207,18 @@ void ASCCharacter::PlayEquipableMontage(FName SectionName)
 {
 	// TODO: We can refactor this later by using a state as a enum type. Then using it with a OnRep so it'll run in other client's
 	MulticastPlayEquipableMontage(SectionName);
+}
+
+void ASCCharacter::ServerAddHarvestedItem_Implementation(const FResourceInfo& Resource)
+{
+	if (ItemsDataTable == nullptr) return;
+
+	if (FItemInformation* ItemInformation = ItemsDataTable->FindRow<FItemInformation>(Resource.ResourceID, TEXT("")))
+	{
+		ItemInformation->ItemQuantity = Resource.Quantity;
+
+		InventoryComponent->AddItem(*ItemInformation);
+	}
 }
 
 void ASCCharacter::MulticastPlayEquipableMontage_Implementation(FName SectionName)
