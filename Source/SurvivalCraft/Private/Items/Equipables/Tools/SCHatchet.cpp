@@ -2,6 +2,7 @@
 
 #include "Items/Equipables/Tools/SCHatchet.h"
 #include "Character/SCCharacter.h"
+#include "HarvestingSystem/SCDestructibleHarvestable.h"
 #include "HarvestingSystem/SCLargeItem.h"
 #include "Items/Data/ResourceData.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -49,23 +50,37 @@ void ASCHatchet::HarvestFoliage(float Damage, AActor* Target)
 	{
 		LargeItem->ReceiveDamage(Damage);
 
-		if (LargeItem->GetHealth() > 0)
+		// TODO: Find a better way to identify this
+		FLargeItemInfo* LargeItemInfo = LargeItemsResourceDataTable->FindRow<FLargeItemInfo>(FName(*UKismetSystemLibrary::GetDisplayName(Target)), TEXT(""));
+
+		if (!LargeItemInfo) return;
+
+		if (LargeItem->GetHealth() > 0.f)
 		{
-			// TODO: Find a better way to identify this
-			if (FLargeItemInfo* LargeItemInfo = LargeItemsResourceDataTable->FindRow<FLargeItemInfo>(FName(*UKismetSystemLibrary::GetDisplayName(Target)), TEXT("")))
+			// TODO: Create a Interface to Add the Harvested Item so we don't need to Cast everytime
+			ASCCharacter* Character = Cast<ASCCharacter>(GetOwner());
+			
+			for (auto& GivenItem : LargeItemInfo->GivenItems)
 			{
-				// TODO: Create a Interface to Add the Harvested Item so we don't need to Cast everytime
-				ASCCharacter* Character = Cast<ASCCharacter>(GetOwner());
-				
-				for (auto& GivenItem : LargeItemInfo->GivenItems)
-				{
-					Character->ServerAddHarvestedItem(GivenItem);
-				}
+				Character->ServerAddHarvestedItem(GivenItem);
 			}
 		}
 		else
 		{
+			const FTransform SpawnTransform = Target->GetActorTransform();
+			
+			ASCDestructibleHarvestable* SpawnedDestructibleHarvestable = GetWorld()->SpawnActorDeferred<ASCDestructibleHarvestable>(
+				LargeItemInfo->DestructibleHarvestableClass,
+				SpawnTransform,
+				this,
+				nullptr,
+				ESpawnActorCollisionHandlingMethod::AlwaysSpawn
+			);
+			
 			Target->Destroy();
+
+			SpawnedDestructibleHarvestable->SetDirectionToFall(GetOwner()->GetActorForwardVector());
+			SpawnedDestructibleHarvestable->FinishSpawning(SpawnTransform);
 		}
 	}
 }
