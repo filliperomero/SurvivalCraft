@@ -109,6 +109,9 @@ private:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastPlayEquipableMontage(FName SectionName);
 
+	UFUNCTION(Client, Reliable)
+	void ClientShowItemAdded(UTexture2D* ItemIcon, int32 ItemQuantity, const FText& ItemName);
+
 	bool bCanUseEquipable = true;
 
 public:

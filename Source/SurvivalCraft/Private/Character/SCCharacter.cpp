@@ -180,6 +180,15 @@ void ASCCharacter::SpawnEquipable(TSubclassOf<AActor> EquipableItemClass, FItemI
 	ClientSpawnEquipable(EquippedItem->GetEquipableItemInfo().FirsPersonEquipClass, EquippedItem->GetEquipableItemInfo().SocketName);
 }
 
+void ASCCharacter::ClientShowItemAdded_Implementation(UTexture2D* ItemIcon, int32 ItemQuantity, const FText& ItemName)
+{
+	// TODO: Create a local variable where we can just get from it or cast if needed
+	if (ASCPlayerController* SCPC = Cast<ASCPlayerController>(GetController()))
+	{
+		SCPC->ShowItemAdded(ItemIcon, ItemQuantity, ItemName);
+	}
+}
+
 void ASCCharacter::ClientSpawnEquipable_Implementation(TSubclassOf<ASCEquipableItem> EquipableItemClass, FName SocketName)
 {
 	FP_EquippedItem = GetWorld()->SpawnActor<ASCEquipableItem>(EquipableItemClass);
@@ -218,6 +227,8 @@ void ASCCharacter::ServerAddHarvestedItem_Implementation(const FResourceInfo& Re
 		ItemInformation->ItemQuantity = Resource.Quantity;
 
 		InventoryComponent->AddItem(*ItemInformation);
+
+		ClientShowItemAdded(ItemInformation->ItemIcon, Resource.Quantity, ItemInformation->ItemName);
 	}
 }
 

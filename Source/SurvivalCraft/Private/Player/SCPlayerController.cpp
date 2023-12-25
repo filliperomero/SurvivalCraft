@@ -46,6 +46,11 @@ void ASCPlayerController::ResetItemSlot(EContainerType ContainerType, int32 Slot
 	OnResetItemSlotDelegate.Broadcast(ContainerType, SlotIndex);
 }
 
+void ASCPlayerController::ShowItemAdded(UTexture2D* ItemIcon, int32 ItemQuantity, FText ItemName)
+{
+	OnItemAddedDelegate.Broadcast(ItemIcon, ItemQuantity, ItemName);
+}
+
 void ASCPlayerController::Move(const FInputActionValue& Value)
 {
 	const FVector2D MovementVector = Value.Get<FVector2D>();

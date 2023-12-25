@@ -13,4 +13,11 @@ void USCOverlayWidgetController::BindCallbacksToDependencies()
 			OnToggleInventoryWidgetDelegate.Broadcast();
 		}
 	);
+
+	GetSCPC()->OnItemAddedDelegate.AddLambda(
+		[this](UTexture2D* ItemIcon, int32 ItemQuantity, FText ItemName)
+		{
+			OnItemAddedWidgetDelegate.Broadcast(ItemIcon, ItemQuantity, ItemName);
+		}
+	);
 }
