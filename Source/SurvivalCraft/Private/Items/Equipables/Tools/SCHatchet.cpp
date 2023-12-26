@@ -32,7 +32,7 @@ void ASCHatchet::Interact_Implementation(const FVector& LocationToCheck)
 	{
 		for (const auto& Actor : OutActors)
 		{
-			HarvestFoliage(15.f, Actor);
+			HarvestFoliage(ToolDamage, Actor);
 		}
 	}
 	// For Debug
@@ -62,7 +62,14 @@ void ASCHatchet::HarvestFoliage(float Damage, AActor* Target)
 			
 			for (auto& GivenItem : LargeItemInfo->GivenItems)
 			{
-				Character->ServerAddHarvestedItem(GivenItem);
+				const int32 Quantity = CalculateGivenQuantity(GivenItem);
+				
+				FResourceInfo ResourceInfo;
+				ResourceInfo.ResourceID = GivenItem.ResourceID;
+				ResourceInfo.Quantity = Quantity;
+				ResourceInfo.PreferredToolType = GivenItem.PreferredToolType;
+				
+				Character->ServerAddHarvestedItem(ResourceInfo);
 			}
 		}
 		else
@@ -83,4 +90,29 @@ void ASCHatchet::HarvestFoliage(float Damage, AActor* Target)
 			SpawnedDestructibleHarvestable->FinishSpawning(SpawnTransform);
 		}
 	}
+}
+
+int32 ASCHatchet::CalculateGivenQuantity(const FResourceInfo& Resource) const
+{
+	const float BaseQuantity = static_cast<float>(Resource.Quantity);
+	constexpr float ServerRate = 1.f; // TODO: It'll be changed by a Global Variable in the future
+	float ToolTypeRate = 0.f;
+	float ToolTierRate = 0.f;
+
+	if (Resource.PreferredToolType == ToolType) ToolTypeRate = FMath::FRandRange(0.2, 0.4);
+	else ToolTypeRate = FMath::FRandRange(0.01, 0.1);
+	
+	switch (ToolTier)
+	{
+	case EToolTier::ETT_Stone:
+		ToolTierRate = FMath::FRandRange(0.8, 1.2);
+		break;
+	case EToolTier::ETT_Iron:
+		ToolTierRate = FMath::FRandRange(1.2, 1.6);
+		break;
+	}
+
+	const int32 Quantity = FMath::TruncToInt32(BaseQuantity * ServerRate * ToolTypeRate * ToolTierRate * ToolDamage);
+	
+	return FMath::Clamp(Quantity, 1, Quantity);
 }

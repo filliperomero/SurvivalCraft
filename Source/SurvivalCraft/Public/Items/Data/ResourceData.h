@@ -18,6 +18,9 @@ struct FResourceInfo : public FTableRowBase
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	int32 Quantity = 0;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	EHarvestingToolType PreferredToolType = EHarvestingToolType::EHTT_Hatchet;
 };
 
 USTRUCT(BlueprintType)

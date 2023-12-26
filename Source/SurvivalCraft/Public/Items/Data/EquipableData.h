@@ -19,6 +19,20 @@ enum class EEquipableState : uint8
 	EES_Swimming UMETA(DisplayName = "Swimming")
 };
 
+UENUM(BlueprintType)
+enum class EToolTier : uint8
+{
+	ETT_Stone UMETA(DisplayName = "Stone"),
+	ETT_Iron UMETA(DisplayName = "Iron")
+};
+
+UENUM(BlueprintType)
+enum class EHarvestingToolType : uint8
+{
+	EHTT_Pickaxe UMETA(DisplayName = "Pickaxe"),
+	EHTT_Hatchet UMETA(DisplayName = "Hatchet")
+};
+
 USTRUCT(BlueprintType)
 struct FEquipableItemInfo
 {
