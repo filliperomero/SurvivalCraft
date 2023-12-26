@@ -17,8 +17,6 @@ public:
 	void ReceiveDamage(float InDamage);
 
 protected:
-	virtual void BeginPlay() override;
-
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UStaticMeshComponent> MeshComponent;
 

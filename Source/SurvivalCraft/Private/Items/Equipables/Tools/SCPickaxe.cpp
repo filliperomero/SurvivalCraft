@@ -62,6 +62,8 @@ void ASCPickaxe::HarvestFoliage(float Damage, AActor* Target)
 			for (auto& GivenItem : LargeItemInfo->GivenItems)
 			{
 				const int32 Quantity = CalculateGivenQuantity(GivenItem);
+
+				if (Quantity <= 0) continue;
 				
 				FResourceInfo ResourceInfo;
 				ResourceInfo.ResourceID = GivenItem.ResourceID;
@@ -111,7 +113,5 @@ int32 ASCPickaxe::CalculateGivenQuantity(const FResourceInfo& Resource) const
 		break;
 	}
 
-	const int32 Quantity = FMath::TruncToInt32(BaseQuantity * ServerRate * ToolTypeRate * ToolTierRate * ToolDamage);
-	
-	return FMath::Clamp(Quantity, 1, Quantity);
+	return FMath::TruncToInt32(BaseQuantity * ServerRate * ToolTypeRate * ToolTierRate * ToolDamage);
 }
