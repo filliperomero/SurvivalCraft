@@ -69,6 +69,8 @@ ASCDestructibleHarvestable::ASCDestructibleHarvestable()
 	TopCapsule4Component->SetCollisionResponseToAllChannels(ECR_Block);
 	TopCapsule4Component->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 	TopCapsule4Component->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+	DissolveTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("DissolveTimelineComponent"));
 }
 
 void ASCDestructibleHarvestable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -83,7 +85,8 @@ void ASCDestructibleHarvestable::BeginPlay()
 	Super::BeginPlay();
 	
 	AddForce();
-
+	
+	GetWorldTimerManager().SetTimer(DissolveTimer, this, &ThisClass::DissolveTimerFinished, DissolveDelay);
 	GetWorldTimerManager().SetTimer(DestroyTimer, this, &ThisClass::DestroyTimerFinished, DestroyCooldown);
 }
 
@@ -95,4 +98,33 @@ void ASCDestructibleHarvestable::AddForce() const
 void ASCDestructibleHarvestable::DestroyTimerFinished()
 {
 	Destroy();
+}
+
+void ASCDestructibleHarvestable::StartDissolve()
+{
+	if (DissolveMaterialInstances.Num() <= 0 || !DissolveCurve || !DissolveTimeline) return;
+
+	for (auto& DissolveMaterialInstance : DissolveMaterialInstances)
+	{
+		DissolveMaterialInstance.DynamicDissolveMaterialInstance = UMaterialInstanceDynamic::Create(DissolveMaterialInstance.DissolveMaterialInstance, this);
+		MeshComponent->SetMaterial(DissolveMaterialInstance.MaterialIndex, DissolveMaterialInstance.DynamicDissolveMaterialInstance);
+	}
+
+	DissolveTrack.BindDynamic(this, &ThisClass::UpdateDissolveMaterial);
+	
+	DissolveTimeline->AddInterpFloat(DissolveCurve, DissolveTrack);
+	DissolveTimeline->Play();
+}
+
+void ASCDestructibleHarvestable::DissolveTimerFinished()
+{
+	StartDissolve();
+}
+
+void ASCDestructibleHarvestable::UpdateDissolveMaterial(float DissolveValue)
+{
+	for (auto& DissolveMaterialInstance : DissolveMaterialInstances)
+	{
+		DissolveMaterialInstance.DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("Dissolve"), DissolveValue);
+	}
 }

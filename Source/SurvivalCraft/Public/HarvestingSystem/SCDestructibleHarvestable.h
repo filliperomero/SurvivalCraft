@@ -3,10 +3,29 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/TimelineComponent.h"
 #include "GameFramework/Actor.h"
 #include "SCDestructibleHarvestable.generated.h"
 
+class UTimelineComponent;
 class UCapsuleComponent;
+
+USTRUCT(BlueprintType)
+struct FDissolveMaterial
+{
+	GENERATED_BODY()
+
+	FDissolveMaterial() = default;
+
+	UPROPERTY(EditDefaultsOnly)
+	int32 MaterialIndex = 0;
+	
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UMaterialInstance> DissolveMaterialInstance = nullptr;
+	
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> DynamicDissolveMaterialInstance = nullptr;
+};
 
 UCLASS()
 class SURVIVALCRAFT_API ASCDestructibleHarvestable : public AActor
@@ -39,7 +58,7 @@ protected:
 	TObjectPtr<UStaticMeshComponent> MeshComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float DestroyCooldown = 10.f;
+	float DestroyCooldown = 15.f;
 
 private:
 	void AddForce() const;
@@ -50,6 +69,29 @@ private:
 	void DestroyTimerFinished();
 
 	FTimerHandle DestroyTimer;
+
+	/** Dissolve Effect */
+	
+	UPROPERTY(EditAnywhere, Category = "Dissolve Effect")
+	float DissolveDelay = 10.f;
+	
+	UPROPERTY(VisibleAnywhere, Category = "Dissolve Effect")
+	TObjectPtr<UTimelineComponent> DissolveTimeline;
+
+	UPROPERTY(EditAnywhere, Category = "Dissolve Effect")
+	TObjectPtr<UCurveFloat> DissolveCurve;
+
+	UPROPERTY(EditAnywhere, Category = "Dissolve Effect")
+	TArray<FDissolveMaterial> DissolveMaterialInstances;
+
+	FOnTimelineFloat DissolveTrack;
+	FTimerHandle DissolveTimer;
+
+	UFUNCTION()
+	void UpdateDissolveMaterial(float DissolveValue);
+	
+	void StartDissolve();
+	void DissolveTimerFinished();
 
 public:
 	FORCEINLINE void SetDirectionToFall(const FVector& InDirection) { DirectionToFall = InDirection; }
