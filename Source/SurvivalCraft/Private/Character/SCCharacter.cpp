@@ -10,11 +10,13 @@
 #include "Items/Data/ResourceData.h"
 #include "Net/UnrealNetwork.h"
 #include "Player/SCPlayerController.h"
+#include "SurvivalCraft/SurvivalCraft.h"
 #include "UI/HUD/SCHUD.h"
 
 ASCCharacter::ASCCharacter()
 {
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_STRUCTURE, ECR_Block);
 
 	GetMesh()->SetOwnerNoSee(true);
 		
