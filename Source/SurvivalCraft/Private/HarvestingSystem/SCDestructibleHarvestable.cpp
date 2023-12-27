@@ -7,8 +7,6 @@ ASCDestructibleHarvestable::ASCDestructibleHarvestable()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
-	
-	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneComponent"));
 }
 
 void ASCDestructibleHarvestable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

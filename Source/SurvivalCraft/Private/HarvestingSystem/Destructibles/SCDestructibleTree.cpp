@@ -7,6 +7,8 @@
 ASCDestructibleTree::ASCDestructibleTree()
 {
 	PrimaryActorTick.bCanEverTick = false;
+
+	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneComponent"));
 	
 	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComponent"));
 	CapsuleComponent->SetupAttachment(RootComponent);

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Enums/CombatState.h"
 #include "GameFramework/Character.h"
 #include "Interfaces/PlayerInterface.h"
 #include "Items/Data/EquipableData.h"
@@ -40,9 +41,14 @@ public:
 
 	UFUNCTION()
 	void UseEquipable();
+
+	void Interact();
 	
 	UFUNCTION(BlueprintCallable)
 	void FinishEquipable();
+	
+	UFUNCTION(BlueprintCallable)
+	void FinishHarvesting();
 	
 	UFUNCTION(BlueprintCallable)
 	void EquipableHit();
@@ -86,8 +92,14 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Animations, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UAnimMontage> EquipableMontage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Animations, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UAnimMontage> PickupMontage;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Resources", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UDataTable> ItemsDataTable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Resources", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UDataTable> GroundResourcesDataTable;
 
 	UPROPERTY()
 	TObjectPtr<ASCEquipableItem> EquippedItem;
@@ -96,6 +108,12 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<ASCEquipableItem> FP_EquippedItem;
+
+	UPROPERTY(ReplicatedUsing = OnRep_CombatState)
+	ECombatState CombatState = ECombatState::ECS_Unoccupied;
+
+	UFUNCTION()
+	void OnRep_CombatState();
 
 	UFUNCTION(Server, Reliable)
 	void ServerUseHotBar(const int32 Index);
@@ -113,12 +131,18 @@ private:
 
 	UFUNCTION(Server, Reliable)
 	void ServerUseEquipable();
+
+	UFUNCTION(Server, Reliable)
+	void ServerInteract();
 	
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastPlayEquipableMontage(FName SectionName);
 
 	UFUNCTION(Client, Reliable)
 	void ClientShowItemAdded(UTexture2D* ItemIcon, int32 ItemQuantity, const FText& ItemName);
+
+	void HarvestGroundItem(AActor* TargetActor);
+	void PlayHarvestingMontage();
 
 	bool bCanUseEquipable = true;
 

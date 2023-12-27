@@ -48,6 +48,7 @@ private:
 	void StopJump();
 	void ToggleInventory();
 	void OnLeftMouse();
+	void Interact();
 
 	UPROPERTY()
 	ASCCharacter* SCCharacter;
@@ -66,6 +67,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> LeftMouseAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> InteractAction;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UInputMappingContext> InputMappingContext;

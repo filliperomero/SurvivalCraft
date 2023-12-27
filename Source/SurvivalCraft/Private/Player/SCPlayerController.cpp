@@ -29,6 +29,7 @@ void ASCPlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ThisClass::Look);
 		EnhancedInputComponent->BindAction(InventoryAction, ETriggerEvent::Started, this, &ThisClass::ToggleInventory);
 		EnhancedInputComponent->BindAction(LeftMouseAction, ETriggerEvent::Started, this, &ThisClass::OnLeftMouse);
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &ThisClass::Interact);
 	}
 	else
 	{
@@ -94,4 +95,11 @@ void ASCPlayerController::OnLeftMouse()
 
 	// TODO: Create a interface for the Character so I don't need to cast.
 	SCCharacter->UseEquipable();
+}
+
+void ASCPlayerController::Interact()
+{
+	SCCharacter = SCCharacter == nullptr ? Cast<ASCCharacter>(GetCharacter()) : SCCharacter;
+
+	SCCharacter->Interact();
 }

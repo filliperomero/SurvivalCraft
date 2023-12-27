@@ -4,10 +4,13 @@
 #include "Camera/CameraComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "HarvestingSystem/SCDestructibleHarvestable.h"
+#include "HarvestingSystem/SCGroundItem.h"
 #include "Inventory/SCPlayerHotbarComponent.h"
 #include "Inventory/SCPlayerInventoryComponent.h"
 #include "Items/SCEquipableItem.h"
 #include "Items/Data/ResourceData.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "Player/SCPlayerController.h"
 #include "SurvivalCraft/SurvivalCraft.h"
@@ -132,6 +135,7 @@ void ASCCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ASCCharacter, EquipableState);
+	DOREPLIFETIME(ASCCharacter, CombatState);
 }
 
 void ASCCharacter::UseHotBar(const int32 Index)
@@ -145,9 +149,19 @@ void ASCCharacter::UseEquipable()
 	ServerUseEquipable();
 }
 
+void ASCCharacter::Interact()
+{
+	if (CombatState == ECombatState::ECS_Unoccupied) ServerInteract();
+}
+
 void ASCCharacter::FinishEquipable()
 {
 	bCanUseEquipable = true;
+}
+
+void ASCCharacter::FinishHarvesting()
+{
+	if (HasAuthority()) CombatState = ECombatState::ECS_Unoccupied;
 }
 
 void ASCCharacter::EquipableHit()
@@ -188,6 +202,20 @@ void ASCCharacter::ServerUseHotBar_Implementation(const int32 Index)
 		case EItemType::EIT_Buildable:
 			break;
 		}
+	}
+}
+
+void ASCCharacter::OnRep_CombatState()
+{
+	switch (CombatState) {
+	case ECombatState::ECS_Unoccupied:
+		break;
+	case ECombatState::ECS_Harvesting:
+		PlayHarvestingMontage();
+		
+		break;
+	case ECombatState::ECS_MAX:
+		break;
 	}
 }
 
@@ -245,6 +273,91 @@ void ASCCharacter::ServerUseEquipable_Implementation()
 	EquippedItem->UseItem_Implementation(this);
 }
 
+void ASCCharacter::ServerInteract_Implementation()
+{
+	TArray<AActor*> ActorsToIgnore;
+	TArray<AActor*> OutActors;
+	TArray<TEnumAsByte<EObjectTypeQuery>> TraceObjects;
+	
+	TraceObjects.Add(UEngineTypes::ConvertToObjectType(ECC_WorldStatic));
+	ActorsToIgnore.Add(this);
+	
+	if (UKismetSystemLibrary::SphereOverlapActors(this, GetActorLocation(), 70.f, TraceObjects, nullptr, ActorsToIgnore, OutActors))
+	{
+		// TODO: We need to improve this to check the first actor and set the combatState properly
+		CombatState = ECombatState::ECS_Harvesting;
+		PlayHarvestingMontage();
+		
+		for (const auto& Actor : OutActors)
+		{
+			HarvestGroundItem(Actor);
+		}
+	}
+}
+
+void ASCCharacter::HarvestGroundItem(AActor* TargetActor)
+{
+	constexpr float Damage = 15.f;
+	constexpr float ServerRate = 1.f;
+	// TODO: Create a interface for this so we don't need to cast and our Character class don't need to have a reference
+	ASCGroundItem* GroundItem = Cast<ASCGroundItem>(TargetActor);
+
+	// It isn't a Ground Item
+	if (GroundItem == nullptr) return;
+
+	GroundItem->ReceiveDamage(Damage);
+
+	FLargeItemInfo* GroundItemInfo = GroundResourcesDataTable->FindRow<FLargeItemInfo>(FName(*UKismetSystemLibrary::GetDisplayName(TargetActor)), TEXT(""));
+
+	if (!GroundItemInfo) return;
+
+	if (GroundItem->GetHealth() > 0.f)
+	{
+		for (auto& GivenItem : GroundItemInfo->GivenItems)
+		{
+			const int32 Quantity = FMath::TruncToInt(GivenItem.Quantity * ServerRate * FMath::FRandRange(0.3, 1.2));
+
+			if (Quantity <= 0) continue;
+				
+			FResourceInfo ResourceInfo;
+			ResourceInfo.ResourceID = GivenItem.ResourceID;
+			ResourceInfo.Quantity = Quantity;
+			ResourceInfo.PreferredToolType = GivenItem.PreferredToolType;
+				
+			ServerAddHarvestedItem(ResourceInfo);
+		}
+	}
+	else
+	{
+		const FTransform SpawnTransform = TargetActor->GetActorTransform();
+			
+		ASCDestructibleHarvestable* SpawnedDestructibleHarvestable = GetWorld()->SpawnActorDeferred<ASCDestructibleHarvestable>(
+			GroundItemInfo->DestructibleHarvestableClass,
+			SpawnTransform,
+			this,
+			nullptr,
+			ESpawnActorCollisionHandlingMethod::AlwaysSpawn
+		);
+			
+		TargetActor->Destroy();
+
+		SpawnedDestructibleHarvestable->SetDirectionToFall(GetOwner()->GetActorForwardVector());
+		SpawnedDestructibleHarvestable->FinishSpawning(SpawnTransform);
+	}
+}
+
+void ASCCharacter::PlayHarvestingMontage()
+{
+	if (!PickupMontage) return;
+	
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	UAnimInstance* AnimInstance1P = GetMesh1P()->GetAnimInstance();
+
+	if (AnimInstance) AnimInstance->Montage_Play(PickupMontage);
+
+	if (AnimInstance1P) AnimInstance1P->Montage_Play(PickupMontage);
+}
+
 void ASCCharacter::PlayEquipableMontage(FName SectionName)
 {
 	// TODO: We can refactor this later by using a state as a enum type. Then using it with a OnRep so it'll run in other client's
@@ -284,7 +397,6 @@ void ASCCharacter::MulticastPlayEquipableMontage_Implementation(FName SectionNam
 		AnimInstance1P->Montage_JumpToSection(SectionName);
 	}
 }
-
 
 // TODO: Removed because the EquippedItem (ItemMaster) is already replicated.
 // void ASCCharacter::MulticastEquipItem_Implementation(AActor* Target, FName SocketName, EEquipableState InEquippedState)

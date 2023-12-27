@@ -13,7 +13,15 @@ class SURVIVALCRAFT_API ASCGroundItem : public ASCHarvesting
 
 public:
 	ASCGroundItem();
+	void ReceiveDamage(float InDamage);
 
 protected:
-	virtual void BeginPlay() override;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UStaticMeshComponent> StaticMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Properties")
+	float Health = 50.f;
+
+public:
+	FORCEINLINE float GetHealth() const { return Health; }
 };
