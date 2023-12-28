@@ -38,6 +38,8 @@ protected:
 	virtual bool RemoveItemByIndex(int32 Index);
 	virtual bool IsSlotEmpty(int32 SlotIndex);
 	virtual void UpdateUI(int32 Index, const FItemInformation& Item, bool bShouldResetSlot);
+	bool HasItemsToStack(const FItemInformation& ItemToCheck);
+	void AddRemainingItemQuantity(FItemInformation& Item);
 	// Override in child classes
 	virtual void HandleSlotDrop(USCItemsContainerComponent* FromContainer, int32 FromIndex, int32 ToIndex);
 
