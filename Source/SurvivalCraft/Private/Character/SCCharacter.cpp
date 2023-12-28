@@ -10,6 +10,7 @@
 #include "Inventory/SCPlayerInventoryComponent.h"
 #include "Items/SCEquipableItem.h"
 #include "Items/Data/ResourceData.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "Player/SCPlayerController.h"
@@ -212,6 +213,11 @@ void ASCCharacter::OnRep_CombatState()
 		break;
 	case ECombatState::ECS_Harvesting:
 		PlayHarvestingMontage();
+		if (HarvestBushEffect)
+			UGameplayStatics::SpawnEmitterAtLocation(this, HarvestBushEffect, GetActorLocation());
+
+		if (HarvestBushSound)
+			UGameplayStatics::SpawnSoundAtLocation(this, HarvestBushSound, GetActorLocation());
 		
 		break;
 	case ECombatState::ECS_MAX:
@@ -275,6 +281,8 @@ void ASCCharacter::ServerUseEquipable_Implementation()
 
 void ASCCharacter::ServerInteract_Implementation()
 {
+	if (IsValid(EquippedItem)) return;
+	
 	TArray<AActor*> ActorsToIgnore;
 	TArray<AActor*> OutActors;
 	TArray<TEnumAsByte<EObjectTypeQuery>> TraceObjects;
@@ -287,6 +295,11 @@ void ASCCharacter::ServerInteract_Implementation()
 		// TODO: We need to improve this to check the first actor and set the combatState properly
 		CombatState = ECombatState::ECS_Harvesting;
 		PlayHarvestingMontage();
+		if (HarvestBushEffect)
+			UGameplayStatics::SpawnEmitterAtLocation(this, HarvestBushEffect, GetActorLocation());
+
+		if (HarvestBushSound)
+			UGameplayStatics::SpawnSoundAtLocation(this, HarvestBushSound, GetActorLocation());
 		
 		for (const auto& Actor : OutActors)
 		{
