@@ -23,5 +23,5 @@ public:
 	void UseItem(ASCCharacter* SCCharacter);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void Interact(const FVector& LocationToCheck);
+	void Interact(const FVector& LocationToCheck, const FRotator& Rotation);
 };

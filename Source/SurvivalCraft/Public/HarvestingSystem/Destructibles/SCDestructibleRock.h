@@ -19,4 +19,10 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UGeometryCollectionComponent> GeometryCollectionComponent;
+
+	UPROPERTY(EditAnywhere, Category = "Effects")
+	TObjectPtr<UParticleSystem> DestroyEffect;
+
+	UPROPERTY(EditAnywhere, Category = "Effects")
+	TObjectPtr<USoundBase> DestroySound;
 };

@@ -5,6 +5,8 @@
 #include "HarvestingSystem/SCDestructibleHarvestable.h"
 #include "HarvestingSystem/SCLargeItem.h"
 #include "Items/Data/ResourceData.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "SurvivalCraft/SurvivalCraft.h"
 
@@ -20,7 +22,7 @@ void ASCPickaxe::UseItem_Implementation(ASCCharacter* SCCharacter)
 	SCCharacter->PlayEquipableMontage(FName("Hatchet"));
 }
 
-void ASCPickaxe::Interact_Implementation(const FVector& LocationToCheck)
+void ASCPickaxe::Interact_Implementation(const FVector& LocationToCheck, const FRotator& Rotation)
 {
 	TArray<AActor*> ActorsToIgnore;
 	TArray<AActor*> OutActors;
@@ -34,6 +36,8 @@ void ASCPickaxe::Interact_Implementation(const FVector& LocationToCheck)
 		for (const auto& Actor : OutActors)
 		{
 			HarvestFoliage(ToolDamage, Actor);
+			// TODO: The Rotation for now only works in the Server, since the PlayerArrow is not being replicated. We need to replicate the Pitch (where the user is looking)
+			MulticastHitEffect(LocationToCheck, Rotation);
 		}
 	}
 }
@@ -114,4 +118,25 @@ int32 ASCPickaxe::CalculateGivenQuantity(const FResourceInfo& Resource) const
 	}
 
 	return FMath::TruncToInt32(BaseQuantity * ServerRate * ToolTypeRate * ToolTierRate * ToolDamage);
+}
+
+void ASCPickaxe::MulticastHitEffect_Implementation(const FVector_NetQuantize& Location, const FRotator& Rotation)
+{
+	const FVector EndLocation = Location + (UKismetMathLibrary::GetForwardVector(Rotation) * TraceDistance);
+	FHitResult HitResult;
+
+	FCollisionQueryParams Params;
+	
+	GetWorld()->LineTraceSingleByChannel(HitResult, Location, EndLocation, ECC_Visibility);
+
+	// DrawDebugLine(GetWorld(), Location, EndLocation, FColor::Red, false, 10.f);
+
+	if (HitResult.bBlockingHit)
+	{
+		if (HitEffect)
+			UGameplayStatics::SpawnEmitterAtLocation(this, HitEffect, HitResult.ImpactPoint);
+
+		if (HitSound)
+			UGameplayStatics::PlaySoundAtLocation(this, HitSound, HitResult.ImpactPoint);
+	}
 }

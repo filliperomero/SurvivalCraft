@@ -168,7 +168,7 @@ void ASCCharacter::EquipableHit()
 {
 	if (!HasAuthority()) return;
 
-	IEquipableInterface::Execute_Interact(EquippedItem, PlayerArrow->GetComponentLocation());
+	IEquipableInterface::Execute_Interact(EquippedItem, PlayerArrow->GetComponentLocation(), PlayerArrow->GetComponentRotation());
 }
 
 void ASCCharacter::ServerUseHotBar_Implementation(const int32 Index)
