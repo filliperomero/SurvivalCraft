@@ -209,17 +209,13 @@ void USCItemsContainerComponent::ServerAddItem_Implementation(FItemInformation I
 						: 0;
 				}
 			}
-
-			if (Item.ItemQuantity > 0)
-			{
-				AddRemainingItemQuantity(Item);
-			}
-			else return;
 		}
-		else
+
+		if (Item.ItemQuantity > 0)
 		{
 			AddRemainingItemQuantity(Item);
 		}
+		else return;
 	}
 	else
 	{
