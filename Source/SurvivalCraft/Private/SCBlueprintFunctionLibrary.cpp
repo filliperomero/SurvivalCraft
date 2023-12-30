@@ -60,3 +60,16 @@ USCHotbarMenuWidgetController* USCBlueprintFunctionLibrary::GetHotbarMenuWidgetC
 	
 	return nullptr;
 }
+
+USCCraftingMenuWidgetController* USCBlueprintFunctionLibrary::GetCraftingMenuWidgetController(const UObject* WorldContextObject)
+{
+	FWidgetControllerParams WCParams;
+	ASCHUD* SCHUD = nullptr;
+	
+	if (MakeWidgetControllerParams(WorldContextObject, WCParams, SCHUD))
+	{
+		return SCHUD->GetCraftingMenuWidgetController(WCParams);
+	}
+	
+	return nullptr;
+}

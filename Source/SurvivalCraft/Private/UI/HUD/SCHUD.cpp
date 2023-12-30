@@ -3,6 +3,7 @@
 #include "UI/HUD/SCHUD.h"
 #include "Blueprint/UserWidget.h"
 #include "UI/Widget/SCUserWidget.h"
+#include "UI/WidgetController/SCCraftingMenuWidgetController.h"
 #include "UI/WidgetController/SCHotbarMenuWidgetController.h"
 #include "UI/WidgetController/SCInventoryMenuWidgetController.h"
 #include "UI/WidgetController/SCOverlayWidgetController.h"
@@ -61,4 +62,16 @@ USCHotbarMenuWidgetController* ASCHUD::GetHotbarMenuWidgetController(const FWidg
 	}
 
 	return HotbarMenuWidgetController;
+}
+
+USCCraftingMenuWidgetController* ASCHUD::GetCraftingMenuWidgetController(const FWidgetControllerParams& WCParams)
+{
+	if (CraftingMenuWidgetController == nullptr)
+	{
+		CraftingMenuWidgetController = NewObject<USCCraftingMenuWidgetController>(this, CraftingMenuWidgetControllerClass);
+		CraftingMenuWidgetController->SetWidgetControllerParams(WCParams);
+		CraftingMenuWidgetController->BindCallbacksToDependencies();
+	}
+
+	return CraftingMenuWidgetController;
 }
