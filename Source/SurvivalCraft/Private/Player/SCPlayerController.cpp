@@ -52,6 +52,13 @@ void ASCPlayerController::ShowItemAdded(UTexture2D* ItemIcon, int32 ItemQuantity
 	OnItemAddedDelegate.Broadcast(ItemIcon, ItemQuantity, ItemName);
 }
 
+bool ASCPlayerController::CanCraftItem(const int32 ItemID, const EContainerType ContainerType, const ECraftingType TableType)
+{
+	SCCharacter = SCCharacter == nullptr ? Cast<ASCCharacter>(GetCharacter()) : SCCharacter;
+	
+	return SCCharacter->CanCraftItem(ItemID, ContainerType, TableType);
+}
+
 void ASCPlayerController::Move(const FInputActionValue& Value)
 {
 	const FVector2D MovementVector = Value.Get<FVector2D>();

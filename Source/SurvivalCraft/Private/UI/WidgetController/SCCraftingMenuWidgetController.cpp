@@ -1,11 +1,12 @@
 ﻿// Copyright Fillipe Romero
 
 #include "UI/WidgetController/SCCraftingMenuWidgetController.h"
-
 #include "Enums/ContainerType.h"
+#include "Player/SCPlayerController.h"
 
-void USCCraftingMenuWidgetController::CraftingItemSelected(const int32 ItemID, const EContainerType ContainerType)
+void USCCraftingMenuWidgetController::CraftingItemSelected(const int32 ItemID, const EContainerType ContainerType, const ECraftingType TableType)
 {
-	// Maybe I can just broadcast the item selected? I can have a reference of the table already.
-	OnCraftingItemSelectedDelegate.Broadcast(ItemID, ContainerType);
+	const bool bCanCraft = GetSCPC()->CanCraftItem(ItemID, ContainerType, TableType);
+
+	OnCraftingItemSelectedDelegate.Broadcast(ItemID, ContainerType, bCanCraft);
 }

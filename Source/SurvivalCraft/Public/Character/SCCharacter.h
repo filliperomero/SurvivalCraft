@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Crafting/Data/CraftingData.h"
 #include "Enums/CombatState.h"
 #include "GameFramework/Character.h"
 #include "Interfaces/PlayerInterface.h"
@@ -10,6 +11,7 @@
 #include "Logging/LogMacros.h"
 #include "SCCharacter.generated.h"
 
+class USCItemsContainerComponent;
 struct FResourceInfo;
 class ASCEquipableItem;
 class USCPlayerHotbarComponent;
@@ -43,6 +45,7 @@ public:
 	void UseEquipable();
 
 	void Interact();
+	bool CanCraftItem(const int32 ItemID, const EContainerType ContainerType, const ECraftingType TableType);
 	
 	UFUNCTION(BlueprintCallable)
 	void FinishEquipable();
@@ -107,6 +110,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Resources", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UDataTable> GroundResourcesDataTable;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Resources", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UDataTable> PlayerCraftingRecipesDataTable;
+
 	UPROPERTY()
 	TObjectPtr<ASCEquipableItem> EquippedItem;
 
@@ -149,6 +155,7 @@ private:
 
 	void HarvestGroundItem(AActor* TargetActor);
 	void PlayHarvestingMontage();
+	USCItemsContainerComponent* GetContainerComponent(const EContainerType ContainerType) const;
 
 	bool bCanUseEquipable = true;
 

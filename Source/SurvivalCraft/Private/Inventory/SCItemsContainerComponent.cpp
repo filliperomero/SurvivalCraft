@@ -116,6 +116,50 @@ bool USCItemsContainerComponent::AddItemToIndex(const FItemInformation& Item, in
 	return false;
 }
 
+bool USCItemsContainerComponent::ContainRequiredItems(TArray<FCraftingItemInfo> RequiredItems)
+{
+	// For cases where we don't have any required items
+	if (RequiredItems.Num() <= 0) return true;
+
+	// We assume the RequiredItems array don't have duplicated items in the list. E.g.: 2 of the same ItemID
+	TMap<int32, bool> RequiredItemResult;
+	
+	for (const FCraftingItemInfo& RequiredItem : RequiredItems)
+	{
+		int32 RequiredQuantity = RequiredItem.ItemQuantity;
+		bool bHasQuantity = false;
+
+		for (const FItemInformation& Item : Items)
+		{
+			if (Item.ItemID == RequiredItem.ItemID)
+			{
+				if (Item.ItemQuantity >= RequiredQuantity)
+				{
+					bHasQuantity = true;
+					break;
+				}
+				
+				RequiredQuantity -= Item.ItemQuantity;
+			}
+		}
+
+		RequiredItemResult.Add(RequiredItem.ItemID, bHasQuantity);
+	}
+
+	bool bContainRequiredItems = true;
+
+	for (const auto& Result : RequiredItemResult)
+	{
+		if (Result.Value == false)
+		{
+			bContainRequiredItems = false;
+			break;
+		}
+	}
+
+	return bContainRequiredItems;
+}
+
 bool USCItemsContainerComponent::HasItemsToStack(const FItemInformation& ItemToCheck)
 {
 	bool bHasItem = false;

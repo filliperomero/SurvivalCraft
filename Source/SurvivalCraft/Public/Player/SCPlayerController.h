@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Crafting/Data/CraftingData.h"
 #include "Enums/ContainerType.h"
 #include "GameFramework/PlayerController.h"
 #include "SCPlayerController.generated.h"
@@ -31,6 +32,7 @@ public:
 	void ClientResetItemSlot(EContainerType ContainerType, int32 SlotIndex);
 	
 	void ShowItemAdded(UTexture2D* ItemIcon, int32 ItemQuantity, FText ItemName);
+	bool CanCraftItem(const int32 ItemID, const EContainerType ContainerType, const ECraftingType TableType);
 	
 	FOnToggleInventorySignature OnToggleInventoryDelegate;
 	FOnUpdateItemSlotSignature OnUpdateItemSlotDelegate;

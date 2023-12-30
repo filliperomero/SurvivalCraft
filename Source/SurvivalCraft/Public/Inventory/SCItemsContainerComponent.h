@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Crafting/Data/CraftingData.h"
 #include "Enums/ContainerType.h"
 #include "Items/Data/SCItemData.h"
 #include "SCItemsContainerComponent.generated.h"
@@ -24,6 +25,7 @@ public:
 	void OnSlotDrop(USCItemsContainerComponent* FromContainer, int32 FromIndex, int32 ToIndex);
 	void TransferItem(USCItemsContainerComponent* ToComponent, int32 FromIndex, int32 ToIndex);
 	virtual bool AddItemToIndex(const FItemInformation& Item, int32 Index);
+	bool ContainRequiredItems(TArray<FCraftingItemInfo> RequiredItems);
 
 	TArray<FItemInformation> Items;
 

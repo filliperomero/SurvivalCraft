@@ -4,11 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "SCWidgetController.h"
+#include "Crafting/Data/CraftingData.h"
 #include "SCCraftingMenuWidgetController.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCraftingItemSelectedSignature, const int32, ItemID, const EContainerType, ContainerType);
-
 enum class EContainerType : uint8;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnCraftingItemSelectedSignature, const int32, ItemID, const EContainerType, ContainerType, const bool, bCanCraft);
 
 UCLASS(BlueprintType, Blueprintable)
 class SURVIVALCRAFT_API USCCraftingMenuWidgetController : public USCWidgetController
@@ -17,7 +18,7 @@ class SURVIVALCRAFT_API USCCraftingMenuWidgetController : public USCWidgetContro
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void CraftingItemSelected(const int32 ItemID, const EContainerType ContainerType);
+	void CraftingItemSelected(const int32 ItemID, const EContainerType ContainerType, const ECraftingType TableType);
 
 	UPROPERTY(BlueprintAssignable)
 	FOnCraftingItemSelectedSignature OnCraftingItemSelectedDelegate;

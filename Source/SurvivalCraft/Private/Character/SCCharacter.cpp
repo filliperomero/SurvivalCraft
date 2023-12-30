@@ -155,6 +155,42 @@ void ASCCharacter::Interact()
 	if (CombatState == ECombatState::ECS_Unoccupied) ServerInteract();
 }
 
+bool ASCCharacter::CanCraftItem(const int32 ItemID, const EContainerType ContainerType, const ECraftingType TableType)
+{
+	USCItemsContainerComponent* ContainerComponent = GetContainerComponent(ContainerType);
+	
+	if (!ContainerComponent) return false;
+
+	const FName RowName = FName(*FString::FromInt(ItemID));
+	
+	switch (TableType)
+	{
+	case ECraftingType::ECFT_PlayerInventory:
+		{
+			if (PlayerCraftingRecipesDataTable)
+			{
+				if (const FCraftingRecipe* CraftingRecipe = PlayerCraftingRecipesDataTable->FindRow<FCraftingRecipe>(RowName, TEXT("")))
+				{
+					return ContainerComponent->ContainRequiredItems(CraftingRecipe->RequiredItems);	
+				}
+			}
+			break;
+		}
+	case ECraftingType::ECFT_CookingPot:
+		break;
+	case ECraftingType::ECFT_CraftingBench:
+		break;
+	case ECraftingType::ECFT_Forge:
+		break;
+	case ECraftingType::ECFT_AdvancedWorkbench:
+		break;
+	case ECraftingType::ECFT_StorageBox:
+		break;
+	}
+
+	return false;
+}
+
 void ASCCharacter::FinishEquipable()
 {
 	bCanUseEquipable = true;
@@ -369,6 +405,23 @@ void ASCCharacter::PlayHarvestingMontage()
 	if (AnimInstance) AnimInstance->Montage_Play(PickupMontage);
 
 	if (AnimInstance1P) AnimInstance1P->Montage_Play(PickupMontage);
+}
+
+USCItemsContainerComponent* ASCCharacter::GetContainerComponent(const EContainerType ContainerType) const
+{
+	switch (ContainerType)
+	{
+	case EContainerType::ECT_PlayerInventory:
+		return InventoryComponent;
+	case EContainerType::ECT_PlayerHotbar:
+		return HotbarComponent;
+	case EContainerType::ECT_PlayerStorage:
+		break;
+	case EContainerType::ECT_PlayerArmor:
+		break;
+	}
+
+	return nullptr;
 }
 
 void ASCCharacter::PlayEquipableMontage(FName SectionName)
