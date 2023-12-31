@@ -67,5 +67,8 @@ struct FCraftingRecipe : public FTableRowBase
 	int32 ItemExperience = 0;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float CraftingTime = 0.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TArray<FCraftingItemInfo> RequiredItems;
 };

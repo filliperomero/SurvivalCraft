@@ -107,21 +107,15 @@ void ASCCharacter::ServerCraftItem_Implementation(const int32 ItemID, const ECon
 			{
 				if (ContainerComponent->ContainRequiredItems(CraftingRecipe->RequiredItems))
 				{
-					if (ContainerComponent->RemoveItems(CraftingRecipe->RequiredItems))
+					if (CraftingRecipe->CraftingTime <= 0)
 					{
-						// TODO: We'll need to modify here since in the course we have a delay in between, so we can show a progress bar in the future
-						// Everything below should be inside a function called "AddCraftedItem"
-						const FName ItemIDToCraft = FName(*FString::FromInt(CraftingRecipe->ItemID));
-
-						if (const FItemInformation* ItemInformation = ItemsDataTable->FindRow<FItemInformation>(ItemIDToCraft, TEXT("")))
-						{
-							ContainerComponent->AddItem(*ItemInformation);
-
-							ClientShowItemAdded(ItemInformation->ItemIcon, ItemInformation->ItemQuantity, ItemInformation->ItemName);
-						}
-						// Here we should reset the combat state.
+						CraftTimerFinished(ContainerComponent, *CraftingRecipe);
 					}
-
+					else
+					{
+						CraftTimerDelegate.BindUFunction(this, FName("CraftTimerFinished"), ContainerComponent, *CraftingRecipe);
+						GetWorldTimerManager().SetTimer(CraftTimerHandle, CraftTimerDelegate, CraftingRecipe->CraftingTime, false);
+					}
 				}
 				else
 				{
@@ -475,6 +469,31 @@ USCItemsContainerComponent* ASCCharacter::GetContainerComponent(const EContainer
 	}
 
 	return nullptr;
+}
+
+void ASCCharacter::CraftTimerFinished(USCItemsContainerComponent* ContainerComponent, const FCraftingRecipe& CraftingRecipe)
+{
+	if (ContainerComponent->ContainRequiredItems(CraftingRecipe.RequiredItems))
+	{
+		if (ContainerComponent->RemoveItems(CraftingRecipe.RequiredItems))
+		{
+			// TODO: We'll need to modify here since in the course we have a delay in between, so we can show a progress bar in the future
+			// Everything below should be inside a function called "AddCraftedItem"
+			const FName ItemIDToCraft = FName(*FString::FromInt(CraftingRecipe.ItemID));
+
+			if (const FItemInformation* ItemInformation = ItemsDataTable->FindRow<FItemInformation>(ItemIDToCraft, TEXT("")))
+			{
+				ContainerComponent->AddItem(*ItemInformation);
+
+				ClientShowItemAdded(ItemInformation->ItemIcon, ItemInformation->ItemQuantity, ItemInformation->ItemName);
+			}
+			// Here we should reset the combat state.
+		}
+	}
+	else
+	{
+		// We never hit here but... we never know. we should reset the combat state here. so we can craft again.
+	}
 }
 
 void ASCCharacter::PlayEquipableMontage(FName SectionName)

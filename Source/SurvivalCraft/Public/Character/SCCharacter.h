@@ -160,6 +160,12 @@ private:
 	void PlayHarvestingMontage();
 	USCItemsContainerComponent* GetContainerComponent(const EContainerType ContainerType) const;
 
+	FTimerDelegate CraftTimerDelegate;
+	FTimerHandle CraftTimerHandle;
+
+	UFUNCTION()
+	void CraftTimerFinished(USCItemsContainerComponent* ContainerComponent, const FCraftingRecipe& CraftingRecipe);
+
 	bool bCanUseEquipable = true;
 
 public:
