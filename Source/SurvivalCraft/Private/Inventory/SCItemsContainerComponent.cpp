@@ -64,21 +64,20 @@ bool USCItemsContainerComponent::IsSlotEmpty(int32 SlotIndex)
 
 void USCItemsContainerComponent::UpdateUI(int32 Index, const FItemInformation& Item, bool bShouldResetSlot)
 {
-	if (bShouldResetSlot == false)
+	ASCPlayerController* PC = IPlayerInterface::Execute_GetSCPlayerController(GetOwner());
+
+	switch (ContainerType)
 	{
-		ASCPlayerController* PC = IPlayerInterface::Execute_GetSCPlayerController(GetOwner());
-		
-		switch (ContainerType)
-		{
-			case EContainerType::ECT_PlayerInventory:
-			case EContainerType::ECT_PlayerHotbar:
-				PC->ClientUpdateItemSlot(ContainerType, Index, Item);
-				break;
-			case EContainerType::ECT_PlayerStorage:
-				break;
-			case EContainerType::ECT_PlayerArmor:
-				break;
-		}
+		case EContainerType::ECT_PlayerInventory:
+		case EContainerType::ECT_PlayerHotbar:
+			if (bShouldResetSlot) PC->ClientResetItemSlot(ContainerType, Index);
+			else PC->ClientUpdateItemSlot(ContainerType, Index, Item);
+
+			break;
+		case EContainerType::ECT_PlayerStorage:
+			break;
+		case EContainerType::ECT_PlayerArmor:
+			break;
 	}
 }
 
