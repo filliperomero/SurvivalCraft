@@ -33,6 +33,7 @@ public:
 	
 	void ShowItemAdded(UTexture2D* ItemIcon, int32 ItemQuantity, FText ItemName);
 	bool CanCraftItem(const int32 ItemID, const EContainerType ContainerType, const ECraftingType TableType);
+	void CraftItem(const int32 ItemID, const EContainerType ContainerType, const ECraftingType TableType);
 	
 	FOnToggleInventorySignature OnToggleInventoryDelegate;
 	FOnUpdateItemSlotSignature OnUpdateItemSlotDelegate;

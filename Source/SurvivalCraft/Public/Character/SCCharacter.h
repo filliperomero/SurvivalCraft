@@ -67,6 +67,9 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerOnSlotDrop(EContainerType TargetContainerType, EContainerType FromContainerType, int32 FromIndex, int32 ToIndex, EArmorType ArmorType);
 
+	UFUNCTION(Server, Reliable)
+	void ServerCraftItem(const int32 ItemID, const EContainerType ContainerType, const ECraftingType TableType);
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;

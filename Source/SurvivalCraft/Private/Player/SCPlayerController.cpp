@@ -59,6 +59,13 @@ bool ASCPlayerController::CanCraftItem(const int32 ItemID, const EContainerType 
 	return SCCharacter->CanCraftItem(ItemID, ContainerType, TableType);
 }
 
+void ASCPlayerController::CraftItem(const int32 ItemID, const EContainerType ContainerType, const ECraftingType TableType)
+{
+	SCCharacter = SCCharacter == nullptr ? Cast<ASCCharacter>(GetCharacter()) : SCCharacter;
+	
+	return SCCharacter->ServerCraftItem(ItemID, ContainerType, TableType);
+}
+
 void ASCPlayerController::Move(const FInputActionValue& Value)
 {
 	const FVector2D MovementVector = Value.Get<FVector2D>();

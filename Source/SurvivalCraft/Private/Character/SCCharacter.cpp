@@ -90,6 +90,59 @@ void ASCCharacter::ServerOnSlotDrop_Implementation(EContainerType TargetContaine
 	}
 }
 
+void ASCCharacter::ServerCraftItem_Implementation(const int32 ItemID, const EContainerType ContainerType, const ECraftingType TableType)
+{
+	// TODO: Need to create a variable called isCrafting. Probably I can use the CombatState for that
+	USCItemsContainerComponent* ContainerComponent = GetContainerComponent(ContainerType);
+	
+	const FName RowName = FName(*FString::FromInt(ItemID));
+
+	if (!PlayerCraftingRecipesDataTable || !ItemsDataTable) return;
+	
+	switch (TableType)
+	{
+	case ECraftingType::ECFT_PlayerInventory:
+		{
+			if (const FCraftingRecipe* CraftingRecipe = PlayerCraftingRecipesDataTable->FindRow<FCraftingRecipe>(RowName, TEXT("")))
+			{
+				if (ContainerComponent->ContainRequiredItems(CraftingRecipe->RequiredItems))
+				{
+					if (ContainerComponent->RemoveItems(CraftingRecipe->RequiredItems))
+					{
+						// TODO: We'll need to modify here since in the course we have a delay in between, so we can show a progress bar in the future
+						// Everything below should be inside a function called "AddCraftedItem"
+						const FName ItemIDToCraft = FName(*FString::FromInt(CraftingRecipe->ItemID));
+
+						if (const FItemInformation* ItemInformation = ItemsDataTable->FindRow<FItemInformation>(ItemIDToCraft, TEXT("")))
+						{
+							ContainerComponent->AddItem(*ItemInformation);
+
+							ClientShowItemAdded(ItemInformation->ItemIcon, ItemInformation->ItemQuantity, ItemInformation->ItemName);
+						}
+						// Here we should reset the combat state.
+					}
+
+				}
+				else
+				{
+					// We never hit here but... we never know. we should reset the combat state here. so we can craft again.
+				}
+			}
+			break;
+		}
+	case ECraftingType::ECFT_CookingPot:
+		break;
+	case ECraftingType::ECFT_CraftingBench:
+		break;
+	case ECraftingType::ECFT_Forge:
+		break;
+	case ECraftingType::ECFT_AdvancedWorkbench:
+		break;
+	case ECraftingType::ECFT_StorageBox:
+		break;
+	}
+}
+
 void ASCCharacter::BeginPlay()
 {
 	Super::BeginPlay();

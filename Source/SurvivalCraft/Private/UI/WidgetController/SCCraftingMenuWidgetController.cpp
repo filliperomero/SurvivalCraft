@@ -8,5 +8,14 @@ void USCCraftingMenuWidgetController::CraftingItemSelected(const int32 ItemID, c
 {
 	const bool bCanCraft = GetSCPC()->CanCraftItem(ItemID, ContainerType, TableType);
 
+	SelectedCraftingItem= { ItemID, ContainerType, TableType };
+
 	OnCraftingItemSelectedDelegate.Broadcast(ItemID, ContainerType, bCanCraft);
+}
+
+void USCCraftingMenuWidgetController::CraftButtonPressed()
+{
+	if (GetSCPC() == nullptr || SelectedCraftingItem.ItemID == 0) return;
+
+	GetSCPC()->CraftItem(SelectedCraftingItem.ItemID, SelectedCraftingItem.ContainerType, SelectedCraftingItem.TableType);
 }

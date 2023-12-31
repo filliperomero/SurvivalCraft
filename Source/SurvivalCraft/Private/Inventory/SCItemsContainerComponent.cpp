@@ -116,6 +116,67 @@ bool USCItemsContainerComponent::AddItemToIndex(const FItemInformation& Item, in
 	return false;
 }
 
+bool USCItemsContainerComponent::RemoveItems(TArray<FCraftingItemInfo> ItemsToRemove)
+{
+	if (ItemsToRemove.Num() <= 0) return true;
+
+	bool bAbortRemoveItems = false;
+
+	TMap<int32/*Index in array*/, int32/*QuantityToRemove*/> ItemsToRemoveMap;
+
+	for (const FCraftingItemInfo& ItemToRemove : ItemsToRemove)
+	{
+		int32 QuantityToRemove = ItemToRemove.ItemQuantity;
+		
+		for (int32 Index = 0; Index < Items.Num(); Index++)
+		{
+			const FItemInformation& Item = Items[Index];
+			
+			if (Item.ItemID == ItemToRemove.ItemID)
+			{
+				if (Item.ItemQuantity >= QuantityToRemove)
+				{
+					ItemsToRemoveMap.Add(Index, QuantityToRemove);
+					QuantityToRemove = 0;
+					break;
+				}
+				
+				ItemsToRemoveMap.Add(Index, Item.ItemQuantity);
+				QuantityToRemove -= Item.ItemQuantity;
+			}
+		}
+
+		if (QuantityToRemove > 0)
+		{
+			bAbortRemoveItems = true;
+			break;
+		}
+	}
+
+	// If we're aborting, we have a bigger problem because we should be calling ContainRequiredItems before calling this function
+	if (bAbortRemoveItems) return false;
+
+	// Delete all necessary items
+	for (const auto& ItemToRemove : ItemsToRemoveMap)
+	{
+		const int32 SlotIndex = ItemToRemove.Key;
+		const int32 ItemQuantityToRemove = ItemToRemove.Value;
+		
+		if (Items[SlotIndex].ItemQuantity == ItemQuantityToRemove)
+		{
+			// Note for the future: If RemoveItemByIndex is not updating the UI, remember that updating the UI is done in the child's class of the RemoveItemByIndex
+			RemoveItemByIndex(SlotIndex);
+		}
+		else
+		{
+			Items[SlotIndex].ItemQuantity = Items[SlotIndex].ItemQuantity - ItemQuantityToRemove;
+			UpdateUI(SlotIndex, Items[SlotIndex], false);
+		}
+	}
+	
+	return true;
+}
+
 bool USCItemsContainerComponent::ContainRequiredItems(TArray<FCraftingItemInfo> RequiredItems)
 {
 	// For cases where we don't have any required items

@@ -11,6 +11,15 @@ enum class EContainerType : uint8;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnCraftingItemSelectedSignature, const int32, ItemID, const EContainerType, ContainerType, const bool, bCanCraft);
 
+struct FSelectedItem
+{
+	int32 ItemID = 0;
+
+	EContainerType ContainerType;
+
+	ECraftingType TableType;
+};
+
 UCLASS(BlueprintType, Blueprintable)
 class SURVIVALCRAFT_API USCCraftingMenuWidgetController : public USCWidgetController
 {
@@ -20,6 +29,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void CraftingItemSelected(const int32 ItemID, const EContainerType ContainerType, const ECraftingType TableType);
 
+	UFUNCTION(BlueprintCallable)
+	void CraftButtonPressed();
+
 	UPROPERTY(BlueprintAssignable)
 	FOnCraftingItemSelectedSignature OnCraftingItemSelectedDelegate;
+
+private:
+	FSelectedItem SelectedCraftingItem;
 };
