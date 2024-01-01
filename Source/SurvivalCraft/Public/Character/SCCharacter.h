@@ -76,6 +76,9 @@ protected:
 	virtual void OnRep_PlayerState() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	UFUNCTION()
+	void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, class AController* InstigatorController, AActor* DamageCauser);
+
 private:
 	UPROPERTY(VisibleDefaultsOnly, Category=Mesh)
 	TObjectPtr<USkeletalMeshComponent> Mesh1P;
@@ -127,6 +130,46 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_CombatState)
 	ECombatState CombatState = ECombatState::ECS_Unoccupied;
 
+	/* Player Stats */
+	UPROPERTY(ReplicatedUsing = OnRep_Health, VisibleAnywhere, Category = "Player Stats")
+	float Health = 100.f;
+
+	UPROPERTY(EditAnywhere, Category = "Player Stats")
+	float MaxHealth = 100.f;
+
+	UFUNCTION()
+	void OnRep_Health(float LastHealth);
+
+	void UpdateHealth();
+	
+	UPROPERTY(VisibleAnywhere, Category = "Player Stats")
+	float Food = 100.f;
+
+	UPROPERTY(EditAnywhere, Category = "Player Stats")
+	float MaxFood = 100.f;
+
+	UPROPERTY(VisibleAnywhere, Category = "Player Stats")
+	float Water = 100.f;
+
+	UPROPERTY(EditAnywhere, Category = "Player Stats")
+	float MaxWater = 100.f;
+
+	UPROPERTY(VisibleAnywhere, Category = "Player Stats")
+	float Stamina = 100.f;
+
+	UPROPERTY(EditAnywhere, Category = "Player Stats")
+	float MaxStamina = 100.f;
+
+	UPROPERTY(VisibleAnywhere, Category = "Player Stats")
+	int32 Level = 1;
+
+	UPROPERTY(VisibleAnywhere, Category = "Player Stats")
+	int32 XP = 0;
+
+	UPROPERTY(VisibleAnywhere, Category = "Player Stats")
+	int32 SkillPoints = 0;
+	/* End of Player Stats */
+
 	UFUNCTION()
 	void OnRep_CombatState();
 
@@ -172,4 +215,6 @@ public:
 	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
 	UCameraComponent* GetFirstPersonCameraComponent() const { return Camera; }
 	FORCEINLINE ASCEquipableItem* GetEquippedItem() const { return EquippedItem; }
+	FORCEINLINE float GetHealth() const { return Health; }
+	FORCEINLINE float GetMaxHealth() const { return MaxHealth; }
 };

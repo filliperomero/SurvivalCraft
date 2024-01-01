@@ -73,3 +73,16 @@ USCCraftingMenuWidgetController* USCBlueprintFunctionLibrary::GetCraftingMenuWid
 	
 	return nullptr;
 }
+
+USCPlayerStatsMenuWidgetController* USCBlueprintFunctionLibrary::GetPlayerStatsMenuWidgetController(const UObject* WorldContextObject)
+{
+	FWidgetControllerParams WCParams;
+	ASCHUD* SCHUD = nullptr;
+	
+	if (MakeWidgetControllerParams(WorldContextObject, WCParams, SCHUD))
+	{
+		return SCHUD->GetPlayerStatsMenuWidgetController(WCParams);
+	}
+	
+	return nullptr;
+}

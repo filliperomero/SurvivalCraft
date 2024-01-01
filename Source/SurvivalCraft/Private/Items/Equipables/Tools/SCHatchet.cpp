@@ -8,6 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Player/SCPlayerController.h"
 #include "SurvivalCraft/SurvivalCraft.h"
 
 ASCHatchet::ASCHatchet()
@@ -26,17 +27,27 @@ void ASCHatchet::Interact_Implementation(const FVector& LocationToCheck, const F
 	TArray<AActor*> ActorsToIgnore;
 	TArray<AActor*> OutActors;
 	TArray<TEnumAsByte<EObjectTypeQuery>> TraceObjects;
-	
+
 	TraceObjects.Add(UEngineTypes::ConvertToObjectType(ECC_STRUCTURE));
+	TraceObjects.Add(UEngineTypes::ConvertToObjectType(ECC_Pawn));
 	ActorsToIgnore.Add(GetOwner());
 	
 	if (UKismetSystemLibrary::SphereOverlapActors(GetWorld(), LocationToCheck, 60.f, TraceObjects, nullptr, ActorsToIgnore, OutActors))
 	{
 		for (const auto& Actor : OutActors)
 		{
-			HarvestFoliage(ToolDamage, Actor);
-			// TODO: The Rotation for now only works in the Server, since the PlayerArrow is not being replicated. We need to replicate the Pitch (where the user is looking)
-			MulticastHitEffect(LocationToCheck, Rotation);
+			if (Actor->Implements<UPlayerInterface>())
+			{
+				ASCPlayerController* SCController = IPlayerInterface::Execute_GetSCPlayerController(GetOwner());
+				
+				UGameplayStatics::ApplyDamage(Actor, ToolDamage, SCController, this, UDamageType::StaticClass());
+			}
+			else
+			{
+				HarvestFoliage(ToolDamage, Actor);
+				// TODO: The Rotation for now only works in the Server, since the PlayerArrow is not being replicated. We need to replicate the Pitch (where the user is looking)
+				MulticastHitEffect(LocationToCheck, Rotation);
+			}
 		}
 	}
 	// For Debug

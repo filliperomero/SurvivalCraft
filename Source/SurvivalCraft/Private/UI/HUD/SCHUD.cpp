@@ -7,6 +7,7 @@
 #include "UI/WidgetController/SCHotbarMenuWidgetController.h"
 #include "UI/WidgetController/SCInventoryMenuWidgetController.h"
 #include "UI/WidgetController/SCOverlayWidgetController.h"
+#include "UI/WidgetController/SCPlayerStatsMenuWidgetController.h"
 #include "UI/WidgetController/SCWidgetController.h"
 
 void ASCHUD::InitOverlay(APlayerController* PC, APlayerState* PS)
@@ -74,4 +75,16 @@ USCCraftingMenuWidgetController* ASCHUD::GetCraftingMenuWidgetController(const F
 	}
 
 	return CraftingMenuWidgetController;
+}
+
+USCPlayerStatsMenuWidgetController* ASCHUD::GetPlayerStatsMenuWidgetController(const FWidgetControllerParams& WCParams)
+{
+	if (PlayerStatsMenuWidgetController == nullptr)
+	{
+		PlayerStatsMenuWidgetController = NewObject<USCPlayerStatsMenuWidgetController>(this, PlayerStatsMenuWidgetControllerClass);
+		PlayerStatsMenuWidgetController->SetWidgetControllerParams(WCParams);
+		PlayerStatsMenuWidgetController->BindCallbacksToDependencies();
+	}
+
+	return PlayerStatsMenuWidgetController;
 }

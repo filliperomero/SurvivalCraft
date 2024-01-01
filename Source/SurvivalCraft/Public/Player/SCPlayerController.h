@@ -14,6 +14,7 @@ DECLARE_MULTICAST_DELEGATE(FOnToggleInventorySignature)
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnUpdateItemSlotSignature, EContainerType/*ContainerType*/, int32/*SlotIndex*/, const FItemInformation&/*Item*/);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnResetItemSlotSignature, EContainerType/*ContainerType*/, int32/*SlotIndex*/);
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnItemAddedSignature, UTexture2D*/*ItemIcon*/, int32/*ItemQuantity*/, FText/*ItemName*/);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStatsChangedSignature, float/*NewValue*/);
 
 struct FInputActionValue;
 class UInputAction;
@@ -34,17 +35,22 @@ public:
 	void ShowItemAdded(UTexture2D* ItemIcon, int32 ItemQuantity, FText ItemName);
 	bool CanCraftItem(const int32 ItemID, const EContainerType ContainerType, const ECraftingType TableType);
 	void CraftItem(const int32 ItemID, const EContainerType ContainerType, const ECraftingType TableType);
+	void UpdateHealth(float NewHealth);
+	float GetHealth();
+	float GetMaxHealth();
 	
 	FOnToggleInventorySignature OnToggleInventoryDelegate;
 	FOnUpdateItemSlotSignature OnUpdateItemSlotDelegate;
 	FOnResetItemSlotSignature OnResetItemSlotDelegate;
 	FOnItemAddedSignature OnItemAddedDelegate;
+	FOnPlayerStatsChangedSignature OnPlayerHealthChangedDelegate;
 
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
 
 private:
+	ASCCharacter* GetSCCharacter();
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void Jump();

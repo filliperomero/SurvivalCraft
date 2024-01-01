@@ -66,6 +66,21 @@ void ASCPlayerController::CraftItem(const int32 ItemID, const EContainerType Con
 	return SCCharacter->ServerCraftItem(ItemID, ContainerType, TableType);
 }
 
+void ASCPlayerController::UpdateHealth(float NewHealth)
+{
+	OnPlayerHealthChangedDelegate.Broadcast(NewHealth);
+}
+
+float ASCPlayerController::GetHealth()
+{
+	return GetSCCharacter()->GetHealth();
+}
+
+float ASCPlayerController::GetMaxHealth()
+{
+	return GetSCCharacter()->GetMaxHealth();
+}
+
 void ASCPlayerController::Move(const FInputActionValue& Value)
 {
 	const FVector2D MovementVector = Value.Get<FVector2D>();
@@ -116,4 +131,9 @@ void ASCPlayerController::Interact()
 	SCCharacter = SCCharacter == nullptr ? Cast<ASCCharacter>(GetCharacter()) : SCCharacter;
 
 	SCCharacter->Interact();
+}
+
+ASCCharacter* ASCPlayerController::GetSCCharacter()
+{
+	return SCCharacter = SCCharacter == nullptr ? Cast<ASCCharacter>(GetCharacter()) : SCCharacter;
 }

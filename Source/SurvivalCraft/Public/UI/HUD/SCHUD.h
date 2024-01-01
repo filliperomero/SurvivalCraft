@@ -6,6 +6,7 @@
 #include "GameFramework/HUD.h"
 #include "SCHUD.generated.h"
 
+class USCPlayerStatsMenuWidgetController;
 class USCCraftingMenuWidgetController;
 class USCHotbarMenuWidgetController;
 class USCInventoryMenuWidgetController;
@@ -25,6 +26,7 @@ public:
 	USCInventoryMenuWidgetController* GetInventoryMenuWidgetController(const FWidgetControllerParams& WCParams);
 	USCHotbarMenuWidgetController* GetHotbarMenuWidgetController(const FWidgetControllerParams& WCParams);
 	USCCraftingMenuWidgetController* GetCraftingMenuWidgetController(const FWidgetControllerParams& WCParams);
+	USCPlayerStatsMenuWidgetController* GetPlayerStatsMenuWidgetController(const FWidgetControllerParams& WCParams);
 
 private:
 	UPROPERTY()
@@ -57,4 +59,10 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<USCCraftingMenuWidgetController> CraftingMenuWidgetControllerClass;
+
+	UPROPERTY()
+	TObjectPtr<USCPlayerStatsMenuWidgetController> PlayerStatsMenuWidgetController;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<USCPlayerStatsMenuWidgetController> PlayerStatsMenuWidgetControllerClass;
 };

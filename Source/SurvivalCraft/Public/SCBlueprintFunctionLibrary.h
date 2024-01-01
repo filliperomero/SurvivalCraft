@@ -6,6 +6,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "SCBlueprintFunctionLibrary.generated.h"
 
+class USCPlayerStatsMenuWidgetController;
 class USCCraftingMenuWidgetController;
 class USCHotbarMenuWidgetController;
 class USCInventoryMenuWidgetController;
@@ -32,4 +33,7 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "SCBlueprintFunctionLibrary|WidgetController", meta = (DefaultToSelf = "WorldContextObject"))
 	static USCCraftingMenuWidgetController* GetCraftingMenuWidgetController(const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintPure, Category = "SCBlueprintFunctionLibrary|WidgetController", meta = (DefaultToSelf = "WorldContextObject"))
+	static USCPlayerStatsMenuWidgetController* GetPlayerStatsMenuWidgetController(const UObject* WorldContextObject);
 };

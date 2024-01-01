@@ -146,6 +146,8 @@ void ASCCharacter::BeginPlay()
 	InventoryComponent->InitializeItems(Item, 30);
 	// Initialize Hotbar
 	HotbarComponent->InitializeItems(Item, 8);
+
+	if (HasAuthority()) OnTakeAnyDamage.AddDynamic(this, &ThisClass::ReceiveDamage);
 }
 
 void ASCCharacter::PossessedBy(AController* NewController)
@@ -184,6 +186,19 @@ void ASCCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 
 	DOREPLIFETIME(ASCCharacter, EquipableState);
 	DOREPLIFETIME(ASCCharacter, CombatState);
+	DOREPLIFETIME(ASCCharacter, Health);
+}
+
+void ASCCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser)
+{
+	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
+	
+	UpdateHealth();
+
+	if (Health <= 0.f)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Character is dead!"));
+	}
 }
 
 void ASCCharacter::UseHotBar(const int32 Index)
@@ -286,6 +301,19 @@ void ASCCharacter::ServerUseHotBar_Implementation(const int32 Index)
 		case EItemType::EIT_Buildable:
 			break;
 		}
+	}
+}
+
+void ASCCharacter::OnRep_Health(float LastHealth)
+{
+	UpdateHealth();
+}
+
+void ASCCharacter::UpdateHealth()
+{
+	if (ASCPlayerController* SCPC = Cast<ASCPlayerController>(GetController()))
+	{
+		SCPC->UpdateHealth(Health);
 	}
 }
 
