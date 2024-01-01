@@ -22,4 +22,16 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Player Stats")
 	FOnStatsChangedSignature OnMaxHealthChangedDelegate;
+
+	UPROPERTY(BlueprintAssignable, Category = "Player Stats")
+	FOnStatsChangedSignature OnFoodChangedDelegate;
+
+	UPROPERTY(BlueprintAssignable, Category = "Player Stats")
+	FOnStatsChangedSignature OnMaxFoodChangedDelegate;
+
+	UPROPERTY(BlueprintAssignable, Category = "Player Stats")
+	FOnStatsChangedSignature OnWaterChangedDelegate;
+
+	UPROPERTY(BlueprintAssignable, Category = "Player Stats")
+	FOnStatsChangedSignature OnMaxWaterChangedDelegate;
 };

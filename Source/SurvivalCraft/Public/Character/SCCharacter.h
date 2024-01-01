@@ -11,6 +11,15 @@
 #include "Logging/LogMacros.h"
 #include "SCCharacter.generated.h"
 
+UENUM(BlueprintType)
+enum class EPlayerStats : uint8
+{
+	EPS_Health UMETA(DisplayName = "Health Stat"),
+	EPS_Food UMETA(DisplayName = "Food Stat"),
+	EPS_Water UMETA(DisplayName = "Water Stat"),
+	EPS_Stamina UMETA(DisplayName = "Stamina Stat"),
+};
+
 class USCItemsContainerComponent;
 struct FResourceInfo;
 class ASCEquipableItem;
@@ -131,6 +140,8 @@ private:
 	ECombatState CombatState = ECombatState::ECS_Unoccupied;
 
 	/* Player Stats */
+	void UpdatePlayerStats(EPlayerStats PlayerStats, float NewValue);
+	
 	UPROPERTY(ReplicatedUsing = OnRep_Health, VisibleAnywhere, Category = "Player Stats")
 	float Health = 100.f;
 
@@ -140,19 +151,29 @@ private:
 	UFUNCTION()
 	void OnRep_Health(float LastHealth);
 
-	void UpdateHealth();
+	UPROPERTY(EditAnywhere, Category = "Player Stats", meta = (ClampMin = "0.0", ClampMax = "100.0", UIMin = "0.0", UIMax = "100.0"))
+	float FoodDecreasePercentage = 2;
 	
-	UPROPERTY(VisibleAnywhere, Category = "Player Stats")
+	UPROPERTY(ReplicatedUsing = OnRep_Food, VisibleAnywhere, Category = "Player Stats")
 	float Food = 100.f;
 
 	UPROPERTY(EditAnywhere, Category = "Player Stats")
 	float MaxFood = 100.f;
 
-	UPROPERTY(VisibleAnywhere, Category = "Player Stats")
+	UFUNCTION()
+	void OnRep_Food(float LastFood);
+	
+	UPROPERTY(EditAnywhere, Category = "Player Stats", meta = (ClampMin = "0.0", ClampMax = "100.0", UIMin = "0.0", UIMax = "100.0"))
+	float WaterDecreasePercentage = 4;
+
+	UPROPERTY(ReplicatedUsing = OnRep_Water, VisibleAnywhere, Category = "Player Stats")
 	float Water = 100.f;
 
 	UPROPERTY(EditAnywhere, Category = "Player Stats")
 	float MaxWater = 100.f;
+
+	UFUNCTION()
+	void OnRep_Water(float LastWater);
 
 	UPROPERTY(VisibleAnywhere, Category = "Player Stats")
 	float Stamina = 100.f;
@@ -168,6 +189,14 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Player Stats")
 	int32 SkillPoints = 0;
+
+	FTimerHandle StatDrainTimer;
+
+	UPROPERTY(EditAnywhere, Category = "Player Stats")
+	float StatDrainDelay = 60.f;
+
+	UFUNCTION()
+	void PassiveStatDrain();
 	/* End of Player Stats */
 
 	UFUNCTION()
@@ -217,4 +246,8 @@ public:
 	FORCEINLINE ASCEquipableItem* GetEquippedItem() const { return EquippedItem; }
 	FORCEINLINE float GetHealth() const { return Health; }
 	FORCEINLINE float GetMaxHealth() const { return MaxHealth; }
+	FORCEINLINE float GetFood() const { return Food; }
+	FORCEINLINE float GetMaxFood() const { return MaxFood; }
+	FORCEINLINE float GetWater() const { return Water; }
+	FORCEINLINE float GetMaxWater() const { return MaxWater; }
 };

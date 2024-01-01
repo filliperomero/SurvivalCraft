@@ -147,7 +147,11 @@ void ASCCharacter::BeginPlay()
 	// Initialize Hotbar
 	HotbarComponent->InitializeItems(Item, 8);
 
-	if (HasAuthority()) OnTakeAnyDamage.AddDynamic(this, &ThisClass::ReceiveDamage);
+	if (HasAuthority())
+	{
+		OnTakeAnyDamage.AddDynamic(this, &ThisClass::ReceiveDamage);
+		GetWorldTimerManager().SetTimer(StatDrainTimer, this, &ThisClass::PassiveStatDrain, StatDrainDelay, true);
+	}
 }
 
 void ASCCharacter::PossessedBy(AController* NewController)
@@ -187,13 +191,16 @@ void ASCCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(ASCCharacter, EquipableState);
 	DOREPLIFETIME(ASCCharacter, CombatState);
 	DOREPLIFETIME(ASCCharacter, Health);
+	// TODO: Check if we need to replicate to others the Food and Water or only to the Owner
+	DOREPLIFETIME(ASCCharacter, Food);
+	DOREPLIFETIME(ASCCharacter, Water);
 }
 
 void ASCCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser)
 {
 	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
 	
-	UpdateHealth();
+	UpdatePlayerStats(EPlayerStats::EPS_Health, Health);
 
 	if (Health <= 0.f)
 	{
@@ -304,16 +311,41 @@ void ASCCharacter::ServerUseHotBar_Implementation(const int32 Index)
 	}
 }
 
-void ASCCharacter::OnRep_Health(float LastHealth)
-{
-	UpdateHealth();
-}
-
-void ASCCharacter::UpdateHealth()
+void ASCCharacter::UpdatePlayerStats(EPlayerStats PlayerStats, float NewValue)
 {
 	if (ASCPlayerController* SCPC = Cast<ASCPlayerController>(GetController()))
 	{
-		SCPC->UpdateHealth(Health);
+		SCPC->UpdatePlayerStats(PlayerStats, NewValue);
+	}
+}
+
+void ASCCharacter::OnRep_Health(float LastHealth)
+{
+	UpdatePlayerStats(EPlayerStats::EPS_Health, Health);
+}
+
+void ASCCharacter::OnRep_Food(float LastFood)
+{
+	UpdatePlayerStats(EPlayerStats::EPS_Food, Food);
+}
+
+void ASCCharacter::OnRep_Water(float LastWater)
+{
+	UpdatePlayerStats(EPlayerStats::EPS_Water, Water);
+}
+
+void ASCCharacter::PassiveStatDrain()
+{
+	if (FoodDecreasePercentage > 0.f)
+	{
+		Food = FMath::Clamp(Food - (FoodDecreasePercentage / 100 * MaxFood), 0, MaxFood);
+		UpdatePlayerStats(EPlayerStats::EPS_Food, Food);
+	}
+	
+	if (WaterDecreasePercentage > 0.f)
+	{
+		Water = FMath::Clamp(Water - (WaterDecreasePercentage / 100 * MaxWater), 0, MaxWater);
+		UpdatePlayerStats(EPlayerStats::EPS_Water, Water);
 	}
 }
 

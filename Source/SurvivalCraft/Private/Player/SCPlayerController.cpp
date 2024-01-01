@@ -66,9 +66,23 @@ void ASCPlayerController::CraftItem(const int32 ItemID, const EContainerType Con
 	return SCCharacter->ServerCraftItem(ItemID, ContainerType, TableType);
 }
 
-void ASCPlayerController::UpdateHealth(float NewHealth)
+void ASCPlayerController::UpdatePlayerStats(EPlayerStats PlayerStats, float NewValue)
 {
-	OnPlayerHealthChangedDelegate.Broadcast(NewHealth);
+	switch (PlayerStats)
+	{
+		case EPlayerStats::EPS_Health:
+			OnPlayerHealthChangedDelegate.Broadcast(NewValue);
+			break;
+		case EPlayerStats::EPS_Food:
+			OnPlayerFoodChangedDelegate.Broadcast(NewValue);
+			break;
+		case EPlayerStats::EPS_Water:
+			OnPlayerWaterChangedDelegate.Broadcast(NewValue);
+			break;
+		case EPlayerStats::EPS_Stamina:
+			OnPlayerStaminaChangedDelegate.Broadcast(NewValue);
+			break;
+	}
 }
 
 float ASCPlayerController::GetHealth()
@@ -79,6 +93,26 @@ float ASCPlayerController::GetHealth()
 float ASCPlayerController::GetMaxHealth()
 {
 	return GetSCCharacter()->GetMaxHealth();
+}
+
+float ASCPlayerController::GetFood()
+{
+	return GetSCCharacter()->GetFood();
+}
+
+float ASCPlayerController::GetMaxFood()
+{
+	return GetSCCharacter()->GetMaxFood();
+}
+
+float ASCPlayerController::GetWater()
+{
+	return GetSCCharacter()->GetWater();
+}
+
+float ASCPlayerController::GetMaxWater()
+{
+	return GetSCCharacter()->GetMaxWater();
 }
 
 void ASCPlayerController::Move(const FInputActionValue& Value)
