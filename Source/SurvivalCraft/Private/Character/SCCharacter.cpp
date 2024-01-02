@@ -198,13 +198,20 @@ void ASCCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 
 void ASCCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser)
 {
+	if (bDead)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Character is already Dead. No Damage will be applied."));
+		return;
+	}
+	
 	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
 	
 	UpdatePlayerStats(EPlayerStats::EPS_Health, Health);
 
 	if (Health <= 0.f)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Character is dead!"));
+		UE_LOG(LogTemp, Warning, TEXT("Character just died"));
+		bDead = true;
 	}
 }
 
@@ -336,17 +343,44 @@ void ASCCharacter::OnRep_Water(float LastWater)
 
 void ASCCharacter::PassiveStatDrain()
 {
-	if (FoodDecreasePercentage > 0.f)
+	if (bDead && GetWorldTimerManager().IsTimerActive(StatDrainTimer))
+	{
+		GetWorldTimerManager().ClearTimer(StatDrainTimer);
+	}
+	
+	if (FoodDecreasePercentage > 0.f && Food > 0.f)
 	{
 		Food = FMath::Clamp(Food - (FoodDecreasePercentage / 100 * MaxFood), 0, MaxFood);
 		UpdatePlayerStats(EPlayerStats::EPS_Food, Food);
+		if (Food == 0.f) bStarving = true;
 	}
 	
-	if (WaterDecreasePercentage > 0.f)
+	if (WaterDecreasePercentage > 0.f && Water > 0.f)
 	{
 		Water = FMath::Clamp(Water - (WaterDecreasePercentage / 100 * MaxWater), 0, MaxWater);
 		UpdatePlayerStats(EPlayerStats::EPS_Water, Water);
+		if (Water == 0.f) bDehydrated = true;
 	}
+	
+	if ((bStarving || bDehydrated) && !GetWorldTimerManager().IsTimerActive(HealthDecreaseTimer))
+	{
+		GetWorldTimerManager().SetTimer(HealthDecreaseTimer, this, &ThisClass::DecreaseHealthOverTime, HealthDecreaseDelay, true);
+	}
+}
+
+void ASCCharacter::DecreaseHealthOverTime()
+{
+	if (bDead && GetWorldTimerManager().IsTimerActive(HealthDecreaseTimer))
+	{
+		GetWorldTimerManager().ClearTimer(HealthDecreaseTimer);
+		return;
+	}
+	
+	float BaseDamage = HealthDecreasePercentage / 100 * MaxHealth;
+	// If only one negative stat is active, we should divide our damage
+	if (!bStarving || !bDehydrated) BaseDamage = BaseDamage / 2;
+
+	UGameplayStatics::ApplyDamage(this, BaseDamage, GetController(), this, UDamageType::StaticClass());
 }
 
 void ASCCharacter::OnRep_CombatState()

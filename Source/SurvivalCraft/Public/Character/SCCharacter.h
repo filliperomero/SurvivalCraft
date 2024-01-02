@@ -139,6 +139,8 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_CombatState)
 	ECombatState CombatState = ECombatState::ECS_Unoccupied;
 
+	bool bDead = false;
+
 	/* Player Stats */
 	void UpdatePlayerStats(EPlayerStats PlayerStats, float NewValue);
 	
@@ -151,6 +153,8 @@ private:
 	UFUNCTION()
 	void OnRep_Health(float LastHealth);
 
+	bool bStarving = false;
+
 	UPROPERTY(EditAnywhere, Category = "Player Stats", meta = (ClampMin = "0.0", ClampMax = "100.0", UIMin = "0.0", UIMax = "100.0"))
 	float FoodDecreasePercentage = 2;
 	
@@ -162,6 +166,8 @@ private:
 
 	UFUNCTION()
 	void OnRep_Food(float LastFood);
+
+	bool bDehydrated = false;
 	
 	UPROPERTY(EditAnywhere, Category = "Player Stats", meta = (ClampMin = "0.0", ClampMax = "100.0", UIMin = "0.0", UIMax = "100.0"))
 	float WaterDecreasePercentage = 4;
@@ -191,12 +197,22 @@ private:
 	int32 SkillPoints = 0;
 
 	FTimerHandle StatDrainTimer;
+	FTimerHandle HealthDecreaseTimer;
 
 	UPROPERTY(EditAnywhere, Category = "Player Stats")
 	float StatDrainDelay = 60.f;
 
+	UPROPERTY(EditAnywhere, Category = "Player Stats")
+	float HealthDecreaseDelay = 15.f;
+
+	UPROPERTY(EditAnywhere, Category = "Player Stats", meta = (ClampMin = "0.0", ClampMax = "100.0", UIMin = "0.0", UIMax = "100.0"))
+	float HealthDecreasePercentage = 4.f;
+
 	UFUNCTION()
 	void PassiveStatDrain();
+
+	UFUNCTION()
+	void DecreaseHealthOverTime();
 	/* End of Player Stats */
 
 	UFUNCTION()
