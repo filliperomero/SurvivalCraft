@@ -5,6 +5,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Character/SCCharacter.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Items/Data/SCItemData.h"
 
 void ASCPlayerController::BeginPlay()
@@ -30,6 +31,8 @@ void ASCPlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(InventoryAction, ETriggerEvent::Started, this, &ThisClass::ToggleInventory);
 		EnhancedInputComponent->BindAction(LeftMouseAction, ETriggerEvent::Started, this, &ThisClass::OnLeftMouse);
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &ThisClass::Interact);
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &ThisClass::Sprint);
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &ThisClass::StopSprint);
 	}
 	else
 	{
@@ -115,6 +118,16 @@ float ASCPlayerController::GetMaxWater()
 	return GetSCCharacter()->GetMaxWater();
 }
 
+float ASCPlayerController::GetStamina()
+{
+	return GetSCCharacter()->GetStamina();
+}
+
+float ASCPlayerController::GetMaxStamina()
+{
+	return GetSCCharacter()->GetMaxStamina();
+}
+
 void ASCPlayerController::Move(const FInputActionValue& Value)
 {
 	const FVector2D MovementVector = Value.Get<FVector2D>();
@@ -165,6 +178,23 @@ void ASCPlayerController::Interact()
 	SCCharacter = SCCharacter == nullptr ? Cast<ASCCharacter>(GetCharacter()) : SCCharacter;
 
 	SCCharacter->Interact();
+}
+
+void ASCPlayerController::Sprint()
+{
+	ASCCharacter* Char = GetSCCharacter();
+
+	// TODO: Need to refactor this so we can have a sprint with prediction
+	Char->GetCharacterMovement()->MaxWalkSpeed = 1200.f;
+	Char->ServerSprint(true);
+}
+
+void ASCPlayerController::StopSprint()
+{
+	ASCCharacter* Char = GetSCCharacter();
+
+	Char->GetCharacterMovement()->MaxWalkSpeed = 600.f;
+	Char->ServerSprint(false);
 }
 
 ASCCharacter* ASCPlayerController::GetSCCharacter()

@@ -79,8 +79,12 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerCraftItem(const int32 ItemID, const EContainerType ContainerType, const ECraftingType TableType);
 
+	UFUNCTION(Server, Reliable)
+	void ServerSprint(bool bInIsSprinting);
+
 protected:
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -140,6 +144,8 @@ private:
 	ECombatState CombatState = ECombatState::ECS_Unoccupied;
 
 	bool bDead = false;
+	bool bCanSprint = true;
+	bool bIsSprinting = false;
 
 	/* Player Stats */
 	void UpdatePlayerStats(EPlayerStats PlayerStats, float NewValue);
@@ -181,11 +187,17 @@ private:
 	UFUNCTION()
 	void OnRep_Water(float LastWater);
 
-	UPROPERTY(VisibleAnywhere, Category = "Player Stats")
+	// Variable used to update the UI
+	int32 LastStamina = 0;
+
+	UPROPERTY(ReplicatedUsing = OnRep_Stamina, VisibleAnywhere, Category = "Player Stats")
 	float Stamina = 100.f;
 
 	UPROPERTY(EditAnywhere, Category = "Player Stats")
 	float MaxStamina = 100.f;
+
+	UFUNCTION()
+	void OnRep_Stamina(float InLastStamina);
 
 	UPROPERTY(VisibleAnywhere, Category = "Player Stats")
 	int32 Level = 1;
@@ -266,4 +278,6 @@ public:
 	FORCEINLINE float GetMaxFood() const { return MaxFood; }
 	FORCEINLINE float GetWater() const { return Water; }
 	FORCEINLINE float GetMaxWater() const { return MaxWater; }
+	FORCEINLINE float GetStamina() const { return Stamina; }
+	FORCEINLINE float GetMaxStamina() const { return MaxStamina; }
 };

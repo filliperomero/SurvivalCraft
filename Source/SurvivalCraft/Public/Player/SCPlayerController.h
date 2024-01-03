@@ -43,6 +43,8 @@ public:
 	float GetMaxFood();
 	float GetWater();
 	float GetMaxWater();
+	float GetStamina();
+	float GetMaxStamina();
 	
 	FOnToggleInventorySignature OnToggleInventoryDelegate;
 	FOnUpdateItemSlotSignature OnUpdateItemSlotDelegate;
@@ -66,6 +68,8 @@ private:
 	void ToggleInventory();
 	void OnLeftMouse();
 	void Interact();
+	void Sprint();
+	void StopSprint();
 
 	UPROPERTY()
 	ASCCharacter* SCCharacter;
@@ -87,6 +91,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> InteractAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> SprintAction;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UInputMappingContext> InputMappingContext;

@@ -4,6 +4,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "HarvestingSystem/SCDestructibleHarvestable.h"
 #include "HarvestingSystem/SCGroundItem.h"
 #include "Inventory/SCPlayerHotbarComponent.h"
@@ -137,6 +138,20 @@ void ASCCharacter::ServerCraftItem_Implementation(const int32 ItemID, const ECon
 	}
 }
 
+void ASCCharacter::ServerSprint_Implementation(bool bInIsSprinting)
+{
+	bIsSprinting = bInIsSprinting;
+	
+	if (bIsSprinting && bCanSprint)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 800.f;
+	}
+	else
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 600.f;
+	}
+}
+
 void ASCCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -151,6 +166,44 @@ void ASCCharacter::BeginPlay()
 	{
 		OnTakeAnyDamage.AddDynamic(this, &ThisClass::ReceiveDamage);
 		GetWorldTimerManager().SetTimer(StatDrainTimer, this, &ThisClass::PassiveStatDrain, StatDrainDelay, true);
+	}
+}
+
+void ASCCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	// TODO: change this bool to a MovementState Enum so we can set when we sprint + move, otherwise we'll consume stamina while clicking the button
+	if (bIsSprinting)
+	{
+		Stamina = FMath::FInterpConstantTo(Stamina, 0.0f, DeltaSeconds, 2.0f); // 1.5f
+
+		if (Stamina < 1.f)
+		{
+			bCanSprint = false;
+			GetCharacterMovement()->MaxWalkSpeed = 600.f;
+		}
+	}
+	else
+	{
+		if (Stamina < MaxStamina)
+		{
+			Stamina = FMath::FInterpConstantTo(Stamina, MaxStamina, DeltaSeconds, 1.2f);
+
+			if (Stamina >= 1.f) bCanSprint = true;
+		}
+	}
+
+	if (Stamina > 0.f && Stamina < MaxStamina)
+	{
+		const uint32 CurrentStaminaInt = FMath::CeilToInt(Stamina);
+
+		if (LastStamina != CurrentStaminaInt)
+		{
+			UpdatePlayerStats(EPlayerStats::EPS_Stamina, Stamina);
+		}
+
+		LastStamina = CurrentStaminaInt;
 	}
 }
 
@@ -194,6 +247,7 @@ void ASCCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	// TODO: Check if we need to replicate to others the Food and Water or only to the Owner
 	DOREPLIFETIME(ASCCharacter, Food);
 	DOREPLIFETIME(ASCCharacter, Water);
+	DOREPLIFETIME(ASCCharacter, Stamina);
 }
 
 void ASCCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser)
@@ -339,6 +393,16 @@ void ASCCharacter::OnRep_Food(float LastFood)
 void ASCCharacter::OnRep_Water(float LastWater)
 {
 	UpdatePlayerStats(EPlayerStats::EPS_Water, Water);
+}
+
+void ASCCharacter::OnRep_Stamina(float InLastStamina)
+{
+	if (Stamina < 1.f)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 600.f;
+	}
+	
+	UpdatePlayerStats(EPlayerStats::EPS_Stamina, Stamina);
 }
 
 void ASCCharacter::PassiveStatDrain()

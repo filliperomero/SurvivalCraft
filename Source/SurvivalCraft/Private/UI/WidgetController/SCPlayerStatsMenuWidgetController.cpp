@@ -13,6 +13,8 @@ void USCPlayerStatsMenuWidgetController::BroadcastInitialValues()
 	OnMaxFoodChangedDelegate.Broadcast(GetSCPC()->GetMaxFood());
 	OnWaterChangedDelegate.Broadcast(GetSCPC()->GetWater());
 	OnMaxWaterChangedDelegate.Broadcast(GetSCPC()->GetMaxWater());
+	OnStaminaChangedDelegate.Broadcast(GetSCPC()->GetStamina());
+	OnMaxStaminaChangedDelegate.Broadcast(GetSCPC()->GetMaxStamina());
 }
 
 void USCPlayerStatsMenuWidgetController::BindCallbacksToDependencies()
@@ -35,6 +37,12 @@ void USCPlayerStatsMenuWidgetController::BindCallbacksToDependencies()
 		[this](float NewValue)
 		{
 			OnFoodChangedDelegate.Broadcast(NewValue);
+		}
+	);
+	GetSCPC()->OnPlayerStaminaChangedDelegate.AddLambda(
+		[this](float NewValue)
+		{
+			OnStaminaChangedDelegate.Broadcast(NewValue);
 		}
 	);
 }

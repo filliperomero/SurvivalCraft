@@ -34,4 +34,10 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Player Stats")
 	FOnStatsChangedSignature OnMaxWaterChangedDelegate;
+
+	UPROPERTY(BlueprintAssignable, Category = "Player Stats")
+	FOnStatsChangedSignature OnStaminaChangedDelegate;
+
+	UPROPERTY(BlueprintAssignable, Category = "Player Stats")
+	FOnStatsChangedSignature OnMaxStaminaChangedDelegate;
 };
