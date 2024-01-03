@@ -27,6 +27,8 @@ public:
 	virtual bool AddItemToIndex(const FItemInformation& Item, int32 Index);
 	bool RemoveItems(TArray<FCraftingItemInfo> ItemsToRemove);
 	bool ContainRequiredItems(TArray<FCraftingItemInfo> RequiredItems);
+	bool RemoveItemQuantity(int32 Index, int32 AmountToRemove);
+	bool UpdateItemQuantity(int32 Index, int32 NewQuantity);
 
 	TArray<FItemInformation> Items;
 
@@ -48,4 +50,7 @@ protected:
 
 	UFUNCTION(Server, Reliable)
 	void ServerAddItem(FItemInformation Item);
+
+public:
+	TArray<FItemInformation> GetItems() const { return Items; }
 };

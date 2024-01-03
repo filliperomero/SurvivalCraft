@@ -220,6 +220,39 @@ bool USCItemsContainerComponent::ContainRequiredItems(TArray<FCraftingItemInfo> 
 	return bContainRequiredItems;
 }
 
+bool USCItemsContainerComponent::RemoveItemQuantity(int32 Index, int32 AmountToRemove)
+{
+	if (Items.IsValidIndex(Index))
+	{
+		const int32 NewAmount = Items[Index].ItemQuantity - AmountToRemove;
+		
+		return UpdateItemQuantity(Index, NewAmount);
+	}
+
+	return false;
+}
+
+bool USCItemsContainerComponent::UpdateItemQuantity(int32 Index, int32 NewQuantity)
+{
+	if (Items.IsValidIndex(Index))
+	{
+		if (NewQuantity <= 0)
+		{
+			return RemoveItemByIndex(Index);
+		}
+		else
+		{
+			Items[Index].ItemQuantity = NewQuantity;
+
+			UpdateUI(Index, Items[Index], false);
+
+			return true;
+		}
+	}
+
+	return false;
+}
+
 bool USCItemsContainerComponent::HasItemsToStack(const FItemInformation& ItemToCheck)
 {
 	bool bHasItem = false;

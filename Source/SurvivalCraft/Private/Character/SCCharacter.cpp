@@ -4,12 +4,14 @@
 #include "Camera/CameraComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Enums/PlayerStats.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "HarvestingSystem/SCDestructibleHarvestable.h"
 #include "HarvestingSystem/SCGroundItem.h"
 #include "Inventory/SCPlayerHotbarComponent.h"
 #include "Inventory/SCPlayerInventoryComponent.h"
 #include "Items/SCEquipableItem.h"
+#include "Items/Data/ConsumableData.h"
 #include "Items/Data/ResourceData.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -200,7 +202,7 @@ void ASCCharacter::Tick(float DeltaSeconds)
 
 		if (LastStamina != CurrentStaminaInt)
 		{
-			UpdatePlayerStats(EPlayerStats::EPS_Stamina, Stamina);
+			UpdatePlayerStatsUI(EPlayerStats::EPS_Stamina, Stamina);
 		}
 
 		LastStamina = CurrentStaminaInt;
@@ -260,7 +262,7 @@ void ASCCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDama
 	
 	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
 	
-	UpdatePlayerStats(EPlayerStats::EPS_Health, Health);
+	UpdatePlayerStatsUI(EPlayerStats::EPS_Health, Health);
 
 	if (Health <= 0.f)
 	{
@@ -365,14 +367,33 @@ void ASCCharacter::ServerUseHotBar_Implementation(const int32 Index)
 		case EItemType::EIT_Armor:
 			break;
 		case EItemType::EIT_Consumable:
-			break;
+			{
+				if (!ConsumablesDataTable) return;
+				const FItemInformation ItemInfo = HotbarComponent->GetItems()[Index];
+				const FName RowName = FName(*FString::FromInt(ItemInfo.ItemID));
+
+				FConsumableItemInfo* ConsumableItemInfo = ConsumablesDataTable->FindRow<FConsumableItemInfo>(RowName, TEXT(""));
+
+				if (ConsumableItemInfo == nullptr) return;
+
+				for (const auto& StatToUpdate : ConsumableItemInfo->StatsToUpdate)
+				{
+					if (StatToUpdate.DurationPolicy == EConsumableDurationPolicy::Instant)
+					{
+						UpdatePlayerStats(StatToUpdate.StatToModify, StatToUpdate.Amount);
+					}
+				}
+				
+				HotbarComponent->RemoveItemQuantity(Index, 1);
+				break;
+			}
 		case EItemType::EIT_Buildable:
 			break;
 		}
 	}
 }
 
-void ASCCharacter::UpdatePlayerStats(EPlayerStats PlayerStats, float NewValue)
+void ASCCharacter::UpdatePlayerStatsUI(EPlayerStats PlayerStats, float NewValue)
 {
 	if (ASCPlayerController* SCPC = Cast<ASCPlayerController>(GetController()))
 	{
@@ -380,19 +401,42 @@ void ASCCharacter::UpdatePlayerStats(EPlayerStats PlayerStats, float NewValue)
 	}
 }
 
+void ASCCharacter::UpdatePlayerStats(EPlayerStats PlayerStats, float NewValue)
+{
+	switch (PlayerStats)
+	{
+		case EPlayerStats::EPS_Health:
+			Health = FMath::Clamp(Health + NewValue, 0.f, GetMaxHealth());
+			UpdatePlayerStatsUI(EPlayerStats::EPS_Health, Health);
+			break;
+		case EPlayerStats::EPS_Food:
+			Food = FMath::Clamp(Food + NewValue, 0.f, GetMaxFood());
+			UpdatePlayerStatsUI(EPlayerStats::EPS_Food, Food);
+			break;
+		case EPlayerStats::EPS_Water:
+			Water = FMath::Clamp(Water + NewValue, 0.f, GetMaxWater());
+			UpdatePlayerStatsUI(EPlayerStats::EPS_Water, Water);
+			break;
+		case EPlayerStats::EPS_Stamina:
+			Stamina = FMath::Clamp(Stamina + NewValue, 0.f, GetMaxStamina());
+			UpdatePlayerStatsUI(EPlayerStats::EPS_Stamina, Stamina);
+			break;
+	}
+}
+
 void ASCCharacter::OnRep_Health(float LastHealth)
 {
-	UpdatePlayerStats(EPlayerStats::EPS_Health, Health);
+	UpdatePlayerStatsUI(EPlayerStats::EPS_Health, Health);
 }
 
 void ASCCharacter::OnRep_Food(float LastFood)
 {
-	UpdatePlayerStats(EPlayerStats::EPS_Food, Food);
+	UpdatePlayerStatsUI(EPlayerStats::EPS_Food, Food);
 }
 
 void ASCCharacter::OnRep_Water(float LastWater)
 {
-	UpdatePlayerStats(EPlayerStats::EPS_Water, Water);
+	UpdatePlayerStatsUI(EPlayerStats::EPS_Water, Water);
 }
 
 void ASCCharacter::OnRep_Stamina(float InLastStamina)
@@ -402,7 +446,7 @@ void ASCCharacter::OnRep_Stamina(float InLastStamina)
 		GetCharacterMovement()->MaxWalkSpeed = 600.f;
 	}
 	
-	UpdatePlayerStats(EPlayerStats::EPS_Stamina, Stamina);
+	UpdatePlayerStatsUI(EPlayerStats::EPS_Stamina, Stamina);
 }
 
 void ASCCharacter::PassiveStatDrain()
@@ -415,14 +459,14 @@ void ASCCharacter::PassiveStatDrain()
 	if (FoodDecreasePercentage > 0.f && Food > 0.f)
 	{
 		Food = FMath::Clamp(Food - (FoodDecreasePercentage / 100 * MaxFood), 0, MaxFood);
-		UpdatePlayerStats(EPlayerStats::EPS_Food, Food);
+		UpdatePlayerStatsUI(EPlayerStats::EPS_Food, Food);
 		if (Food == 0.f) bStarving = true;
 	}
 	
 	if (WaterDecreasePercentage > 0.f && Water > 0.f)
 	{
 		Water = FMath::Clamp(Water - (WaterDecreasePercentage / 100 * MaxWater), 0, MaxWater);
-		UpdatePlayerStats(EPlayerStats::EPS_Water, Water);
+		UpdatePlayerStatsUI(EPlayerStats::EPS_Water, Water);
 		if (Water == 0.f) bDehydrated = true;
 	}
 	

@@ -5,20 +5,12 @@
 #include "CoreMinimal.h"
 #include "Crafting/Data/CraftingData.h"
 #include "Enums/CombatState.h"
+#include "Enums/PlayerStats.h"
 #include "GameFramework/Character.h"
 #include "Interfaces/PlayerInterface.h"
 #include "Items/Data/EquipableData.h"
 #include "Logging/LogMacros.h"
 #include "SCCharacter.generated.h"
-
-UENUM(BlueprintType)
-enum class EPlayerStats : uint8
-{
-	EPS_Health UMETA(DisplayName = "Health Stat"),
-	EPS_Food UMETA(DisplayName = "Food Stat"),
-	EPS_Water UMETA(DisplayName = "Water Stat"),
-	EPS_Stamina UMETA(DisplayName = "Stamina Stat"),
-};
 
 class USCItemsContainerComponent;
 struct FResourceInfo;
@@ -132,6 +124,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Resources", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UDataTable> PlayerCraftingRecipesDataTable;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Resources", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UDataTable> ConsumablesDataTable;
+
 	UPROPERTY()
 	TObjectPtr<ASCEquipableItem> EquippedItem;
 
@@ -148,6 +143,7 @@ private:
 	bool bIsSprinting = false;
 
 	/* Player Stats */
+	void UpdatePlayerStatsUI(EPlayerStats PlayerStats, float NewValue);
 	void UpdatePlayerStats(EPlayerStats PlayerStats, float NewValue);
 	
 	UPROPERTY(ReplicatedUsing = OnRep_Health, VisibleAnywhere, Category = "Player Stats")
