@@ -380,7 +380,32 @@ void ASCCharacter::ServerUseHotBar_Implementation(const int32 Index)
 				{
 					if (StatToUpdate.DurationPolicy == EConsumableDurationPolicy::Instant)
 					{
-						UpdatePlayerStats(StatToUpdate.StatToModify, StatToUpdate.Amount);
+						AddToPlayerStats(StatToUpdate.StatToModify, StatToUpdate.Amount);
+					}
+					else if (StatToUpdate.DurationPolicy == EConsumableDurationPolicy::Overtime && StatToUpdate.Duration > 0.f)
+					{
+						const float Time = StatToUpdate.Amount / StatToUpdate.Duration;
+
+						switch (StatToUpdate.StatToModify)
+						{
+							case EPlayerStats::EPS_Health:
+								HealthOvertimeAmount = StatToUpdate.Amount;
+								HealthOvertimeDelegate.BindUFunction(this, FName("OvertimePlayerStatsFinished"), StatToUpdate.StatToModify);
+								GetWorldTimerManager().SetTimer(HealthOvertimeTimer, HealthOvertimeDelegate, Time, true);
+								break;
+							case EPlayerStats::EPS_Food:
+								FoodOvertimeAmount = StatToUpdate.Amount;
+								FoodOvertimeDelegate.BindUFunction(this, FName("OvertimePlayerStatsFinished"), StatToUpdate.StatToModify);
+								GetWorldTimerManager().SetTimer(FoodOvertimeTimer, FoodOvertimeDelegate, Time, true);
+								break;
+							case EPlayerStats::EPS_Water:
+								WaterOvertimeAmount = StatToUpdate.Amount;
+								WaterOvertimeDelegate.BindUFunction(this, FName("OvertimePlayerStatsFinished"), StatToUpdate.StatToModify);
+								GetWorldTimerManager().SetTimer(WaterOvertimeTimer, WaterOvertimeDelegate, Time, true);
+								break;
+							case EPlayerStats::EPS_Stamina:
+								break;
+						}
 					}
 				}
 				
@@ -393,6 +418,45 @@ void ASCCharacter::ServerUseHotBar_Implementation(const int32 Index)
 	}
 }
 
+void ASCCharacter::OvertimePlayerStatsFinished(EPlayerStats PlayerStats)
+{
+	switch (PlayerStats)
+	{
+		case EPlayerStats::EPS_Health:
+			{
+				HealthOvertimeAmount -= 1.f;
+				AddToPlayerStats(EPlayerStats::EPS_Health, 1.f);
+				if (HealthOvertimeAmount <= 0.f && GetWorldTimerManager().IsTimerActive(HealthOvertimeTimer))
+				{
+					GetWorldTimerManager().ClearTimer(HealthOvertimeTimer);
+				}
+				break;
+			}
+		case EPlayerStats::EPS_Food:
+			{
+				FoodOvertimeAmount -= 1.f;
+				AddToPlayerStats(EPlayerStats::EPS_Food, 1.f);
+				if (FoodOvertimeAmount <= 0.f && GetWorldTimerManager().IsTimerActive(FoodOvertimeTimer))
+				{
+					GetWorldTimerManager().ClearTimer(FoodOvertimeTimer);
+				}
+				break;
+			}
+		case EPlayerStats::EPS_Water:
+			{
+				WaterOvertimeAmount -= 1.f;
+				AddToPlayerStats(EPlayerStats::EPS_Water, 1.f);
+				if (WaterOvertimeAmount <= 0.f && GetWorldTimerManager().IsTimerActive(WaterOvertimeTimer))
+				{
+					GetWorldTimerManager().ClearTimer(WaterOvertimeTimer);
+				}
+				break;
+			}
+		case EPlayerStats::EPS_Stamina:
+			break;
+	}
+}
+
 void ASCCharacter::UpdatePlayerStatsUI(EPlayerStats PlayerStats, float NewValue)
 {
 	if (ASCPlayerController* SCPC = Cast<ASCPlayerController>(GetController()))
@@ -401,7 +465,7 @@ void ASCCharacter::UpdatePlayerStatsUI(EPlayerStats PlayerStats, float NewValue)
 	}
 }
 
-void ASCCharacter::UpdatePlayerStats(EPlayerStats PlayerStats, float NewValue)
+void ASCCharacter::AddToPlayerStats(EPlayerStats PlayerStats, float NewValue)
 {
 	switch (PlayerStats)
 	{

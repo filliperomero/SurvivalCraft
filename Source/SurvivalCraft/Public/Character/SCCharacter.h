@@ -144,7 +144,7 @@ private:
 
 	/* Player Stats */
 	void UpdatePlayerStatsUI(EPlayerStats PlayerStats, float NewValue);
-	void UpdatePlayerStats(EPlayerStats PlayerStats, float NewValue);
+	void AddToPlayerStats(EPlayerStats PlayerStats, float NewValue);
 	
 	UPROPERTY(ReplicatedUsing = OnRep_Health, VisibleAnywhere, Category = "Player Stats")
 	float Health = 100.f;
@@ -221,6 +221,19 @@ private:
 
 	UFUNCTION()
 	void DecreaseHealthOverTime();
+
+	float HealthOvertimeAmount = 0;
+	FTimerDelegate HealthOvertimeDelegate;
+	FTimerHandle HealthOvertimeTimer;
+	float FoodOvertimeAmount = 0;
+	FTimerDelegate FoodOvertimeDelegate;
+	FTimerHandle FoodOvertimeTimer;
+	float WaterOvertimeAmount = 0;
+	FTimerDelegate WaterOvertimeDelegate;
+	FTimerHandle WaterOvertimeTimer;
+
+	UFUNCTION()
+	void OvertimePlayerStatsFinished(EPlayerStats PlayerStats);
 	/* End of Player Stats */
 
 	UFUNCTION()
