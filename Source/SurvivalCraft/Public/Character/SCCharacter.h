@@ -37,6 +37,7 @@ public:
 	/** Player Interface */
 	virtual ASCPlayerController* GetSCPlayerController_Implementation() override;
 	virtual void OnSlotDrop_Implementation(EContainerType TargetContainerType, EContainerType FromContainerType, int32 FromIndex, int32 ToIndex, EArmorType ArmorType) override;
+	virtual void AddToXP_Implementation(int32 InXP) override;
 	/** Player Interface */
 
 	UFUNCTION(BlueprintCallable)
@@ -194,15 +195,6 @@ private:
 
 	UFUNCTION()
 	void OnRep_Stamina(float InLastStamina);
-
-	UPROPERTY(VisibleAnywhere, Category = "Player Stats")
-	int32 Level = 1;
-
-	UPROPERTY(VisibleAnywhere, Category = "Player Stats")
-	int32 XP = 0;
-
-	UPROPERTY(VisibleAnywhere, Category = "Player Stats")
-	int32 SkillPoints = 0;
 
 	FTimerHandle StatDrainTimer;
 	FTimerHandle HealthDecreaseTimer;

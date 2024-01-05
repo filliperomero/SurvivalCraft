@@ -2,6 +2,7 @@
 
 #include "UI/WidgetController/SCInventoryMenuWidgetController.h"
 #include "Player/SCPlayerController.h"
+#include "Player/SCPlayerState.h"
 
 void USCInventoryMenuWidgetController::BindCallbacksToDependencies()
 {
@@ -20,4 +21,11 @@ void USCInventoryMenuWidgetController::BindCallbacksToDependencies()
 			OnResetItemSlotWidgetDelegate.Broadcast(ContainerType, SlotIndex);
 		}
 	);
+
+	GetSCPS()->OnLevelChangedDelegate.AddLambda(
+	[this](int32 NewLevel)
+	{
+		OnPlayerLevelChangedDelegate.Broadcast(NewLevel);	
+	}
+);
 }

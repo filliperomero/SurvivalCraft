@@ -26,4 +26,7 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void OnSlotDrop(EContainerType TargetContainerType, EContainerType FromContainerType, int32 FromIndex, int32 ToIndex, EArmorType ArmorType);
+
+	UFUNCTION(BlueprintNativeEvent)
+	void AddToXP(int32 InXP);
 };

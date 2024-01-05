@@ -1,7 +1,9 @@
 ﻿// Copyright Fillipe Romero
 
 #include "UI/WidgetController/SCPlayerStatsMenuWidgetController.h"
+#include "Data/LevelUpInfo.h"
 #include "Player/SCPlayerController.h"
+#include "Player/SCPlayerState.h"
 
 void USCPlayerStatsMenuWidgetController::BroadcastInitialValues()
 {
@@ -20,6 +22,37 @@ void USCPlayerStatsMenuWidgetController::BroadcastInitialValues()
 void USCPlayerStatsMenuWidgetController::BindCallbacksToDependencies()
 {
 	Super::BindCallbacksToDependencies();
+
+	GetSCPS()->OnXPChangedDelegate.AddLambda(
+		[this](float NewXP)
+		{
+			const ULevelUpInfo* LevelUpInfo = GetSCPS()->LevelUpInfo;
+
+			checkf(LevelUpInfo, TEXT("Unable to find LevelUpInfo. Please fill out SCPlayerState Blueprint"));
+
+			const int32 Level = LevelUpInfo->FindLevelForXP(NewXP);
+			const int32 MaxLevel = LevelUpInfo->LevelUpInformation.Num();
+
+			if (Level <= MaxLevel && Level > 0)
+			{
+				const int32 LevelUpRequirement = LevelUpInfo->LevelUpInformation[Level].LevelUpRequirement;
+				const int32 PreviousLevelUpRequirement = LevelUpInfo->LevelUpInformation[Level - 1].LevelUpRequirement;
+
+				const int32 DeltaLevelUpRequirement = LevelUpRequirement - PreviousLevelUpRequirement;
+				const int32 XPForThisLevel = NewXP - PreviousLevelUpRequirement;
+
+				const float XPBarPercent = static_cast<float>(XPForThisLevel) / static_cast<float>(DeltaLevelUpRequirement);
+				
+				OnXPChangedDelegate.Broadcast(XPForThisLevel, DeltaLevelUpRequirement, XPBarPercent);
+			}
+		}
+	);
+	GetSCPS()->OnSkillPointsChangedDelegate.AddLambda(
+		[this](int32 NewSkillPoints)
+		{
+			OnSkillPointsChangedDelegate.Broadcast(NewSkillPoints);
+		}
+	);
 
 	GetSCPC()->OnPlayerHealthChangedDelegate.AddLambda(
 		[this](float NewValue)

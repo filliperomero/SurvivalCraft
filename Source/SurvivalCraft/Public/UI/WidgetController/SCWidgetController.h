@@ -6,6 +6,7 @@
 #include "UObject/Object.h"
 #include "SCWidgetController.generated.h"
 
+class ASCPlayerState;
 class ASCPlayerController;
 
 USTRUCT(BlueprintType)
@@ -48,10 +49,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Widget Controller")
 	TObjectPtr<ASCPlayerController> SCPlayerController;
 
-	// For when we have a PlayerState
-	// UPROPERTY(BlueprintReadOnly, Category = "Widget Controller")
-	// TObjectPtr<ASCPlayerState> SCPlayerState;
+	UPROPERTY(BlueprintReadOnly, Category = "Widget Controller")
+	TObjectPtr<ASCPlayerState> SCPlayerState;
 	
 	ASCPlayerController* GetSCPC();
-	// ASCPlayerState* GetSCPS();
+	ASCPlayerState* GetSCPS();
 };

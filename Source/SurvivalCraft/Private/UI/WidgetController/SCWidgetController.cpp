@@ -2,6 +2,7 @@
 
 #include "UI/WidgetController/SCWidgetController.h"
 #include "Player/SCPlayerController.h"
+#include "Player/SCPlayerState.h"
 
 void USCWidgetController::SetWidgetControllerParams(const FWidgetControllerParams& WCParams)
 {
@@ -25,4 +26,14 @@ ASCPlayerController* USCWidgetController::GetSCPC()
 	}
 
 	return SCPlayerController;
+}
+
+ASCPlayerState* USCWidgetController::GetSCPS()
+{
+	if (SCPlayerState == nullptr)
+	{
+		SCPlayerState = Cast<ASCPlayerState>(PlayerState);
+	}
+
+	return SCPlayerState;
 }

@@ -17,6 +17,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "Player/SCPlayerController.h"
+#include "Player/SCPlayerState.h"
 #include "SurvivalCraft/SurvivalCraft.h"
 #include "UI/HUD/SCHUD.h"
 
@@ -60,6 +61,14 @@ ASCPlayerController* ASCCharacter::GetSCPlayerController_Implementation()
 void ASCCharacter::OnSlotDrop_Implementation(EContainerType TargetContainerType, EContainerType FromContainerType, int32 FromIndex, int32 ToIndex, EArmorType ArmorType)
 {
 	ServerOnSlotDrop(TargetContainerType, FromContainerType, FromIndex, ToIndex, ArmorType);
+}
+
+void ASCCharacter::AddToXP_Implementation(int32 InXP)
+{
+	ASCPlayerState* SCPlayerState = GetPlayerState<ASCPlayerState>();
+	check(SCPlayerState)
+
+	return SCPlayerState->AddToXP(InXP);
 }
 
 void ASCCharacter::ServerOnSlotDrop_Implementation(EContainerType TargetContainerType, EContainerType FromContainerType, int32 FromIndex, int32 ToIndex, EArmorType ArmorType)
@@ -750,7 +759,8 @@ void ASCCharacter::CraftTimerFinished(USCItemsContainerComponent* ContainerCompo
 			if (const FItemInformation* ItemInformation = ItemsDataTable->FindRow<FItemInformation>(ItemIDToCraft, TEXT("")))
 			{
 				ContainerComponent->AddItem(*ItemInformation);
-
+				
+				Execute_AddToXP(this, CraftingRecipe.ItemExperience);
 				ClientShowItemAdded(ItemInformation->ItemIcon, ItemInformation->ItemQuantity, ItemInformation->ItemName);
 			}
 			// Here we should reset the combat state.
