@@ -25,7 +25,7 @@ void USCInventoryMenuWidgetController::BindCallbacksToDependencies()
 	GetSCPS()->OnLevelChangedDelegate.AddLambda(
 	[this](int32 NewLevel)
 	{
-		OnPlayerLevelChangedDelegate.Broadcast(NewLevel);	
+		OnPlayerLevelChangedDelegate.Broadcast(static_cast<float>(NewLevel));	
 	}
 );
 }

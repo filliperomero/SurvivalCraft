@@ -22,4 +22,10 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnItemAddedWidgetSignature OnItemAddedWidgetDelegate;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnStatsChangedSignature OnXPChangedDelegate;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnStatsChangedSignature OnLevelChangedDelegate;
 };

@@ -24,7 +24,7 @@ void USCPlayerStatsMenuWidgetController::BindCallbacksToDependencies()
 	Super::BindCallbacksToDependencies();
 
 	GetSCPS()->OnXPChangedDelegate.AddLambda(
-		[this](float NewXP)
+		[this](int32 NewXP, int32 EarnedXP)
 		{
 			const ULevelUpInfo* LevelUpInfo = GetSCPS()->LevelUpInfo;
 
@@ -50,7 +50,7 @@ void USCPlayerStatsMenuWidgetController::BindCallbacksToDependencies()
 	GetSCPS()->OnSkillPointsChangedDelegate.AddLambda(
 		[this](int32 NewSkillPoints)
 		{
-			OnSkillPointsChangedDelegate.Broadcast(NewSkillPoints);
+			OnSkillPointsChangedDelegate.Broadcast(static_cast<float>(NewSkillPoints));
 		}
 	);
 

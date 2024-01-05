@@ -47,7 +47,7 @@ void ASCPlayerState::AddToXP(int32 InXP)
 	}
 	
 	XP += InXP;
-	OnXPChangedDelegate.Broadcast(XP);
+	OnXPChangedDelegate.Broadcast(XP, InXP);
 }
 
 void ASCPlayerState::AddToSkillPoints(int32 InPoints)
@@ -63,7 +63,7 @@ void ASCPlayerState::OnRep_Level(int32 OldLevel)
 
 void ASCPlayerState::OnRep_XP(int32 OldXP)
 {
-	OnXPChangedDelegate.Broadcast(XP);
+	OnXPChangedDelegate.Broadcast(XP, XP - OldXP);
 }
 
 void ASCPlayerState::OnRep_SkillPoints(int32 OldSkillPoints)

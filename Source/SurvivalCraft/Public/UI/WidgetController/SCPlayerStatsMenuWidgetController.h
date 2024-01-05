@@ -6,7 +6,6 @@
 #include "SCWidgetController.h"
 #include "SCPlayerStatsMenuWidgetController.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStatsChangedSignature, float, NewValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnXPChangedSignature, int32, CurrentXP, int32, RequiredXP, float, XPPercent);
 
 UCLASS(BlueprintType, Blueprintable)

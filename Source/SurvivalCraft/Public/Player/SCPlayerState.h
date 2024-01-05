@@ -7,6 +7,7 @@
 #include "SCPlayerState.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChangedSignature, int32 /*StatValue*/)
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPlayerXPChangedSignature, int32 /*NewTotalXPValue*/, int32 /*EarnedXP*/)
 
 class ULevelUpInfo;
 
@@ -23,7 +24,7 @@ public:
 	void AddToXP(int32 InXP);
 	void AddToSkillPoints(int32 InPoints);
 
-	FOnPlayerStatChangedSignature OnXPChangedDelegate;
+	FOnPlayerXPChangedSignature OnXPChangedDelegate;
 	FOnPlayerStatChangedSignature OnLevelChangedDelegate;
 	FOnPlayerStatChangedSignature OnSkillPointsChangedDelegate;
 
