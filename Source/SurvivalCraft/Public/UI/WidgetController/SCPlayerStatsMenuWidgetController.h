@@ -46,4 +46,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Player Stats|Skill Points")
 	FOnStatsChangedSignature OnSkillPointsChangedDelegate;
+
+	UFUNCTION(BlueprintCallable)
+	void SpendPointButtonPressed(EPlayerStats StatToUpgrade);
 };

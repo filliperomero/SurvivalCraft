@@ -71,6 +71,40 @@ void ASCCharacter::AddToXP_Implementation(int32 InXP)
 	return SCPlayerState->AddToXP(InXP);
 }
 
+void ASCCharacter::SpendSkillPoint_Implementation(EPlayerStats StatToUpgrade)
+{
+	ASCPlayerState* SCPlayerState = GetPlayerState<ASCPlayerState>();
+	check(SCPlayerState);
+
+	if (SCPlayerState->GetSkillPoints() <= 0) return;
+
+	SCPlayerState->AddToSkillPoints(-1);
+
+	switch (StatToUpgrade)
+	{
+		case EPlayerStats::EPS_Health:
+		case EPlayerStats::EPS_MaxHealth:
+			AddToPlayerStats(EPlayerStats::EPS_MaxHealth, 25.f);
+			
+			break;
+		case EPlayerStats::EPS_Food:
+		case EPlayerStats::EPS_MaxFood:
+			AddToPlayerStats(EPlayerStats::EPS_MaxFood, 5.f);
+			
+			break;
+		case EPlayerStats::EPS_Water:
+		case EPlayerStats::EPS_MaxWater:
+			AddToPlayerStats(EPlayerStats::EPS_MaxWater, 5.f);
+			
+			break;
+		case EPlayerStats::EPS_Stamina:
+		case EPlayerStats::EPS_MaxStamina:
+			AddToPlayerStats(EPlayerStats::EPS_MaxStamina, 2.f);
+
+			break;
+	}
+}
+
 void ASCCharacter::ServerOnSlotDrop_Implementation(EContainerType TargetContainerType, EContainerType FromContainerType, int32 FromIndex, int32 ToIndex, EArmorType ArmorType)
 {
 	USCItemsContainerComponent* FromContainer = nullptr;
@@ -255,10 +289,14 @@ void ASCCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(ASCCharacter, EquipableState);
 	DOREPLIFETIME(ASCCharacter, CombatState);
 	DOREPLIFETIME(ASCCharacter, Health);
+	DOREPLIFETIME(ASCCharacter, MaxHealth);
 	// TODO: Check if we need to replicate to others the Food and Water or only to the Owner
 	DOREPLIFETIME(ASCCharacter, Food);
+	DOREPLIFETIME(ASCCharacter, MaxFood);
 	DOREPLIFETIME(ASCCharacter, Water);
+	DOREPLIFETIME(ASCCharacter, MaxWater);
 	DOREPLIFETIME(ASCCharacter, Stamina);
+	DOREPLIFETIME(ASCCharacter, MaxStamina);
 }
 
 void ASCCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser)
@@ -494,6 +532,22 @@ void ASCCharacter::AddToPlayerStats(EPlayerStats PlayerStats, float NewValue)
 			Stamina = FMath::Clamp(Stamina + NewValue, 0.f, GetMaxStamina());
 			UpdatePlayerStatsUI(EPlayerStats::EPS_Stamina, Stamina);
 			break;
+		case EPlayerStats::EPS_MaxHealth:
+			MaxHealth = FMath::Clamp(MaxHealth + NewValue, 0.f, 9999.f);
+			UpdatePlayerStatsUI(EPlayerStats::EPS_MaxHealth, MaxHealth);
+			break;
+		case EPlayerStats::EPS_MaxFood:
+			MaxFood = FMath::Clamp(MaxFood + NewValue, 0.f, 9999.f);
+			UpdatePlayerStatsUI(EPlayerStats::EPS_MaxFood, MaxFood);
+			break;
+		case EPlayerStats::EPS_MaxWater:
+			MaxWater = FMath::Clamp(MaxWater + NewValue, 0.f, 9999.f);
+			UpdatePlayerStatsUI(EPlayerStats::EPS_MaxWater, MaxWater);
+			break;
+		case EPlayerStats::EPS_MaxStamina:
+			MaxStamina = FMath::Clamp(MaxStamina + NewValue, 0.f, 9999.f);
+			UpdatePlayerStatsUI(EPlayerStats::EPS_MaxStamina, MaxStamina);
+			break;
 	}
 }
 
@@ -502,14 +556,29 @@ void ASCCharacter::OnRep_Health(float LastHealth)
 	UpdatePlayerStatsUI(EPlayerStats::EPS_Health, Health);
 }
 
+void ASCCharacter::OnRep_MaxHealth(float LastMaxHealth)
+{
+	UpdatePlayerStatsUI(EPlayerStats::EPS_MaxHealth, MaxHealth);
+}
+
 void ASCCharacter::OnRep_Food(float LastFood)
 {
 	UpdatePlayerStatsUI(EPlayerStats::EPS_Food, Food);
 }
 
+void ASCCharacter::OnRep_MaxFood(float LastMaxFood)
+{
+	UpdatePlayerStatsUI(EPlayerStats::EPS_MaxFood, MaxFood);
+}
+
 void ASCCharacter::OnRep_Water(float LastWater)
 {
 	UpdatePlayerStatsUI(EPlayerStats::EPS_Water, Water);
+}
+
+void ASCCharacter::OnRep_MaxWater(float LastMaxWater)
+{
+	UpdatePlayerStatsUI(EPlayerStats::EPS_MaxWater, MaxWater);
 }
 
 void ASCCharacter::OnRep_Stamina(float InLastStamina)
@@ -520,6 +589,11 @@ void ASCCharacter::OnRep_Stamina(float InLastStamina)
 	}
 	
 	UpdatePlayerStatsUI(EPlayerStats::EPS_Stamina, Stamina);
+}
+
+void ASCCharacter::OnRep_MaxStamina(float LastMaxStamina)
+{
+	UpdatePlayerStatsUI(EPlayerStats::EPS_MaxStamina, MaxStamina);
 }
 
 void ASCCharacter::PassiveStatDrain()

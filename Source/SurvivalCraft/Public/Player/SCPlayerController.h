@@ -45,15 +45,22 @@ public:
 	float GetMaxWater();
 	float GetStamina();
 	float GetMaxStamina();
+
+	UFUNCTION(Server, Reliable)
+	void ServerSpendSkillPoint(EPlayerStats StatToUpgrade);
 	
 	FOnToggleInventorySignature OnToggleInventoryDelegate;
 	FOnUpdateItemSlotSignature OnUpdateItemSlotDelegate;
 	FOnResetItemSlotSignature OnResetItemSlotDelegate;
 	FOnItemAddedSignature OnItemAddedDelegate;
 	FOnPlayerStatsChangedSignature OnPlayerHealthChangedDelegate;
+	FOnPlayerStatsChangedSignature OnPlayerMaxHealthChangedDelegate;
 	FOnPlayerStatsChangedSignature OnPlayerFoodChangedDelegate;
+	FOnPlayerStatsChangedSignature OnPlayerMaxFoodChangedDelegate;
 	FOnPlayerStatsChangedSignature OnPlayerWaterChangedDelegate;
+	FOnPlayerStatsChangedSignature OnPlayerMaxWaterChangedDelegate;
 	FOnPlayerStatsChangedSignature OnPlayerStaminaChangedDelegate;
+	FOnPlayerStatsChangedSignature OnPlayerMaxStaminaChangedDelegate;
 
 protected:
 	virtual void BeginPlay() override;

@@ -38,6 +38,7 @@ public:
 	virtual ASCPlayerController* GetSCPlayerController_Implementation() override;
 	virtual void OnSlotDrop_Implementation(EContainerType TargetContainerType, EContainerType FromContainerType, int32 FromIndex, int32 ToIndex, EArmorType ArmorType) override;
 	virtual void AddToXP_Implementation(int32 InXP) override;
+	virtual void SpendSkillPoint_Implementation(EPlayerStats StatToUpgrade) override;
 	/** Player Interface */
 
 	UFUNCTION(BlueprintCallable)
@@ -150,11 +151,14 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_Health, VisibleAnywhere, Category = "Player Stats")
 	float Health = 100.f;
 
-	UPROPERTY(EditAnywhere, Category = "Player Stats")
+	UPROPERTY(ReplicatedUsing = OnRep_MaxHealth, EditAnywhere, Category = "Player Stats")
 	float MaxHealth = 100.f;
 
 	UFUNCTION()
 	void OnRep_Health(float LastHealth);
+
+	UFUNCTION()
+	void OnRep_MaxHealth(float LastMaxHealth);
 
 	bool bStarving = false;
 
@@ -164,11 +168,14 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_Food, VisibleAnywhere, Category = "Player Stats")
 	float Food = 100.f;
 
-	UPROPERTY(EditAnywhere, Category = "Player Stats")
+	UPROPERTY(ReplicatedUsing = OnRep_MaxFood, EditAnywhere, Category = "Player Stats")
 	float MaxFood = 100.f;
 
 	UFUNCTION()
 	void OnRep_Food(float LastFood);
+
+	UFUNCTION()
+	void OnRep_MaxFood(float LastMaxFood);
 
 	bool bDehydrated = false;
 	
@@ -178,11 +185,14 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_Water, VisibleAnywhere, Category = "Player Stats")
 	float Water = 100.f;
 
-	UPROPERTY(EditAnywhere, Category = "Player Stats")
+	UPROPERTY(ReplicatedUsing = OnRep_MaxWater, EditAnywhere, Category = "Player Stats")
 	float MaxWater = 100.f;
 
 	UFUNCTION()
 	void OnRep_Water(float LastWater);
+
+	UFUNCTION()
+	void OnRep_MaxWater(float LastMaxWater);
 
 	// Variable used to update the UI
 	int32 LastStamina = 0;
@@ -190,11 +200,14 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_Stamina, VisibleAnywhere, Category = "Player Stats")
 	float Stamina = 100.f;
 
-	UPROPERTY(EditAnywhere, Category = "Player Stats")
+	UPROPERTY(ReplicatedUsing = OnRep_MaxStamina, EditAnywhere, Category = "Player Stats")
 	float MaxStamina = 100.f;
 
 	UFUNCTION()
 	void OnRep_Stamina(float InLastStamina);
+
+	UFUNCTION()
+	void OnRep_MaxStamina(float LastMaxStamina);
 
 	FTimerHandle StatDrainTimer;
 	FTimerHandle HealthDecreaseTimer;

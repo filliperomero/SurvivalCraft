@@ -60,10 +60,22 @@ void USCPlayerStatsMenuWidgetController::BindCallbacksToDependencies()
 			OnHealthChangedDelegate.Broadcast(NewValue);
 		}
 	);
+	GetSCPC()->OnPlayerMaxHealthChangedDelegate.AddLambda(
+		[this](float NewValue)
+		{
+			OnMaxHealthChangedDelegate.Broadcast(NewValue);
+		}
+	);
 	GetSCPC()->OnPlayerWaterChangedDelegate.AddLambda(
 		[this](float NewValue)
 		{
 			OnWaterChangedDelegate.Broadcast(NewValue);
+		}
+	);
+	GetSCPC()->OnPlayerMaxWaterChangedDelegate.AddLambda(
+		[this](float NewValue)
+		{
+			OnMaxWaterChangedDelegate.Broadcast(NewValue);
 		}
 	);
 	GetSCPC()->OnPlayerFoodChangedDelegate.AddLambda(
@@ -72,10 +84,32 @@ void USCPlayerStatsMenuWidgetController::BindCallbacksToDependencies()
 			OnFoodChangedDelegate.Broadcast(NewValue);
 		}
 	);
+	GetSCPC()->OnPlayerMaxFoodChangedDelegate.AddLambda(
+		[this](float NewValue)
+		{
+			OnMaxFoodChangedDelegate.Broadcast(NewValue);
+		}
+	);
 	GetSCPC()->OnPlayerStaminaChangedDelegate.AddLambda(
 		[this](float NewValue)
 		{
 			OnStaminaChangedDelegate.Broadcast(NewValue);
 		}
 	);
+	GetSCPC()->OnPlayerMaxStaminaChangedDelegate.AddLambda(
+		[this](float NewValue)
+		{
+			OnMaxStaminaChangedDelegate.Broadcast(NewValue);
+		}
+	);
+}
+
+void USCPlayerStatsMenuWidgetController::SpendPointButtonPressed(EPlayerStats StatToUpgrade)
+{
+	if (GetSCPC() == nullptr) return;
+
+	// Avoid calling a Server RPC if locally we don't have enough points. We'll still validate in the server
+	if (GetSCPS() == nullptr || GetSCPS()->GetSkillPoints() <= 0) return;
+
+	GetSCPC()->ServerSpendSkillPoint(StatToUpgrade);
 }

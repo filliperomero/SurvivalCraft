@@ -77,14 +77,26 @@ void ASCPlayerController::UpdatePlayerStats(EPlayerStats PlayerStats, float NewV
 		case EPlayerStats::EPS_Health:
 			OnPlayerHealthChangedDelegate.Broadcast(NewValue);
 			break;
+		case EPlayerStats::EPS_MaxHealth:
+			OnPlayerMaxHealthChangedDelegate.Broadcast(NewValue);
+			break;
 		case EPlayerStats::EPS_Food:
 			OnPlayerFoodChangedDelegate.Broadcast(NewValue);
+			break;
+		case EPlayerStats::EPS_MaxFood:
+			OnPlayerMaxFoodChangedDelegate.Broadcast(NewValue);
 			break;
 		case EPlayerStats::EPS_Water:
 			OnPlayerWaterChangedDelegate.Broadcast(NewValue);
 			break;
+		case EPlayerStats::EPS_MaxWater:
+			OnPlayerMaxWaterChangedDelegate.Broadcast(NewValue);
+			break;
 		case EPlayerStats::EPS_Stamina:
 			OnPlayerStaminaChangedDelegate.Broadcast(NewValue);
+			break;
+		case EPlayerStats::EPS_MaxStamina:
+			OnPlayerMaxStaminaChangedDelegate.Broadcast(NewValue);
 			break;
 	}
 }
@@ -127,6 +139,11 @@ float ASCPlayerController::GetStamina()
 float ASCPlayerController::GetMaxStamina()
 {
 	return GetSCCharacter()->GetMaxStamina();
+}
+
+void ASCPlayerController::ServerSpendSkillPoint_Implementation(EPlayerStats StatToUpgrade)
+{
+	IPlayerInterface::Execute_SpendSkillPoint(GetSCCharacter(), StatToUpgrade);
 }
 
 void ASCPlayerController::Move(const FInputActionValue& Value)
