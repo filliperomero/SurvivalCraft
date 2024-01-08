@@ -22,10 +22,17 @@ void USCInventoryMenuWidgetController::BindCallbacksToDependencies()
 		}
 	);
 
+	GetSCPC()->OnUpdateArmorSlotDelegate.AddLambda(
+		[this](EArmorType ArmorType, const FItemInformation& Item)
+		{
+			OnUpdateArmorSlotWidgetDelegate.Broadcast(ArmorType, Item);
+		}
+	);
+
 	GetSCPS()->OnLevelChangedDelegate.AddLambda(
-	[this](int32 NewLevel)
-	{
-		OnPlayerLevelChangedDelegate.Broadcast(static_cast<float>(NewLevel));	
-	}
-);
+		[this](int32 NewLevel)
+		{
+			OnPlayerLevelChangedDelegate.Broadcast(static_cast<float>(NewLevel));	
+		}
+	);
 }

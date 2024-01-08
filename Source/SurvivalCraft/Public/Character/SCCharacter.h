@@ -37,6 +37,7 @@ public:
 	/** Player Interface */
 	virtual ASCPlayerController* GetSCPlayerController_Implementation() override;
 	virtual void OnSlotDrop_Implementation(EContainerType TargetContainerType, EContainerType FromContainerType, int32 FromIndex, int32 ToIndex, EArmorType ArmorType) override;
+	virtual void OnEquipArmor_Implementation(EContainerType FromContainerType, int32 FromIndex, EArmorType ArmorType) override;
 	virtual void AddToXP_Implementation(int32 InXP) override;
 	virtual void SpendSkillPoint_Implementation(EPlayerStats StatToUpgrade) override;
 	/** Player Interface */
@@ -69,6 +70,9 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void ServerOnSlotDrop(EContainerType TargetContainerType, EContainerType FromContainerType, int32 FromIndex, int32 ToIndex, EArmorType ArmorType);
+
+	UFUNCTION(Server, Reliable)
+	void ServerOnEquipArmor(EContainerType FromContainerType, int32 FromIndex, EArmorType ArmorType);
 
 	UFUNCTION(Server, Reliable)
 	void ServerCraftItem(const int32 ItemID, const EContainerType ContainerType, const ECraftingType TableType);
@@ -131,6 +135,30 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<ASCEquipableItem> EquippedItem;
+
+	UPROPERTY(ReplicatedUsing = OnRep_HelmetSlot)
+	TObjectPtr<ASCItemMaster> HelmetSlot;
+
+	UFUNCTION()
+	void OnRep_HelmetSlot();
+
+	UPROPERTY(ReplicatedUsing = OnRep_ChestSlot)
+	TObjectPtr<ASCItemMaster> ChestSlot;
+
+	UFUNCTION()
+	void OnRep_ChestSlot();
+
+	UPROPERTY(ReplicatedUsing = OnRep_PantsSlot)
+	TObjectPtr<ASCItemMaster> PantsSlot;
+
+	UFUNCTION()
+	void OnRep_PantsSlot();
+
+	UPROPERTY(ReplicatedUsing = OnRep_BootsSlot)
+	TObjectPtr<ASCItemMaster> BootsSlot;
+
+	UFUNCTION()
+	void OnRep_BootsSlot();
 
 	int32 EquippedItemIndex = -1;
 
@@ -273,6 +301,7 @@ private:
 	void HarvestGroundItem(AActor* TargetActor);
 	void PlayHarvestingMontage();
 	USCItemsContainerComponent* GetContainerComponent(const EContainerType ContainerType) const;
+	ASCItemMaster* GetArmorSlot(EArmorType ArmorType);
 
 	FTimerDelegate CraftTimerDelegate;
 	FTimerHandle CraftTimerHandle;

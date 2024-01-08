@@ -51,6 +51,11 @@ void ASCPlayerController::ClientResetItemSlot_Implementation(EContainerType Cont
 	OnResetItemSlotDelegate.Broadcast(ContainerType, SlotIndex);
 }
 
+void ASCPlayerController::ClientUpdateArmorSlot_Implementation(EArmorType ArmorType, const FItemInformation& Item)
+{
+	OnUpdateArmorSlotDelegate.Broadcast(ArmorType, Item);
+}
+
 void ASCPlayerController::ShowItemAdded(UTexture2D* ItemIcon, int32 ItemQuantity, FText ItemName)
 {
 	OnItemAddedDelegate.Broadcast(ItemIcon, ItemQuantity, ItemName);

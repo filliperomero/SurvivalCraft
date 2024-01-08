@@ -15,6 +15,8 @@ class SURVIVALCRAFT_API ASCArmor : public ASCItemMaster
 public:
 	ASCArmor();
 
+	void SetMasterPose(USkeletalMeshComponent* CharacterMesh) const;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Mesh)
 	TObjectPtr<USkeletalMeshComponent> SkeletalMesh;
 

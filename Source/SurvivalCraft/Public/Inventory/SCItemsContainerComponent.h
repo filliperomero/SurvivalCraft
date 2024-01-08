@@ -29,6 +29,7 @@ public:
 	bool ContainRequiredItems(TArray<FCraftingItemInfo> RequiredItems);
 	bool RemoveItemQuantity(int32 Index, int32 AmountToRemove);
 	bool UpdateItemQuantity(int32 Index, int32 NewQuantity);
+	virtual bool RemoveItemByIndex(int32 Index);
 
 	TArray<FItemInformation> Items;
 
@@ -40,7 +41,6 @@ protected:
 
 	virtual void FindEmptySlot(bool& bSuccess, int32& OutEmptyIndex);
 	FItemInformation GetItemByIndex(int32 Index);
-	virtual bool RemoveItemByIndex(int32 Index);
 	virtual bool IsSlotEmpty(int32 SlotIndex);
 	virtual void UpdateUI(int32 Index, const FItemInformation& Item, bool bShouldResetSlot);
 	bool HasItemsToStack(const FItemInformation& ItemToCheck);

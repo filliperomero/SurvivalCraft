@@ -20,6 +20,7 @@
 #include "Player/SCPlayerState.h"
 #include "SurvivalCraft/SurvivalCraft.h"
 #include "UI/HUD/SCHUD.h"
+#include <Items/SCArmor.h>
 
 ASCCharacter::ASCCharacter()
 {
@@ -61,6 +62,11 @@ ASCPlayerController* ASCCharacter::GetSCPlayerController_Implementation()
 void ASCCharacter::OnSlotDrop_Implementation(EContainerType TargetContainerType, EContainerType FromContainerType, int32 FromIndex, int32 ToIndex, EArmorType ArmorType)
 {
 	ServerOnSlotDrop(TargetContainerType, FromContainerType, FromIndex, ToIndex, ArmorType);
+}
+
+void ASCCharacter::OnEquipArmor_Implementation(EContainerType FromContainerType, int32 FromIndex, EArmorType ArmorType)
+{
+	ServerOnEquipArmor(FromContainerType, FromIndex, ArmorType);
 }
 
 void ASCCharacter::AddToXP_Implementation(int32 InXP)
@@ -197,6 +203,64 @@ void ASCCharacter::ServerSprint_Implementation(bool bInIsSprinting)
 	}
 }
 
+void ASCCharacter::ServerOnEquipArmor_Implementation(EContainerType FromContainerType, int32 FromIndex, EArmorType ArmorType)
+{
+	// TODO: Try to refactor this function to use the ServerOnSlotDrop
+	// TODO: Try to refactor this function to use the container type ECT_PlayerArmor. We'll need to check if we use this container for other stuffs in the course
+
+	// For now, we can only equip itens that come from the Player Inventory
+	if (FromContainerType != EContainerType::ECT_PlayerInventory) return;
+
+	USCItemsContainerComponent* ItemsContainerComp = GetContainerComponent(FromContainerType);
+
+	// TODO: Improve this to have a function to return the item
+	const FItemInformation Item = ItemsContainerComp->GetItems()[FromIndex];
+
+	if (Item.ItemType == EItemType::EIT_Armor && Item.ArmorType == ArmorType && Item.ItemClass != nullptr) 
+	{
+
+		ASCItemMaster* ArmorSlot = GetArmorSlot(ArmorType);
+
+		if (IsValid(ArmorSlot))
+		{
+			return;
+		}
+
+		ASCItemMaster* SpawnedArmorItem = GetWorld()->SpawnActor<ASCItemMaster>(Item.ItemClass);
+		SpawnedArmorItem->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale);
+		SpawnedArmorItem->SetOwner(this);
+
+		InventoryComponent->RemoveItemByIndex(FromIndex);
+		if (ASCPlayerController* SCPC = Cast<ASCPlayerController>(GetController()))
+		{
+			SCPC->ClientUpdateArmorSlot(ArmorType, Item);
+		}
+		
+		switch (ArmorType)
+		{
+			case EArmorType::EAT_Helmet:
+				HelmetSlot = SpawnedArmorItem;
+				break;
+			case EArmorType::EAT_Chest:
+				ChestSlot = SpawnedArmorItem;
+				break;
+			case EArmorType::EAT_Pants:
+				PantsSlot = SpawnedArmorItem;
+				break;
+			case EArmorType::EAT_Boots:
+				BootsSlot = SpawnedArmorItem;
+				break;
+		}
+
+		// TODO: Create a interface for the Armor Item, so we don't need to include it
+		if (ASCArmor* SpawnedArmor = Cast<ASCArmor>(SpawnedArmorItem))
+		{
+			SpawnedArmor->SetMasterPose(GetMesh());
+		}
+	}
+
+}
+
 void ASCCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -288,6 +352,10 @@ void ASCCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 
 	DOREPLIFETIME(ASCCharacter, EquipableState);
 	DOREPLIFETIME(ASCCharacter, CombatState);
+	DOREPLIFETIME(ASCCharacter, HelmetSlot);
+	DOREPLIFETIME(ASCCharacter, ChestSlot);
+	DOREPLIFETIME(ASCCharacter, PantsSlot);
+	DOREPLIFETIME(ASCCharacter, BootsSlot);
 	DOREPLIFETIME(ASCCharacter, Health);
 	DOREPLIFETIME(ASCCharacter, MaxHealth);
 	// TODO: Check if we need to replicate to others the Food and Water or only to the Owner
@@ -501,6 +569,46 @@ void ASCCharacter::OvertimePlayerStatsFinished(EPlayerStats PlayerStats)
 			}
 		case EPlayerStats::EPS_Stamina:
 			break;
+	}
+}
+
+void ASCCharacter::OnRep_HelmetSlot()
+{
+	if (HelmetSlot == nullptr) return;
+
+	if (ASCArmor* SpawnedArmor = Cast<ASCArmor>(HelmetSlot))
+	{
+		SpawnedArmor->SetMasterPose(GetMesh());
+	}
+}
+
+void ASCCharacter::OnRep_ChestSlot()
+{
+	if (ChestSlot == nullptr) return;
+
+	if (ASCArmor* SpawnedArmor = Cast<ASCArmor>(ChestSlot))
+	{
+		SpawnedArmor->SetMasterPose(GetMesh());
+	}
+}
+
+
+void ASCCharacter::OnRep_PantsSlot()
+{
+	if (PantsSlot == nullptr) return;
+
+	if (ASCArmor* SpawnedArmor = Cast<ASCArmor>(PantsSlot))
+	{
+		SpawnedArmor->SetMasterPose(GetMesh());
+	}
+}
+void ASCCharacter::OnRep_BootsSlot()
+{
+	if (BootsSlot == nullptr) return;
+
+	if (ASCArmor* SpawnedArmor = Cast<ASCArmor>(BootsSlot))
+	{
+		SpawnedArmor->SetMasterPose(GetMesh());
 	}
 }
 
@@ -844,6 +952,25 @@ void ASCCharacter::CraftTimerFinished(USCItemsContainerComponent* ContainerCompo
 	{
 		// We never hit here but... we never know. we should reset the combat state here. so we can craft again.
 	}
+}
+
+ASCItemMaster* ASCCharacter::GetArmorSlot(EArmorType ArmorType)
+{
+	switch (ArmorType)
+	{
+		case EArmorType::EAT_Helmet:
+			return HelmetSlot;
+		case EArmorType::EAT_Chest:
+			return ChestSlot;
+		case EArmorType::EAT_Pants:
+			return PantsSlot;
+		case EArmorType::EAT_Boots:
+			return BootsSlot;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("ArmorType not identified"))
+
+	return nullptr;
 }
 
 void ASCCharacter::PlayEquipableMontage(FName SectionName)
