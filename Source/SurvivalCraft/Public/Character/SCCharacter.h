@@ -75,6 +75,9 @@ public:
 	void ServerOnEquipArmor(EContainerType FromContainerType, int32 FromIndex, EArmorType ArmorType);
 
 	UFUNCTION(Server, Reliable)
+	void ServerOnUnequipArmor(EArmorType ArmorType);
+
+	UFUNCTION(Server, Reliable)
 	void ServerCraftItem(const int32 ItemID, const EContainerType ContainerType, const ECraftingType TableType);
 
 	UFUNCTION(Server, Reliable)
@@ -302,6 +305,7 @@ private:
 	void PlayHarvestingMontage();
 	USCItemsContainerComponent* GetContainerComponent(const EContainerType ContainerType) const;
 	ASCItemMaster* GetArmorSlot(EArmorType ArmorType);
+	void ClearArmorSlot(EArmorType ArmorType);
 
 	FTimerDelegate CraftTimerDelegate;
 	FTimerHandle CraftTimerHandle;

@@ -29,6 +29,13 @@ void USCInventoryMenuWidgetController::BindCallbacksToDependencies()
 		}
 	);
 
+	GetSCPC()->OnResetArmorSlotDelegate.AddLambda(
+		[this](EArmorType ArmorType)
+		{
+			OnResetArmorSlotWidgetDelegate.Broadcast(ArmorType);
+		}
+	);
+
 	GetSCPS()->OnLevelChangedDelegate.AddLambda(
 		[this](int32 NewLevel)
 		{

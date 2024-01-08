@@ -17,6 +17,7 @@ DECLARE_MULTICAST_DELEGATE_TwoParams(FOnResetItemSlotSignature, EContainerType/*
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnItemAddedSignature, UTexture2D*/*ItemIcon*/, int32/*ItemQuantity*/, FText/*ItemName*/);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStatsChangedSignature, float/*NewValue*/);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnUpdateArmorSlotSignature, EArmorType/*ArmorType*/, const FItemInformation&/*Item*/);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnResetArmorSlotSignature, EArmorType/*ArmorType*/);
 
 struct FInputActionValue;
 class UInputAction;
@@ -36,6 +37,9 @@ public:
 
 	UFUNCTION(Client, Reliable)
 	void ClientUpdateArmorSlot(EArmorType ArmorType, const FItemInformation& Item);
+
+	UFUNCTION(Client, Reliable)
+	void ClientResetArmorSlot(EArmorType ArmorType);
 	
 	void ShowItemAdded(UTexture2D* ItemIcon, int32 ItemQuantity, FText ItemName);
 	bool CanCraftItem(const int32 ItemID, const EContainerType ContainerType, const ECraftingType TableType);
@@ -66,6 +70,7 @@ public:
 	FOnPlayerStatsChangedSignature OnPlayerStaminaChangedDelegate;
 	FOnPlayerStatsChangedSignature OnPlayerMaxStaminaChangedDelegate;
 	FOnUpdateArmorSlotSignature OnUpdateArmorSlotDelegate;
+	FOnResetArmorSlotSignature OnResetArmorSlotDelegate;
 
 protected:
 	virtual void BeginPlay() override;

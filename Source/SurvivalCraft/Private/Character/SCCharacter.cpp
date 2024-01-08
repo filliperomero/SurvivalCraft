@@ -61,6 +61,11 @@ ASCPlayerController* ASCCharacter::GetSCPlayerController_Implementation()
 
 void ASCCharacter::OnSlotDrop_Implementation(EContainerType TargetContainerType, EContainerType FromContainerType, int32 FromIndex, int32 ToIndex, EArmorType ArmorType)
 {
+	if (FromContainerType == EContainerType::ECT_PlayerArmor)
+	{
+		return ServerOnUnequipArmor(ArmorType);
+	}
+	
 	ServerOnSlotDrop(TargetContainerType, FromContainerType, FromIndex, ToIndex, ArmorType);
 }
 
@@ -218,8 +223,7 @@ void ASCCharacter::ServerOnEquipArmor_Implementation(EContainerType FromContaine
 
 	if (Item.ItemType == EItemType::EIT_Armor && Item.ArmorType == ArmorType && Item.ItemClass != nullptr) 
 	{
-
-		ASCItemMaster* ArmorSlot = GetArmorSlot(ArmorType);
+		const ASCItemMaster* ArmorSlot = GetArmorSlot(ArmorType);
 
 		if (IsValid(ArmorSlot))
 		{
@@ -253,12 +257,32 @@ void ASCCharacter::ServerOnEquipArmor_Implementation(EContainerType FromContaine
 		}
 
 		// TODO: Create a interface for the Armor Item, so we don't need to include it
-		if (ASCArmor* SpawnedArmor = Cast<ASCArmor>(SpawnedArmorItem))
+		if (const ASCArmor* SpawnedArmor = Cast<ASCArmor>(SpawnedArmorItem))
 		{
 			SpawnedArmor->SetMasterPose(GetMesh());
 		}
 	}
+}
 
+void ASCCharacter::ServerOnUnequipArmor_Implementation(EArmorType ArmorType)
+{
+	ASCItemMaster* ArmorSlot = GetArmorSlot(ArmorType);
+
+	if (!IsValid(ArmorSlot)) return;
+
+	if (const ASCArmor* SpawnedArmor = Cast<ASCArmor>(ArmorSlot))
+	{
+		// TODO: The ArmorItemInfo is being added in OnConstruct but we should deferredSpawn and set those information.
+		const FItemInformation ItemInformation = SpawnedArmor->ArmorItemInfo;
+
+		// TODO: We should add the item in the slot we are dropping (if the slot is empty, otherwise, we drop in the first available slot)
+		InventoryComponent->AddItem(ItemInformation);
+		ArmorSlot->Destroy();
+		ClearArmorSlot(ArmorType);
+
+		if (ASCPlayerController* SCPC = Cast<ASCPlayerController>(GetController()))
+			SCPC->ClientResetArmorSlot(ArmorType);
+	}
 }
 
 void ASCCharacter::BeginPlay()
@@ -971,6 +995,25 @@ ASCItemMaster* ASCCharacter::GetArmorSlot(EArmorType ArmorType)
 	UE_LOG(LogTemp, Warning, TEXT("ArmorType not identified"))
 
 	return nullptr;
+}
+
+void ASCCharacter::ClearArmorSlot(EArmorType ArmorType)
+{
+	switch (ArmorType)
+	{
+		case EArmorType::EAT_Helmet:
+			HelmetSlot = nullptr;
+			break;
+		case EArmorType::EAT_Chest:
+			ChestSlot = nullptr;
+			break;
+		case EArmorType::EAT_Pants:
+			PantsSlot = nullptr;
+			break;
+		case EArmorType::EAT_Boots:
+			BootsSlot = nullptr;
+			break;
+	}
 }
 
 void ASCCharacter::PlayEquipableMontage(FName SectionName)
