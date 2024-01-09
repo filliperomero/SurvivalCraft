@@ -103,6 +103,12 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UArrowComponent> PlayerArrow;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USceneCaptureComponent2D> PlayerWindow;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UMaterial> PlayerWindowMaterial;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USCPlayerInventoryComponent> InventoryComponent;
 
@@ -306,6 +312,7 @@ private:
 	USCItemsContainerComponent* GetContainerComponent(const EContainerType ContainerType) const;
 	ASCItemMaster* GetArmorSlot(EArmorType ArmorType);
 	void ClearArmorSlot(EArmorType ArmorType);
+	void InitializePlayerWindow();
 
 	FTimerDelegate CraftTimerDelegate;
 	FTimerHandle CraftTimerHandle;

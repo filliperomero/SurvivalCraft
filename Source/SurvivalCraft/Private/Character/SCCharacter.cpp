@@ -21,6 +21,8 @@
 #include "SurvivalCraft/SurvivalCraft.h"
 #include "UI/HUD/SCHUD.h"
 #include <Items/SCArmor.h>
+#include "Components/SceneCaptureComponent2D.h"
+#include "Kismet/KismetRenderingLibrary.h"
 
 ASCCharacter::ASCCharacter()
 {
@@ -45,6 +47,13 @@ ASCCharacter::ASCCharacter()
 	Mesh1P->CastShadow = false;
 	Mesh1P->SetRelativeRotation(FRotator(0.f, -90.0f, 0.f));
 	Mesh1P->SetRelativeLocation(FVector(00.f, 0.f, -160.f));
+
+	PlayerWindow = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("PlayerWindow"));
+	PlayerWindow->SetupAttachment(GetMesh());
+	PlayerWindow->SetRelativeRotation(FRotator(-10.f, -90.0f, 0.f));
+	PlayerWindow->SetRelativeLocation(FVector(00.f, 155.f, 130.f));
+	PlayerWindow->MaxViewDistanceOverride = 200.f;
+	// PlayerWindow->PrimitiveRenderMode = ESceneCapturePrimitiveRenderMode::PRM_UseShowOnlyList;
 
 	InventoryComponent = CreateDefaultSubobject<USCPlayerInventoryComponent>(TEXT("InventoryComponent"));
 	InventoryComponent->ContainerType = EContainerType::ECT_PlayerInventory;
@@ -353,6 +362,8 @@ void ASCCharacter::PossessedBy(AController* NewController)
 			HUD->InitOverlay(SCPlayerController, GetPlayerState());
 		}
 	}
+
+	InitializePlayerWindow();
 }
 
 void ASCCharacter::OnRep_PlayerState()
@@ -368,6 +379,8 @@ void ASCCharacter::OnRep_PlayerState()
 			HUD->InitOverlay(SCPlayerController, GetPlayerState());
 		}
 	}
+
+	InitializePlayerWindow();
 }
 
 void ASCCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -389,6 +402,21 @@ void ASCCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(ASCCharacter, MaxWater);
 	DOREPLIFETIME(ASCCharacter, Stamina);
 	DOREPLIFETIME(ASCCharacter, MaxStamina);
+}
+
+void ASCCharacter::InitializePlayerWindow()
+{
+	if (ASCPlayerController* SCPlayerController = Cast<ASCPlayerController>(GetController()))
+	{
+		// TArray<AActor*> ShowOnlyActors;
+		// ShowOnlyActors.Add(this);
+		//
+		// PlayerWindow->ShowOnlyActors = ShowOnlyActors;
+		PlayerWindow->TextureTarget = UKismetRenderingLibrary::CreateRenderTarget2D(this, 500, 800);
+		UMaterialInstanceDynamic* DynamicMatInst = UMaterialInstanceDynamic::Create(PlayerWindowMaterial, this);
+		DynamicMatInst->SetTextureParameterValue(FName("Param"), PlayerWindow->TextureTarget);
+		SCPlayerController->UpdatePlayerWindow(DynamicMatInst);
+	}
 }
 
 void ASCCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser)

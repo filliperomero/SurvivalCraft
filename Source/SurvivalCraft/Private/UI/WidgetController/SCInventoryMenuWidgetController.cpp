@@ -36,6 +36,13 @@ void USCInventoryMenuWidgetController::BindCallbacksToDependencies()
 		}
 	);
 
+	GetSCPC()->OnPlayerWindowInitDelegate.AddLambda(
+		[this](UMaterialInstanceDynamic* Material)
+		{
+			OnPlayerWindowWidgetDelegate.Broadcast(Material);
+		}
+	);
+
 	GetSCPS()->OnLevelChangedDelegate.AddLambda(
 		[this](int32 NewLevel)
 		{

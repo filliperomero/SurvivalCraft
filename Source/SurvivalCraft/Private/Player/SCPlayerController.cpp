@@ -111,6 +111,11 @@ void ASCPlayerController::UpdatePlayerStats(EPlayerStats PlayerStats, float NewV
 	}
 }
 
+void ASCPlayerController::UpdatePlayerWindow(UMaterialInstanceDynamic* Material)
+{
+	OnPlayerWindowInitDelegate.Broadcast(Material);
+}
+
 float ASCPlayerController::GetHealth()
 {
 	return GetSCCharacter()->GetHealth();

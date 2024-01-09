@@ -18,6 +18,7 @@ DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnItemAddedSignature, UTexture2D*/*ItemI
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStatsChangedSignature, float/*NewValue*/);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnUpdateArmorSlotSignature, EArmorType/*ArmorType*/, const FItemInformation&/*Item*/);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnResetArmorSlotSignature, EArmorType/*ArmorType*/);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerWindowInitSignature, UMaterialInstanceDynamic*/*Material*/);
 
 struct FInputActionValue;
 class UInputAction;
@@ -45,6 +46,7 @@ public:
 	bool CanCraftItem(const int32 ItemID, const EContainerType ContainerType, const ECraftingType TableType);
 	void CraftItem(const int32 ItemID, const EContainerType ContainerType, const ECraftingType TableType);
 	void UpdatePlayerStats(EPlayerStats PlayerStats, float NewValue);
+	void UpdatePlayerWindow(UMaterialInstanceDynamic* Material);
 	float GetHealth();
 	float GetMaxHealth();
 	float GetFood();
@@ -71,6 +73,7 @@ public:
 	FOnPlayerStatsChangedSignature OnPlayerMaxStaminaChangedDelegate;
 	FOnUpdateArmorSlotSignature OnUpdateArmorSlotDelegate;
 	FOnResetArmorSlotSignature OnResetArmorSlotDelegate;
+	FOnPlayerWindowInitSignature OnPlayerWindowInitDelegate;
 
 protected:
 	virtual void BeginPlay() override;
