@@ -28,9 +28,6 @@ public:
 	
 private:
 	UPROPERTY(EditAnywhere, Category = "Tool Properties")
-	float ToolDamage = 15.f;
-
-	UPROPERTY(EditAnywhere, Category = "Tool Properties")
 	float TraceDistance = 100.f;
 
 	UPROPERTY(EditAnywhere, Category = "Tool Properties")

@@ -36,4 +36,7 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "SCBlueprintFunctionLibrary|WidgetController", meta = (DefaultToSelf = "WorldContextObject"))
 	static USCPlayerStatsMenuWidgetController* GetPlayerStatsMenuWidgetController(const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintCallable, Category = "SCBlueprintFunctionLibrary|Damage")
+	static float CalculateDamage(AActor* Target, const float BaseDamage);
 };

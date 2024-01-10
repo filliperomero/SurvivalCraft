@@ -7,6 +7,7 @@
 #include "Enums/CombatState.h"
 #include "Enums/PlayerStats.h"
 #include "GameFramework/Character.h"
+#include "Interfaces/CombatInterface.h"
 #include "Interfaces/PlayerInterface.h"
 #include "Items/Data/EquipableData.h"
 #include "Logging/LogMacros.h"
@@ -27,7 +28,7 @@ struct FInputActionValue;
 DECLARE_LOG_CATEGORY_EXTERN(LogSCCharacter, Log, All);
 
 UCLASS(config=Game)
-class SURVIVALCRAFT_API ASCCharacter : public ACharacter, public IPlayerInterface
+class SURVIVALCRAFT_API ASCCharacter : public ACharacter, public IPlayerInterface, public ICombatInterface
 {
 	GENERATED_BODY()
 
@@ -41,6 +42,10 @@ public:
 	virtual void AddToXP_Implementation(int32 InXP) override;
 	virtual void SpendSkillPoint_Implementation(EPlayerStats StatToUpgrade) override;
 	/** Player Interface */
+
+	/** Combat Interface */
+	virtual int32 GetArmorAmount_Implementation() override;
+	/** Combat Interface */
 
 	UFUNCTION(BlueprintCallable)
 	void UseHotBar(const int32 Index);

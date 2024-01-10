@@ -1,6 +1,7 @@
 ﻿// Copyright Fillipe Romero
 
 #include "Items/Equipables/Tools/SCPickaxe.h"
+#include "SCBlueprintFunctionLibrary.h"
 #include "Character/SCCharacter.h"
 #include "HarvestingSystem/SCDestructibleHarvestable.h"
 #include "HarvestingSystem/SCLargeItem.h"
@@ -37,15 +38,17 @@ void ASCPickaxe::Interact_Implementation(const FVector& LocationToCheck, const F
 	{
 		for (const auto& Actor : OutActors)
 		{
+			const float Damage = USCBlueprintFunctionLibrary::CalculateDamage(Actor, static_cast<float>(ItemInfo.ItemDamage));
+			
 			if (Actor->Implements<UPlayerInterface>())
 			{
 				ASCPlayerController* SCController = IPlayerInterface::Execute_GetSCPlayerController(GetOwner());
 				
-				UGameplayStatics::ApplyDamage(Actor, ToolDamage, SCController, this, UDamageType::StaticClass());
+				UGameplayStatics::ApplyDamage(Actor, Damage, SCController, this, UDamageType::StaticClass());
 			}
 			else
 			{
-				HarvestFoliage(ToolDamage, Actor);
+				HarvestFoliage(Damage, Actor);
 				// TODO: The Rotation for now only works in the Server, since the PlayerArrow is not being replicated. We need to replicate the Pitch (where the user is looking)
 				MulticastHitEffect(LocationToCheck, Rotation);
 			}
@@ -128,7 +131,7 @@ int32 ASCPickaxe::CalculateGivenQuantity(const FResourceInfo& Resource) const
 		break;
 	}
 
-	return FMath::TruncToInt32(BaseQuantity * ServerRate * ToolTypeRate * ToolTierRate * ToolDamage);
+	return FMath::TruncToInt32(BaseQuantity * ServerRate * ToolTypeRate * ToolTierRate * static_cast<float>(ItemInfo.ItemDamage));
 }
 
 void ASCPickaxe::MulticastHitEffect_Implementation(const FVector_NetQuantize& Location, const FRotator& Rotation)

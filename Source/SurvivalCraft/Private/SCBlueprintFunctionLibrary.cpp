@@ -1,6 +1,7 @@
 ﻿// Copyright Fillipe Romero
 
 #include "SCBlueprintFunctionLibrary.h"
+#include "Interfaces/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/HUD/SCHUD.h"
 #include "UI/WidgetController/SCWidgetController.h"
@@ -85,4 +86,28 @@ USCPlayerStatsMenuWidgetController* USCBlueprintFunctionLibrary::GetPlayerStatsM
 	}
 	
 	return nullptr;
+}
+
+float USCBlueprintFunctionLibrary::CalculateDamage(AActor* Target, const float BaseDamage)
+{
+	float Damage = BaseDamage * 0.03;
+	
+	if (Target->Implements<UCombatInterface>())
+	{
+		const int32 ArmorAmount = ICombatInterface::Execute_GetArmorAmount(Target);
+		float DamageMultiplier = 4.f;
+		
+		if (ArmorAmount == 1) DamageMultiplier = 3.5f;
+		else if (ArmorAmount == 2) DamageMultiplier = 3.0f;
+		else if (ArmorAmount == 3) DamageMultiplier = 2.5f;
+		else if (ArmorAmount == 4) DamageMultiplier = 2.0f;
+
+		Damage *= DamageMultiplier;
+	}
+	else
+	{
+		Damage *= 4.f;
+	}
+
+	return Damage;
 }

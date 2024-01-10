@@ -125,6 +125,18 @@ void ASCCharacter::SpendSkillPoint_Implementation(EPlayerStats StatToUpgrade)
 	}
 }
 
+int32 ASCCharacter::GetArmorAmount_Implementation()
+{
+	int32 AmountOfArmor = 0;
+
+	if (IsValid(HelmetSlot)) AmountOfArmor++;
+	if (IsValid(ChestSlot)) AmountOfArmor++;
+	if (IsValid(PantsSlot)) AmountOfArmor++;
+	if (IsValid(BootsSlot)) AmountOfArmor++;
+	
+	return AmountOfArmor;
+}
+
 void ASCCharacter::ServerOnSlotDrop_Implementation(EContainerType TargetContainerType, EContainerType FromContainerType, int32 FromIndex, int32 ToIndex, EArmorType ArmorType)
 {
 	USCItemsContainerComponent* FromContainer = nullptr;
@@ -282,7 +294,7 @@ void ASCCharacter::ServerOnUnequipArmor_Implementation(EArmorType ArmorType)
 	if (const ASCArmor* SpawnedArmor = Cast<ASCArmor>(ArmorSlot))
 	{
 		// TODO: The ArmorItemInfo is being added in OnConstruct but we should deferredSpawn and set those information.
-		const FItemInformation ItemInformation = SpawnedArmor->ArmorItemInfo;
+		const FItemInformation ItemInformation = SpawnedArmor->ItemInfo;
 
 		// TODO: We should add the item in the slot we are dropping (if the slot is empty, otherwise, we drop in the first available slot)
 		InventoryComponent->AddItem(ItemInformation);

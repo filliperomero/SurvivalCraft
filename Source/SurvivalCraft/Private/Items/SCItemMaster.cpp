@@ -20,3 +20,16 @@ void ASCItemMaster::BeginPlay()
 	Super::BeginPlay();
 	
 }
+
+// TODO: Check the necessity of setting the ItemInfo, maybe we can set it when spawning the item
+void ASCItemMaster::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+
+	if (ItemsDataTable == nullptr || ItemRowName.IsNone()) return;
+
+	if (const FItemInformation* ItemInformation = ItemsDataTable->FindRow<FItemInformation>(ItemRowName, TEXT("")))
+	{
+		ItemInfo = *ItemInformation;
+	}
+}
