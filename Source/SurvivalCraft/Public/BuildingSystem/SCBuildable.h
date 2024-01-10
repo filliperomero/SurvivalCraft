@@ -23,4 +23,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Buildable Properties")
 	FBuildableInfo BuildableInfo;
+
+public:
+	FORCEINLINE UStaticMeshComponent* GetMesh() const { return Mesh; }
 };

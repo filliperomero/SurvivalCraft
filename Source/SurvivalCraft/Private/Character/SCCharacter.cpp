@@ -20,7 +20,8 @@
 #include "Player/SCPlayerState.h"
 #include "SurvivalCraft/SurvivalCraft.h"
 #include "UI/HUD/SCHUD.h"
-#include <Items/SCArmor.h>
+#include "Items/SCArmor.h"
+#include "BuildingSystem/SCBuildingComponent.h"
 #include "Components/SceneCaptureComponent2D.h"
 #include "Kismet/KismetRenderingLibrary.h"
 
@@ -60,6 +61,8 @@ ASCCharacter::ASCCharacter()
 	
 	HotbarComponent = CreateDefaultSubobject<USCPlayerHotbarComponent>(TEXT("HotbarComponent"));
 	HotbarComponent->ContainerType = EContainerType::ECT_PlayerHotbar;
+
+	BuildingComponent = CreateDefaultSubobject<USCBuildingComponent>(TEXT("BuildingComponent"));
 }
 
 ASCPlayerController* ASCCharacter::GetSCPlayerController_Implementation()

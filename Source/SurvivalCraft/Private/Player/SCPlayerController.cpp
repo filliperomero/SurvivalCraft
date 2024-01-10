@@ -3,6 +3,7 @@
 #include "SurvivalCraft/Public/Player/SCPlayerController.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "BuildingSystem/SCBuildingComponent.h"
 #include "Character/SCCharacter.h"
 #include "Enums/PlayerStats.h"
 #include "GameFramework/Character.h"
@@ -34,6 +35,7 @@ void ASCPlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &ThisClass::Interact);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &ThisClass::Sprint);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &ThisClass::StopSprint);
+		EnhancedInputComponent->BindAction(BuildAction, ETriggerEvent::Started, this, &ThisClass::Build);
 	}
 	else
 	{
@@ -68,16 +70,12 @@ void ASCPlayerController::ShowItemAdded(UTexture2D* ItemIcon, int32 ItemQuantity
 
 bool ASCPlayerController::CanCraftItem(const int32 ItemID, const EContainerType ContainerType, const ECraftingType TableType)
 {
-	SCCharacter = SCCharacter == nullptr ? Cast<ASCCharacter>(GetCharacter()) : SCCharacter;
-	
-	return SCCharacter->CanCraftItem(ItemID, ContainerType, TableType);
+	return GetSCCharacter()->CanCraftItem(ItemID, ContainerType, TableType);
 }
 
 void ASCPlayerController::CraftItem(const int32 ItemID, const EContainerType ContainerType, const ECraftingType TableType)
 {
-	SCCharacter = SCCharacter == nullptr ? Cast<ASCCharacter>(GetCharacter()) : SCCharacter;
-	
-	return SCCharacter->ServerCraftItem(ItemID, ContainerType, TableType);
+	return GetSCCharacter()->ServerCraftItem(ItemID, ContainerType, TableType);
 }
 
 void ASCPlayerController::UpdatePlayerStats(EPlayerStats PlayerStats, float NewValue)
@@ -200,17 +198,13 @@ void ASCPlayerController::ToggleInventory()
 
 void ASCPlayerController::OnLeftMouse()
 {
-	SCCharacter = SCCharacter == nullptr ? Cast<ASCCharacter>(GetCharacter()) : SCCharacter;
-
 	// TODO: Create a interface for the Character so I don't need to cast.
-	SCCharacter->UseEquipable();
+	GetSCCharacter()->UseEquipable();
 }
 
 void ASCPlayerController::Interact()
 {
-	SCCharacter = SCCharacter == nullptr ? Cast<ASCCharacter>(GetCharacter()) : SCCharacter;
-
-	SCCharacter->Interact();
+	GetSCCharacter()->Interact();
 }
 
 void ASCPlayerController::Sprint()
@@ -228,6 +222,11 @@ void ASCPlayerController::StopSprint()
 
 	Char->GetCharacterMovement()->MaxWalkSpeed = 600.f;
 	Char->ServerSprint(false);
+}
+
+void ASCPlayerController::Build()
+{
+	GetSCCharacter()->GetBuildingComponent()->ClientLaunchBuildMode(123);
 }
 
 ASCCharacter* ASCPlayerController::GetSCCharacter()

@@ -13,6 +13,7 @@
 #include "Logging/LogMacros.h"
 #include "SCCharacter.generated.h"
 
+class USCBuildingComponent;
 class USCItemsContainerComponent;
 struct FResourceInfo;
 class ASCEquipableItem;
@@ -119,6 +120,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USCPlayerHotbarComponent> HotbarComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USCBuildingComponent> BuildingComponent;
 
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = "true"))
 	EEquipableState EquipableState = EEquipableState::EES_Default;
@@ -340,4 +344,5 @@ public:
 	FORCEINLINE float GetMaxWater() const { return MaxWater; }
 	FORCEINLINE float GetStamina() const { return Stamina; }
 	FORCEINLINE float GetMaxStamina() const { return MaxStamina; }
+	FORCEINLINE USCBuildingComponent* GetBuildingComponent() const { return BuildingComponent; }
 };
