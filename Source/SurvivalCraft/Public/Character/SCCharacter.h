@@ -318,6 +318,7 @@ private:
 	ASCItemMaster* GetArmorSlot(EArmorType ArmorType);
 	void ClearArmorSlot(EArmorType ArmorType);
 	void InitializePlayerWindow();
+	void DamageArmorSlot(const float Damage, ASCItemMaster* ArmorSlot, EArmorType ArmorType);
 
 	FTimerDelegate CraftTimerDelegate;
 	FTimerHandle CraftTimerHandle;

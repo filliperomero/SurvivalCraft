@@ -442,11 +442,43 @@ void ASCCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDama
 	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
 	
 	UpdatePlayerStatsUI(EPlayerStats::EPS_Health, Health);
+	
+	const int32 ArmorAmount = Execute_GetArmorAmount(this);
+
+	if (ArmorAmount > 0)
+	{
+		const float ArmorDamage = Damage / static_cast<float>(ArmorAmount) / 2.f;
+
+		DamageArmorSlot(ArmorDamage, HelmetSlot, EArmorType::EAT_Helmet);
+		DamageArmorSlot(ArmorDamage, ChestSlot, EArmorType::EAT_Chest);
+		DamageArmorSlot(ArmorDamage, PantsSlot, EArmorType::EAT_Pants);
+		DamageArmorSlot(ArmorDamage, BootsSlot, EArmorType::EAT_Boots);
+	}
 
 	if (Health <= 0.f)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Character just died"));
 		bDead = true;
+	}
+}
+
+void ASCCharacter::DamageArmorSlot(const float Damage, ASCItemMaster* ArmorSlot, EArmorType ArmorType)
+{
+	if (!IsValid(ArmorSlot)) return;
+	
+	ASCPlayerController* SCPC = Cast<ASCPlayerController>(GetController());
+	
+	const int32 NewItemHP = ArmorSlot->ItemInfo.ItemCurrentHP - FMath::TruncToInt(Damage);
+	if (NewItemHP > 0)
+	{
+		ArmorSlot->ItemInfo.ItemCurrentHP = NewItemHP;
+		SCPC->ClientUpdateArmorSlot(ArmorType, ArmorSlot->ItemInfo);
+	}
+	else // Break the item
+	{
+		ArmorSlot->Destroy();
+		ClearArmorSlot(ArmorType);
+		SCPC->ClientResetArmorSlot(ArmorType);
 	}
 }
 
