@@ -323,6 +323,7 @@ private:
 	void ClearArmorSlot(EArmorType ArmorType);
 	void InitializePlayerWindow();
 	void DamageArmorSlot(const float Damage, ASCItemMaster* ArmorSlot, EArmorType ArmorType);
+	void PlaceBuildable();
 
 	FTimerDelegate CraftTimerDelegate;
 	FTimerHandle CraftTimerHandle;

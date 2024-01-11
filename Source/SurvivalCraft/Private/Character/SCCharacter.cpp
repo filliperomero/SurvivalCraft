@@ -485,6 +485,20 @@ void ASCCharacter::DamageArmorSlot(const float Damage, ASCItemMaster* ArmorSlot,
 	}
 }
 
+void ASCCharacter::PlaceBuildable()
+{
+	if (HasAuthority()) return;
+
+	if (BuildingComponent->IsBuildModeEnabled())
+	{
+		const FVector CameraVector = GetFirstPersonCameraComponent()->GetForwardVector();
+		const FRotator CameraRotator = GetFirstPersonCameraComponent()->GetComponentRotation();
+		
+		BuildingComponent->SpawnBuildOnServer(BuildingComponent->GetPreviewTransform(), CameraVector, CameraRotator);
+		BuildingComponent->SetBuildMode(false);
+	}
+}
+
 void ASCCharacter::UseHotBar(const int32 Index)
 {
 	ServerUseHotBar(Index);
@@ -492,6 +506,11 @@ void ASCCharacter::UseHotBar(const int32 Index)
 
 void ASCCharacter::UseEquipable()
 {
+	// TODO: Change the name of the function since it does not make sense anymore to be called "UseEquipable
+	if (BuildingComponent->IsBuildModeEnabled())
+	{
+		return PlaceBuildable();
+	}
 	// Improvement: We should replicate bCanUseEquipable so we can check this locally instead of checking in the server. This would save improve the lag
 	ServerUseEquipable();
 }

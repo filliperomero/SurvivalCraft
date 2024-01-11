@@ -21,9 +21,13 @@ public:
 	UFUNCTION(Client, Reliable)
 	void ClientLaunchBuildMode(const int32 StructureID);
 
+	UFUNCTION(Server, Reliable)
+	void SpawnBuildOnServer(FTransform BuildTransform, FVector ClientCameraVector, FRotator ClientCameraRotation);
+
 private:
 	void BuildModeClient(const int32 StructureID);
-	void SpawnBuildPreview(const int32 StructureID, FTransform& PreviewTransform);
+	void SpawnBuildPreview(const int32 StructureID);
+	void SetPreviewColor(bool bCanPlace);
 	
 	// Provisory
 	UPROPERTY(EditAnywhere, Category = "Building Properties")
@@ -34,12 +38,26 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Building Properties")
 	float MaxBuildDistance = 1000.f;
+
+	UPROPERTY(EditAnywhere, Category = "Building Properties")
+	TObjectPtr<UMaterial> CanPlaceMaterial;
+
+	UPROPERTY(EditAnywhere, Category = "Building Properties")
+	TObjectPtr<UMaterial> CannotPlaceMaterial;
 	
 	UPROPERTY()
 	TObjectPtr<ASCBuildable> BuildablePreview;
 
 	UPROPERTY()
 	ASCCharacter* SCCharacter;
+
+	FTransform PreviewTransform;
 	
 	bool bBuildMode = false;
+	bool bShouldUpdateMaterial = true;
+
+public:
+	FORCEINLINE bool IsBuildModeEnabled() const { return bBuildMode; }
+	FORCEINLINE FTransform GetPreviewTransform() const { return PreviewTransform; }
+	FORCEINLINE void SetBuildMode(const bool IsEnabled) { bBuildMode = IsEnabled; }
 };
