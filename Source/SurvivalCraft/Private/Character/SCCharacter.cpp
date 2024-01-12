@@ -487,14 +487,12 @@ void ASCCharacter::DamageArmorSlot(const float Damage, ASCItemMaster* ArmorSlot,
 
 void ASCCharacter::PlaceBuildable()
 {
-	if (HasAuthority()) return;
-
 	if (BuildingComponent->IsBuildModeEnabled())
 	{
 		const FVector CameraVector = GetFirstPersonCameraComponent()->GetForwardVector();
 		const FRotator CameraRotator = GetFirstPersonCameraComponent()->GetComponentRotation();
 		
-		BuildingComponent->SpawnBuildOnServer(BuildingComponent->GetPreviewTransform(), CameraVector, CameraRotator);
+		BuildingComponent->ServerSpawnBuild(BuildingComponent->GetPreviewTransform(), CameraVector, CameraRotator);
 		BuildingComponent->SetBuildMode(false);
 	}
 }

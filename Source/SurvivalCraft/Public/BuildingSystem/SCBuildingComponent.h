@@ -22,12 +22,15 @@ public:
 	void ClientLaunchBuildMode(const int32 StructureID);
 
 	UFUNCTION(Server, Reliable)
-	void SpawnBuildOnServer(FTransform BuildTransform, FVector ClientCameraVector, FRotator ClientCameraRotation);
+	void ServerSpawnBuild(FTransform BuildTransform, FVector ClientCameraVector, FRotator ClientCameraRotation);
 
 private:
 	void BuildModeClient(const int32 StructureID);
 	void SpawnBuildPreview(const int32 StructureID);
 	void SetPreviewColor(bool bCanPlace);
+	bool CheckForOverlap();
+	// To be used by the Server
+	bool CheckBuildPlacement(const int32 StructureID, FVector ClientCameraVector, FRotator ClientCameraRotation);
 	
 	// Provisory
 	UPROPERTY(EditAnywhere, Category = "Building Properties")
