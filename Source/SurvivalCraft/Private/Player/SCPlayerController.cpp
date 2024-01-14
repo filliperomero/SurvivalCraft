@@ -226,9 +226,7 @@ void ASCPlayerController::StopSprint()
 
 void ASCPlayerController::Build()
 {
-	int32 RandomNumber = FMath::RandRange(1, 2);
-	GetSCCharacter()->StructureID = RandomNumber;
-	GetSCCharacter()->GetBuildingComponent()->ClientLaunchBuildMode(RandomNumber);
+	GetSCCharacter()->GetBuildingComponent()->ClientLaunchBuildMode(GetSCCharacter()->StructureID);
 }
 
 ASCCharacter* ASCPlayerController::GetSCCharacter()
