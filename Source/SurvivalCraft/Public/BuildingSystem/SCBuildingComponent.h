@@ -22,7 +22,7 @@ public:
 	void ClientLaunchBuildMode(const int32 StructureID);
 
 	UFUNCTION(Server, Reliable)
-	void ServerSpawnBuild(FTransform BuildTransform, FVector ClientCameraVector, FRotator ClientCameraRotation);
+	void ServerSpawnBuild(FTransform BuildTransform, FVector ClientCameraVector, FRotator ClientCameraRotation, int32 StructureID);
 
 private:
 	void BuildModeClient(const int32 StructureID);
@@ -30,12 +30,12 @@ private:
 	void SetPreviewColor(bool bCanPlace);
 	bool CheckForOverlap();
 	bool GetSnappingPoints(FTransform& SnappingTransform);
+	TSubclassOf<ASCBuildable> GetBuildableClass(const int32 StructureID);
 	// To be used by the Server
 	bool CheckBuildPlacement(const int32 StructureID, FVector ClientCameraVector, FRotator ClientCameraRotation);
 	
-	// Provisory
 	UPROPERTY(EditAnywhere, Category = "Building Properties")
-	TSubclassOf<ASCBuildable> BuildablePreviewClass;
+	TObjectPtr<UDataTable> StructuresTable;
 
 	UPROPERTY(EditAnywhere, Category = "Building Properties")
 	float MinBuildDistance = 350.f;

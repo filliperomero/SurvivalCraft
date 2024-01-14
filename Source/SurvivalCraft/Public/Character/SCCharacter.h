@@ -35,6 +35,8 @@ class SURVIVALCRAFT_API ASCCharacter : public ACharacter, public IPlayerInterfac
 
 public:
 	ASCCharacter();
+	// Provisory
+	int32 StructureID = 0;
 
 	/** Player Interface */
 	virtual ASCPlayerController* GetSCPlayerController_Implementation() override;

@@ -21,3 +21,4 @@
 #define ECC_LANDSCAPE_TRACE ECollisionChannel::ECC_GameTraceChannel12
 #define ECC_FOUNDATION_PLACEMENT_TRACE ECollisionChannel::ECC_GameTraceChannel13
 #define ECC_TORCH_TRACE ECollisionChannel::ECC_GameTraceChannel14
+#define ECC_WALL_TRACE ECollisionChannel::ECC_GameTraceChannel14

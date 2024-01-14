@@ -4,6 +4,8 @@
 
 #include "BuildableData.generated.h"
 
+class ASCBuildable;
+
 USTRUCT(BlueprintType)
 struct FBuildableInfo
 {
@@ -28,4 +30,16 @@ struct FBuildableInfo
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	bool bDoCeilingCheck = false;
+};
+
+USTRUCT(BlueprintType)
+struct FBuildTableInfo :  public FTableRowBase
+{
+	GENERATED_BODY()
+
+	FBuildTableInfo() = default;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<ASCBuildable> BuildableClass;
+	
 };

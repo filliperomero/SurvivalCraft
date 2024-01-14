@@ -59,13 +59,13 @@ void USCBuildingComponent::ClientLaunchBuildMode_Implementation(const int32 Stru
 	}
 }
 
-void USCBuildingComponent::ServerSpawnBuild_Implementation(FTransform BuildTransform, FVector ClientCameraVector, FRotator ClientCameraRotation)
+void USCBuildingComponent::ServerSpawnBuild_Implementation(FTransform BuildTransform, FVector ClientCameraVector, FRotator ClientCameraRotation, int32 StructureID)
 {
 	PreviewTransform = BuildTransform;
 	
-	if (CheckBuildPlacement(123, ClientCameraVector, ClientCameraRotation))
+	if (CheckBuildPlacement(StructureID, ClientCameraVector, ClientCameraRotation))
 	{
-		GetWorld()->SpawnActor<ASCBuildable>(BuildablePreviewClass, BuildTransform);
+		GetWorld()->SpawnActor<ASCBuildable>(GetBuildableClass(StructureID), BuildTransform);
 	}
 	else
 	{
@@ -135,7 +135,7 @@ void USCBuildingComponent::SpawnBuildPreview(const int32 StructureID)
 {
 	if (IsValid(BuildablePreview)) return;
 	
-	BuildablePreview = GetWorld()->SpawnActor<ASCBuildable>(BuildablePreviewClass, PreviewTransform);
+	BuildablePreview = GetWorld()->SpawnActor<ASCBuildable>(GetBuildableClass(StructureID), PreviewTransform);
 	BuildablePreview->GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
@@ -217,6 +217,17 @@ bool USCBuildingComponent::GetSnappingPoints(FTransform& SnappingTransform)
 	}
 	
 	return false;
+}
+
+TSubclassOf<ASCBuildable> USCBuildingComponent::GetBuildableClass(const int32 StructureID)
+{
+	check(StructuresTable)
+
+	const FName RowName = FName(*FString::FromInt(StructureID));
+
+	const FBuildTableInfo* BuildTableInfo = StructuresTable->FindRow<FBuildTableInfo>(RowName, TEXT(""));
+
+	return BuildTableInfo->BuildableClass;
 }
 
 bool USCBuildingComponent::CheckBuildPlacement(const int32 StructureID, FVector ClientCameraVector, FRotator ClientCameraRotation)

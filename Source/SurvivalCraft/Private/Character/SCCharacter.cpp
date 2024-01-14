@@ -491,8 +491,8 @@ void ASCCharacter::PlaceBuildable()
 	{
 		const FVector CameraVector = GetFirstPersonCameraComponent()->GetForwardVector();
 		const FRotator CameraRotator = GetFirstPersonCameraComponent()->GetComponentRotation();
-		
-		BuildingComponent->ServerSpawnBuild(BuildingComponent->GetPreviewTransform(), CameraVector, CameraRotator);
+
+		BuildingComponent->ServerSpawnBuild(BuildingComponent->GetPreviewTransform(), CameraVector, CameraRotator, StructureID);
 		BuildingComponent->SetBuildMode(false);
 	}
 }
