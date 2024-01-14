@@ -114,11 +114,23 @@ void USCBuildingComponent::BuildModeClient(const int32 StructureID)
 	{
 		if (HitResult.bBlockingHit)
 		{
-			FTransform SnappingTransform;
-			if (GetSnappingPoints(SnappingTransform)) PreviewTransform = SnappingTransform;
+			bool bIsBuildFloating = false;
 			
-			bool bIsOverlapping = CheckForOverlap();
-			SetPreviewColor(!bIsOverlapping);
+			FTransform SnappingTransform;
+			if (GetSnappingPoints(SnappingTransform))
+			{
+				PreviewTransform = SnappingTransform;
+				bool bIsOverlapping = CheckForOverlap();
+				if (BuildablePreview->GetBuildableInfo().bDoFloatCheck) bIsBuildFloating = IsBuildFloating();
+				
+				SetPreviewColor(!bIsOverlapping && !bIsBuildFloating);
+			} 
+			else
+			{
+				bool bIsOverlapping = CheckForOverlap();
+				bIsBuildFloating = IsBuildFloating();
+				SetPreviewColor(!bIsOverlapping && !bIsBuildFloating);
+			}
 		}
 		else
 		{
@@ -219,6 +231,20 @@ bool USCBuildingComponent::GetSnappingPoints(FTransform& SnappingTransform)
 	return false;
 }
 
+bool USCBuildingComponent::IsBuildFloating()
+{
+	if (!IsValid(BuildablePreview)) return false;
+	
+	FVector StartLocation = PreviewTransform.GetLocation();
+	FVector EndLocation = PreviewTransform.GetLocation() - FVector(0.f, 0.f, 50.f);
+
+	FHitResult HitResult;
+	FCollisionQueryParams CollisionQueryParams;
+	CollisionQueryParams.AddIgnoredActor(BuildablePreview);
+
+	return !GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, CollisionQueryParams);
+}
+
 TSubclassOf<ASCBuildable> USCBuildingComponent::GetBuildableClass(const int32 StructureID)
 {
 	check(StructuresTable)
@@ -233,21 +259,19 @@ TSubclassOf<ASCBuildable> USCBuildingComponent::GetBuildableClass(const int32 St
 bool USCBuildingComponent::CheckBuildPlacement(const int32 StructureID, FVector ClientCameraVector, FRotator ClientCameraRotation)
 {
 	SCCharacter = SCCharacter == nullptr ? Cast<ASCCharacter>(GetOwner()) : SCCharacter;
-	
+
 	SpawnBuildPreview(StructureID);
 
 	if (!IsValid(BuildablePreview)) return false;
-	
+
 	FVector ServerCameraLocation = SCCharacter->GetFirstPersonCameraComponent()->GetComponentLocation();
-	FVector ServerCameraForwardVector = SCCharacter->GetFirstPersonCameraComponent()->GetForwardVector();
-	
-	FVector StartLocation = ServerCameraLocation + ClientCameraVector * MinBuildDistance;
-	FVector EndLocation = ServerCameraForwardVector + ClientCameraVector * MaxBuildDistance;
+	FVector StartLocation = ServerCameraLocation + (ClientCameraVector * MinBuildDistance);
+	FVector EndLocation = ServerCameraLocation + (ClientCameraVector * MaxBuildDistance);
 
 	FHitResult HitResult;
 	FCollisionQueryParams CollisionQueryParams;
 	CollisionQueryParams.AddIgnoredActor(BuildablePreview);
-		
+
 	GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, UEngineTypes::ConvertToCollisionChannel(BuildablePreview->GetBuildableInfo().TraceChannel), CollisionQueryParams);
 
 	FRotator Rotator = FRotator(0.f, 90.f + ClientCameraRotation.Yaw, 0.f);
@@ -257,8 +281,22 @@ bool USCBuildingComponent::CheckBuildPlacement(const int32 StructureID, FVector 
 
 	if (!HitResult.bBlockingHit) return false;
 
-	FTransform SnappingTransform;
-	if (GetSnappingPoints(SnappingTransform)) PreviewTransform = SnappingTransform;
+	HitActor = HitResult.GetActor();
+	HitComponent = HitResult.GetComponent();
 
-	return !CheckForOverlap();
+	bool bIsBuildFloating = false;
+
+	FTransform SnappingTransform;
+	if (GetSnappingPoints(SnappingTransform))
+	{
+		PreviewTransform = SnappingTransform;
+
+		if (BuildablePreview->GetBuildableInfo().bDoFloatCheck) bIsBuildFloating = IsBuildFloating();
+	}
+	else
+	{
+		bIsBuildFloating = IsBuildFloating();
+	}
+
+	return !CheckForOverlap() && !bIsBuildFloating;
 }

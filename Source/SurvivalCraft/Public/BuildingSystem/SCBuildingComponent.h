@@ -30,6 +30,7 @@ private:
 	void SetPreviewColor(bool bCanPlace);
 	bool CheckForOverlap();
 	bool GetSnappingPoints(FTransform& SnappingTransform);
+	bool IsBuildFloating();
 	TSubclassOf<ASCBuildable> GetBuildableClass(const int32 StructureID);
 	// To be used by the Server
 	bool CheckBuildPlacement(const int32 StructureID, FVector ClientCameraVector, FRotator ClientCameraRotation);
