@@ -7,6 +7,15 @@
 #include "Components/BoxComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
+/**
+ * Improvements to make:
+ * + In rare moments, the snap system overlaps with the blueprint that we are trying to snap. We probably
+ *	should create a boolean which we set to true when we are snapping and we check this boolean when doing the Box Trace.
+ *	If it's true, we should ignore the HitActor
+ *
+ * + We should improve the trace feature. Instead of using a tons of Trace Channels, we could just create one specific for structures
+ *	and the func GetSnapBoxes should return a TArray of struct which has the UBoxComponent to snap and the StructureType (new Enum) that we can Snap
+ */
 USCBuildingComponent::USCBuildingComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -82,10 +91,21 @@ void USCBuildingComponent::BuildModeClient(const int32 StructureID)
 	FCollisionQueryParams CollisionQueryParams;
 	CollisionQueryParams.AddIgnoredActor(BuildablePreview);
 			
-	GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, CollisionQueryParams);
+	GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, UEngineTypes::ConvertToCollisionChannel(BuildablePreview->GetBuildableInfo().TraceChannel), CollisionQueryParams);
 	
 	FRotator Rotator;
 	Rotator.Yaw = 90.f + SCCharacter->GetFirstPersonCameraComponent()->GetComponentRotation().Yaw;
+	
+	if (HitResult.bBlockingHit)
+	{
+		HitActor = HitResult.GetActor();
+		HitComponent = HitResult.GetComponent();
+	}
+	else
+	{
+		HitActor = nullptr;
+		HitComponent = nullptr;
+	}
 
 	PreviewTransform.SetRotation(Rotator.Quaternion());
 	PreviewTransform.SetLocation(HitResult.bBlockingHit ? HitResult.ImpactPoint : HitResult.TraceEnd);
@@ -94,6 +114,9 @@ void USCBuildingComponent::BuildModeClient(const int32 StructureID)
 	{
 		if (HitResult.bBlockingHit)
 		{
+			FTransform SnappingTransform;
+			if (GetSnappingPoints(SnappingTransform)) PreviewTransform = SnappingTransform;
+			
 			bool bIsOverlapping = CheckForOverlap();
 			SetPreviewColor(!bIsOverlapping);
 		}
@@ -154,20 +177,46 @@ bool USCBuildingComponent::CheckForOverlap()
 	FHitResult HitResult;
 	TArray<AActor*> ActorsToIgnore;
 	ActorsToIgnore.Add(BuildablePreview);
-	
-	return UKismetSystemLibrary::BoxTraceSingle(
+
+	UKismetSystemLibrary::BoxTraceSingle(
 		GetWorld(),
 		StartLocation,
 		EndLocation,
 		HalfSize,
 		Orientation,
-		TraceTypeQuery4,
+		UEngineTypes::ConvertToTraceType(ECC_Visibility),
 		false,
 		ActorsToIgnore,
 		EDrawDebugTrace::None,
 		HitResult,
 		true
 	);
+	
+	return HitResult.bBlockingHit;
+}
+
+bool USCBuildingComponent::GetSnappingPoints(FTransform& SnappingTransform)
+{	
+	if (HitActor == nullptr || HitComponent == nullptr) return false;
+
+	// TODO: create a interface to Buildable to retrieve the SnapBoxes
+	if (const ASCBuildable* HitBuildable = Cast<ASCBuildable>(HitActor))
+	{
+		TArray<UBoxComponent*> SnapBoxes = HitBuildable->GetSnapBoxes();
+
+		if (SnapBoxes.Num() <= 0) return false;
+		
+		for (UBoxComponent*& SnapBox : SnapBoxes)
+		{
+			if (SnapBox == HitComponent)
+			{
+				SnappingTransform = HitComponent->GetComponentTransform();
+				return true;
+			}
+		}
+	}
+	
+	return false;
 }
 
 bool USCBuildingComponent::CheckBuildPlacement(const int32 StructureID, FVector ClientCameraVector, FRotator ClientCameraRotation)
@@ -188,7 +237,7 @@ bool USCBuildingComponent::CheckBuildPlacement(const int32 StructureID, FVector 
 	FCollisionQueryParams CollisionQueryParams;
 	CollisionQueryParams.AddIgnoredActor(BuildablePreview);
 		
-	GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, CollisionQueryParams);
+	GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, UEngineTypes::ConvertToCollisionChannel(BuildablePreview->GetBuildableInfo().TraceChannel), CollisionQueryParams);
 
 	FRotator Rotator = FRotator(0.f, 90.f + ClientCameraRotation.Yaw, 0.f);
 
@@ -196,6 +245,9 @@ bool USCBuildingComponent::CheckBuildPlacement(const int32 StructureID, FVector 
 	PreviewTransform.SetLocation(HitResult.bBlockingHit ? HitResult.ImpactPoint : HitResult.TraceEnd);
 
 	if (!HitResult.bBlockingHit) return false;
+
+	FTransform SnappingTransform;
+	if (GetSnappingPoints(SnappingTransform)) PreviewTransform = SnappingTransform;
 
 	return !CheckForOverlap();
 }

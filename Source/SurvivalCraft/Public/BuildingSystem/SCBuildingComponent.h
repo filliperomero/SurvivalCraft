@@ -29,6 +29,7 @@ private:
 	void SpawnBuildPreview(const int32 StructureID);
 	void SetPreviewColor(bool bCanPlace);
 	bool CheckForOverlap();
+	bool GetSnappingPoints(FTransform& SnappingTransform);
 	// To be used by the Server
 	bool CheckBuildPlacement(const int32 StructureID, FVector ClientCameraVector, FRotator ClientCameraRotation);
 	
@@ -52,7 +53,13 @@ private:
 	TObjectPtr<ASCBuildable> BuildablePreview;
 
 	UPROPERTY()
-	ASCCharacter* SCCharacter;
+	ASCCharacter* SCCharacter = nullptr;
+
+	UPROPERTY()
+	TObjectPtr<AActor> HitActor;
+	
+	UPROPERTY()
+	TObjectPtr<UPrimitiveComponent> HitComponent;
 
 	FTransform PreviewTransform;
 	
