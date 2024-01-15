@@ -23,6 +23,7 @@
 #include "Items/SCArmor.h"
 #include "BuildingSystem/SCBuildingComponent.h"
 #include "Components/SceneCaptureComponent2D.h"
+#include "Interfaces/InteractInterface.h"
 #include "Kismet/KismetRenderingLibrary.h"
 
 ASCCharacter::ASCCharacter()
@@ -515,7 +516,10 @@ void ASCCharacter::UseEquipable()
 
 void ASCCharacter::Interact()
 {
-	if (CombatState == ECombatState::ECS_Unoccupied) ServerInteract();
+	if (CombatState == ECombatState::ECS_Unoccupied)
+	{
+		ServerInteract(GetFirstPersonCameraComponent()->GetComponentRotation());
+	}
 }
 
 bool ASCCharacter::CanCraftItem(const int32 ItemID, const EContainerType ContainerType, const ECraftingType TableType)
@@ -708,7 +712,6 @@ void ASCCharacter::OnRep_ChestSlot()
 	}
 }
 
-
 void ASCCharacter::OnRep_PantsSlot()
 {
 	if (PantsSlot == nullptr) return;
@@ -718,6 +721,7 @@ void ASCCharacter::OnRep_PantsSlot()
 		SpawnedArmor->SetMasterPose(GetMesh());
 	}
 }
+
 void ASCCharacter::OnRep_BootsSlot()
 {
 	if (BootsSlot == nullptr) return;
@@ -935,7 +939,7 @@ void ASCCharacter::ServerUseEquipable_Implementation()
 	EquippedItem->UseItem_Implementation(this);
 }
 
-void ASCCharacter::ServerInteract_Implementation()
+void ASCCharacter::ServerInteract_Implementation(FRotator ClientCameraRotation)
 {
 	if (IsValid(EquippedItem)) return;
 	
@@ -962,6 +966,46 @@ void ASCCharacter::ServerInteract_Implementation()
 			HarvestGroundItem(Actor);
 		}
 	}
+	else
+	{
+		// TODO: Check if we really need a Server RPC here, since we're already in the Server, we could call everything directly
+		ServerLineTraceStorageBox(ClientCameraRotation);
+	}
+}
+
+void ASCCharacter::ServerLineTraceStorageBox_Implementation(FRotator ClientCameraRotation)
+{
+	AActor* HitActor;
+	
+	if (LineTraceFunction(ClientCameraRotation, HitActor))
+	{
+		IInteractInterface::Execute_InteractEvent(HitActor, this);
+	}
+}
+
+bool ASCCharacter::LineTraceFunction(FRotator ClientCameraRotation, AActor*& HitActor)
+{
+	float InteractDistance = 280.f;
+	
+	FVector StartLocation = GetFirstPersonCameraComponent()->GetComponentLocation();
+	FVector EndLocation = StartLocation + (ClientCameraRotation.Vector() * InteractDistance);
+
+	FHitResult HitResult;
+	FCollisionQueryParams CollisionQueryParams;
+	CollisionQueryParams.bTraceComplex = true;
+	CollisionQueryParams.AddIgnoredActor(this);
+
+	GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Camera, CollisionQueryParams);
+	// DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Blue, false, 10.f);
+
+	if (HitResult.bBlockingHit && HitResult.GetActor()->Implements<UInteractInterface>())
+	{
+		HitActor = HitResult.GetActor();
+		
+		return true;
+	}
+
+	return false;
 }
 
 void ASCCharacter::HarvestGroundItem(AActor* TargetActor)

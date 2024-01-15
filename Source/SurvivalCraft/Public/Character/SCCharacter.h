@@ -311,7 +311,12 @@ private:
 	void ServerUseEquipable();
 
 	UFUNCTION(Server, Reliable)
-	void ServerInteract();
+	void ServerInteract(FRotator ClientCameraRotation);
+
+	UFUNCTION(Server, Reliable)
+	void ServerLineTraceStorageBox(FRotator ClientCameraRotation);
+
+	bool LineTraceFunction(FRotator ClientCameraRotation, AActor*& HitActor);
 	
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastPlayEquipableMontage(FName SectionName);

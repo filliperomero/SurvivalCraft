@@ -158,7 +158,7 @@ void USCBuildingComponent::SetPreviewColor(bool bCanPlace)
 	// if (bShouldUpdateMaterial)
 	// {
 	// TODO: Improve this so we just update the materials when needed
-	for (int32 Index = 0; Index < BuildablePreview->GetMesh()->GetNumMaterials() - 1; Index++)
+	for (int32 Index = 0; Index < BuildablePreview->GetMesh()->GetNumMaterials(); Index++)
 	{
 		BuildablePreview->GetMesh()->SetMaterial(Index, bCanPlace ? CanPlaceMaterial : CannotPlaceMaterial);
 	}
