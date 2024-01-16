@@ -127,9 +127,23 @@ void USCBuildingComponent::BuildModeClient(const int32 StructureID)
 			} 
 			else
 			{
-				bool bIsOverlapping = CheckForOverlap();
-				bIsBuildFloating = IsBuildFloating();
-				SetPreviewColor(!bIsOverlapping && !bIsBuildFloating);
+				bool bCanPlace = false;
+				if (BuildablePreview->GetBuildableInfo().bCanPlaceOnGround)
+				{
+					bool bIsOverlapping = CheckForOverlap();
+					bIsBuildFloating = IsBuildFloating();
+					bCanPlace = !bIsOverlapping && !bIsBuildFloating;
+				}
+
+				// A buildable could have bCanPlaceOnGround and bCanPlaceOnFoundation enabled
+				if (BuildablePreview->GetBuildableInfo().bCanPlaceOnFoundation && !bCanPlace)
+				{
+					bool bIsOverlapping = CheckForOverlap();
+					bool bIsBuildOnFoundation = IsBuildOnFoundation();
+					bCanPlace = !bIsOverlapping && bIsBuildOnFoundation;
+				}
+
+				SetPreviewColor(bCanPlace);
 			}
 		}
 		else
@@ -245,6 +259,27 @@ bool USCBuildingComponent::IsBuildFloating()
 	return !GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, CollisionQueryParams);
 }
 
+bool USCBuildingComponent::IsBuildOnFoundation()
+{
+	if (!IsValid(BuildablePreview)) return false;
+	
+	FVector StartLocation = PreviewTransform.GetLocation();
+	FVector EndLocation = PreviewTransform.GetLocation() - FVector(0.f, 0.f, 50.f);
+
+	FHitResult HitResult;
+	FCollisionQueryParams CollisionQueryParams;
+	CollisionQueryParams.AddIgnoredActor(BuildablePreview);
+
+	GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, CollisionQueryParams);
+
+	if (HitResult.bBlockingHit && HitResult.GetActor()->ActorHasTag(FName("Foundation")))
+	{
+		return true;
+	}
+
+	return false;
+}
+
 TSubclassOf<ASCBuildable> USCBuildingComponent::GetBuildableClass(const int32 StructureID)
 {
 	check(StructuresTable)
@@ -295,7 +330,20 @@ bool USCBuildingComponent::CheckBuildPlacement(const int32 StructureID, FVector 
 	}
 	else
 	{
-		bIsBuildFloating = IsBuildFloating();
+		if (BuildablePreview->GetBuildableInfo().bCanPlaceOnGround)
+		{
+			bool bIsOverlapping = CheckForOverlap();
+			bIsBuildFloating = IsBuildFloating();
+			if (!bIsOverlapping && !bIsBuildFloating) return !bIsOverlapping && !bIsBuildFloating;
+		}
+		
+		if (BuildablePreview->GetBuildableInfo().bCanPlaceOnFoundation)
+		{
+			bool bIsBuildOnFoundation = IsBuildOnFoundation();
+			return !CheckForOverlap() && bIsBuildOnFoundation;
+		}
+
+		return false;
 	}
 
 	return !CheckForOverlap() && !bIsBuildFloating;

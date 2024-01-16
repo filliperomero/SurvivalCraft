@@ -5,9 +5,7 @@
 ASCFoundation::ASCFoundation()
 {
 	PrimaryActorTick.bCanEverTick = false;
-}
 
-void ASCFoundation::BeginPlay()
-{
-	Super::BeginPlay();
+	// Add Foundation Tag
+	Tags.Add(FName("Foundation"));
 }

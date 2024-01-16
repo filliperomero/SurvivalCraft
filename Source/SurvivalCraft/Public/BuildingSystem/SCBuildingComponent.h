@@ -31,6 +31,7 @@ private:
 	bool CheckForOverlap();
 	bool GetSnappingPoints(FTransform& SnappingTransform);
 	bool IsBuildFloating();
+	bool IsBuildOnFoundation();
 	TSubclassOf<ASCBuildable> GetBuildableClass(const int32 StructureID);
 	// To be used by the Server
 	bool CheckBuildPlacement(const int32 StructureID, FVector ClientCameraVector, FRotator ClientCameraRotation);

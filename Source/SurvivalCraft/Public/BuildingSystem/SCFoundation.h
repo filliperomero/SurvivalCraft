@@ -13,7 +13,4 @@ class SURVIVALCRAFT_API ASCFoundation : public ASCBuildable
 
 public:
 	ASCFoundation();
-
-protected:
-	virtual void BeginPlay() override;
 };
