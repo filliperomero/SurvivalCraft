@@ -6,6 +6,15 @@
 
 class ASCBuildable;
 
+UENUM(BlueprintType)
+enum class EStructureDamageType : uint8
+{
+	None UMETA(DisplayName = "None"),
+	Wood UMETA(DisplayName = "Wood"),
+	Stone UMETA(DisplayName = "Stone"),
+	Metal UMETA(DisplayName = "Metal")
+};
+
 USTRUCT(BlueprintType)
 struct FBuildableInfo
 {
@@ -30,6 +39,18 @@ struct FBuildableInfo
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	bool bDoCeilingCheck = false;
+};
+
+// TODO: Check if we should put this in the ItemData.h
+USTRUCT(BlueprintType)
+struct FDamageTiers
+{
+	GENERATED_BODY()
+
+	FDamageTiers() = default;
+
+	UPROPERTY(EditDefaultsOnly)
+	TArray<EStructureDamageType> DamageTypes;
 };
 
 USTRUCT(BlueprintType)

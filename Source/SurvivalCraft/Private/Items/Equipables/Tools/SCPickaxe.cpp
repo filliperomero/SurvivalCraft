@@ -2,6 +2,7 @@
 
 #include "Items/Equipables/Tools/SCPickaxe.h"
 #include "SCBlueprintFunctionLibrary.h"
+#include "BuildingSystem/SCBuildable.h"
 #include "Character/SCCharacter.h"
 #include "HarvestingSystem/SCDestructibleHarvestable.h"
 #include "HarvestingSystem/SCLargeItem.h"
@@ -40,7 +41,7 @@ void ASCPickaxe::Interact_Implementation(const FVector& LocationToCheck, const F
 		{
 			const float Damage = USCBlueprintFunctionLibrary::CalculateDamage(Actor, static_cast<float>(ItemInfo.ItemDamage));
 			
-			if (Actor->Implements<UPlayerInterface>())
+			if (Actor->Implements<UPlayerInterface>() || Cast<ASCBuildable>(Actor))
 			{
 				ASCPlayerController* SCController = IPlayerInterface::Execute_GetSCPlayerController(GetOwner());
 				

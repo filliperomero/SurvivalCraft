@@ -20,8 +20,17 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	UFUNCTION()
+	void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, class AController* InstigatorController, AActor* DamageCauser);
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastDestroyStructure();
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Mesh)
 	TObjectPtr<UStaticMeshComponent> Mesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Mesh)
+	TObjectPtr<UGeometryCollectionComponent> DestructibleMesh;
 
 	UPROPERTY(VisibleAnywhere, Category = "Collision Box")
 	TObjectPtr<UBoxComponent> OverlapBox;
@@ -31,6 +40,16 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Collision Box" )
 	TArray<UBoxComponent*> SnapBoxes;
+
+private:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Buildable Properties", meta = (AllowPrivateAccess = true))
+	EStructureDamageType StructureDamageType = EStructureDamageType::None;
+
+	UPROPERTY(VisibleAnywhere, Category = "Buildable Properties")
+	float Health = 100.f;
+
+	UPROPERTY(EditAnywhere, Category = "Buildable Properties")
+	float MaxHealth = 100.f;
 
 public:
 	FORCEINLINE UStaticMeshComponent* GetMesh() const { return Mesh; }

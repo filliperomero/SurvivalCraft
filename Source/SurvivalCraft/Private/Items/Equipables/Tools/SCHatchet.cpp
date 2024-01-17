@@ -2,6 +2,7 @@
 
 #include "Items/Equipables/Tools/SCHatchet.h"
 #include "SCBlueprintFunctionLibrary.h"
+#include "BuildingSystem/SCBuildable.h"
 #include "Character/SCCharacter.h"
 #include "HarvestingSystem/SCDestructibleHarvestable.h"
 #include "HarvestingSystem/SCLargeItem.h"
@@ -38,8 +39,9 @@ void ASCHatchet::Interact_Implementation(const FVector& LocationToCheck, const F
 		for (const auto& Actor : OutActors)
 		{
 			const float Damage = USCBlueprintFunctionLibrary::CalculateDamage(Actor, static_cast<float>(ItemInfo.ItemDamage));
-			
-			if (Actor->Implements<UPlayerInterface>())
+
+			// TODO: Create a interface for Damaging the Buildable
+			if (Actor->Implements<UPlayerInterface>() || Cast<ASCBuildable>(Actor))
 			{
 				ASCPlayerController* SCController = IPlayerInterface::Execute_GetSCPlayerController(GetOwner());
 				
