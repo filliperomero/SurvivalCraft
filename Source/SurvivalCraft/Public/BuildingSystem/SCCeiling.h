@@ -4,31 +4,44 @@
 
 #include "CoreMinimal.h"
 #include "SCBuildable.h"
-#include "SCFoundation.generated.h"
+#include "SCCeiling.generated.h"
 
 UCLASS()
-class SURVIVALCRAFT_API ASCFoundation : public ASCBuildable
+class SURVIVALCRAFT_API ASCCeiling : public ASCBuildable
 {
 	GENERATED_BODY()
 
 public:
-	ASCFoundation();
+	ASCCeiling();
+
 	virtual void DestroyStructure() override;
 
 protected:
 	virtual void BeginPlay() override;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UBoxComponent> CeilingBox;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UBoxComponent> CeilingBox2;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<UBoxComponent> FoundationBox;
+	TObjectPtr<UBoxComponent> CeilingBox3;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<UBoxComponent> FoundationBox2;
+	TObjectPtr<UBoxComponent> CeilingBox4;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<UBoxComponent> FoundationBox3;
+	TObjectPtr<UBoxComponent> TriangleCeilingBox;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<UBoxComponent> FoundationBox4;
+	TObjectPtr<UBoxComponent> TriangleCeilingBox2;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UBoxComponent> TriangleCeilingBox3;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UBoxComponent> TriangleCeilingBox4;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UBoxComponent> WallBox;
@@ -41,27 +54,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UBoxComponent> WallBox4;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<UBoxComponent> TriangleFoundationBox;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<UBoxComponent> TriangleFoundationBox2;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<UBoxComponent> TriangleFoundationBox3;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<UBoxComponent> TriangleFoundationBox4;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<UBoxComponent> RampBox;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<UBoxComponent> RampBox2;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<UBoxComponent> RampBox3;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UBoxComponent> StairsBox;

@@ -16,6 +16,7 @@ class SURVIVALCRAFT_API ASCBuildable : public AActor
 
 public:
 	ASCBuildable();
+	virtual void DestroyStructure();
 
 protected:
 	virtual void BeginPlay() override;
@@ -44,6 +45,9 @@ protected:
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Buildable Properties", meta = (AllowPrivateAccess = true))
 	EStructureDamageType StructureDamageType = EStructureDamageType::None;
+
+	UPROPERTY(EditAnywhere, Category = "Buildable Properties")
+	float LifeSpan = 5.f;
 
 	UPROPERTY(VisibleAnywhere, Category = "Buildable Properties")
 	float Health = 100.f;

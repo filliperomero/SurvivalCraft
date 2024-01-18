@@ -58,10 +58,12 @@ void ASCBuildable::ReceiveDamage(AActor* DamagedActor, float Damage, const UDama
 	
 	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
 
-	if (Health <= 0.f)
-	{
-		MulticastDestroyStructure();
-	}
+	if (Health <= 0.f) DestroyStructure();
+}
+
+void ASCBuildable::DestroyStructure()
+{
+	MulticastDestroyStructure();
 }
 
 void ASCBuildable::MulticastDestroyStructure_Implementation()
@@ -71,4 +73,6 @@ void ASCBuildable::MulticastDestroyStructure_Implementation()
 
 	DestructibleMesh->SetVisibility(true);
 	DestructibleMesh->SetSimulatePhysics(true);
+
+	SetLifeSpan(LifeSpan);
 }
