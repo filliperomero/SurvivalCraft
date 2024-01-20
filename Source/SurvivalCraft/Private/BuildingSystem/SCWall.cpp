@@ -35,6 +35,7 @@ ASCWall::ASCWall()
 	TriangleCeilingBox2 = CreateDefaultSubobject<UBoxComponent>(TEXT("TriangleCeilingBox2"));
 	TriangleCeilingBox2->SetupAttachment(GetMesh());
 	TriangleCeilingBox2->SetRelativeLocation(FVector(0.f, 89.f, 140.f));
+	TriangleCeilingBox2->SetRelativeRotation(FRotator(0.f, 180.f, 0.f));
 	TriangleCeilingBox2->SetBoxExtent(FVector(150.f, 150.f, 10.f));
 	TriangleCeilingBox2->SetCollisionResponseToAllChannels(ECR_Ignore);
 	TriangleCeilingBox2->SetCollisionResponseToChannel(ECC_TRIANGLE_CEILING_TRACE, ECR_Block);
