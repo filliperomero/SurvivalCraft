@@ -1,6 +1,7 @@
 ﻿// Copyright Fillipe Romero
 
 #include "SurvivalCraft/Public/Character/SCCharacter.h"
+#include "BuildingSystem/SCBuildable.h"
 #include "Camera/CameraComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -23,6 +24,7 @@
 #include "Items/SCArmor.h"
 #include "BuildingSystem/SCBuildingComponent.h"
 #include "Components/SceneCaptureComponent2D.h"
+#include "Components/SlateWrapperTypes.h"
 #include "Interfaces/InteractInterface.h"
 #include "Kismet/KismetRenderingLibrary.h"
 
@@ -308,6 +310,13 @@ void ASCCharacter::ServerOnUnequipArmor_Implementation(EArmorType ArmorType)
 		if (ASCPlayerController* SCPC = Cast<ASCPlayerController>(GetController()))
 			SCPC->ClientResetArmorSlot(ArmorType);
 	}
+}
+
+void ASCCharacter::ClientToggleBuildableInfoWidget_Implementation(ASCBuildable* Buildable, ESlateVisibility WidgetVisibility, bool bShowInteractText, bool bShowOptionsText, const FText& StructureName, const FText& OwnerName, float InCurrentHealth, float InMaxHealth)
+{
+	if (!IsValid(Buildable) || (BuildingComponent->IsBuildModeEnabled() && WidgetVisibility != ESlateVisibility::Hidden)) return;
+
+	Buildable->ClientShowInteractText(WidgetVisibility, bShowInteractText, bShowOptionsText, StructureName, OwnerName, InCurrentHealth, InMaxHealth);
 }
 
 void ASCCharacter::BeginPlay()

@@ -1,14 +1,16 @@
 ﻿// Copyright Fillipe Romero
 
 #include "BuildingSystem/SCWindowFrame.h"
-
 #include "BuildingSystem/SCTorch.h"
 #include "Components/BoxComponent.h"
+#include "Components/WidgetComponent.h"
 #include "SurvivalCraft/SurvivalCraft.h"
 
 ASCWindowFrame::ASCWindowFrame()
 {
 	PrimaryActorTick.bCanEverTick = false;
+
+	InfoWidget->SetRelativeLocation(FVector(115.f, 0.f, -50.f));
 
 	WindowBox = CreateDefaultSubobject<UBoxComponent>(TEXT("WindowBox"));
 	WindowBox->SetupAttachment(GetMesh());

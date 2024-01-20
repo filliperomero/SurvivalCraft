@@ -13,6 +13,7 @@
 #include "Logging/LogMacros.h"
 #include "SCCharacter.generated.h"
 
+class ASCBuildable;
 class USCBuildingComponent;
 class USCItemsContainerComponent;
 struct FResourceInfo;
@@ -91,6 +92,10 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void ServerSprint(bool bInIsSprinting);
+
+	// TODO: Check if we really need to have this function here or we can call it directly from Buildable class
+	UFUNCTION(Client, Reliable)
+	void ClientToggleBuildableInfoWidget(ASCBuildable* Buildable, ESlateVisibility WidgetVisibility, bool bShowInteractText, bool bShowOptionsText, const FText& StructureName, const FText& OwnerName, float InCurrentHealth, float InMaxHealth);
 
 protected:
 	virtual void BeginPlay() override;

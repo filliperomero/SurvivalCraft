@@ -1,15 +1,17 @@
 ﻿// Copyright Fillipe Romero
 
 #include "BuildingSystem/SCDoorFrame.h"
-
 #include "BuildingSystem/SCDoor.h"
 #include "BuildingSystem/SCTorch.h"
 #include "Components/BoxComponent.h"
+#include "Components/WidgetComponent.h"
 #include "SurvivalCraft/SurvivalCraft.h"
 
 ASCDoorFrame::ASCDoorFrame()
 {
 	PrimaryActorTick.bCanEverTick = false;
+
+	InfoWidget->SetRelativeLocation(FVector(110.f, 0.f, -50.f));
 
 	DoorBox = CreateDefaultSubobject<UBoxComponent>(TEXT("DoorBox"));
 	DoorBox->SetupAttachment(GetMesh());

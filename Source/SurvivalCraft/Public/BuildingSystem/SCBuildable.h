@@ -7,6 +7,8 @@
 #include "GameFramework/Actor.h"
 #include "SCBuildable.generated.h"
 
+class USphereComponent;
+class UWidgetComponent;
 class UBoxComponent;
 
 UCLASS()
@@ -18,8 +20,17 @@ public:
 	ASCBuildable();
 	virtual void DestroyStructure();
 
+	UFUNCTION(Client, Reliable)
+	void ClientShowInteractText(ESlateVisibility WidgetVisibility, bool bShowInteractText, bool bShowOptionsText, const FText& InStructureName, const FText& InOwnerName, float CurrentHealth, float InMaxHealth);
+
 protected:
 	virtual void BeginPlay() override;
+
+	UFUNCTION()
+	void OnTextSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnTextSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	UFUNCTION()
 	void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, class AController* InstigatorController, AActor* DamageCauser);
@@ -36,6 +47,12 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Collision Box")
 	TObjectPtr<UBoxComponent> OverlapBox;
 
+	UPROPERTY(VisibleAnywhere, Category = "Text Overlap Box")
+	TObjectPtr<USphereComponent> TextOverlapSphere;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Widget)
+	TObjectPtr<UWidgetComponent> InfoWidget;
+
 	UPROPERTY(EditAnywhere, Category = "Buildable Properties")
 	FBuildableInfo BuildableInfo;
 
@@ -45,6 +62,18 @@ protected:
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Buildable Properties", meta = (AllowPrivateAccess = true))
 	EStructureDamageType StructureDamageType = EStructureDamageType::None;
+
+	UPROPERTY(EditAnywhere, Category = "Buildable Properties")
+	bool bIsInteractable = false;
+
+	UPROPERTY(EditAnywhere, Category = "Buildable Properties")
+	bool bHasOptions = true;
+
+	UPROPERTY(EditAnywhere, Category = "Buildable Properties")
+	FText StructureName = FText();
+	
+	UPROPERTY(EditAnywhere, Category = "Buildable Properties")
+	FText OwnerName = FText();
 
 	UPROPERTY(EditAnywhere, Category = "Buildable Properties")
 	float LifeSpan = 5.f;

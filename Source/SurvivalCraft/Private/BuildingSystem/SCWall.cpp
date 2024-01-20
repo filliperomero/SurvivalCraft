@@ -3,11 +3,14 @@
 #include "BuildingSystem/SCWall.h"
 #include "BuildingSystem/SCTorch.h"
 #include "Components/BoxComponent.h"
+#include "Components/WidgetComponent.h"
 #include "SurvivalCraft/SurvivalCraft.h"
 
 ASCWall::ASCWall()
 {
 	PrimaryActorTick.bCanEverTick = false;
+
+	InfoWidget->SetRelativeLocation(FVector(70.f, 0.f, -50.f));
 
 	OverlapBox->SetCollisionResponseToChannel(ECC_STRUCTURE, ECR_Overlap);
 
