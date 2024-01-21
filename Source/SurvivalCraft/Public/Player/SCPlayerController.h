@@ -8,6 +8,7 @@
 #include "GameFramework/PlayerController.h"
 #include "SCPlayerController.generated.h"
 
+enum class EArmorType : uint8;
 enum class EPlayerStats : uint8;
 class ASCCharacter;
 struct FItemInformation;
@@ -19,6 +20,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStatsChangedSignature, float/*NewVa
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnUpdateArmorSlotSignature, EArmorType/*ArmorType*/, const FItemInformation&/*Item*/);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnResetArmorSlotSignature, EArmorType/*ArmorType*/);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerWindowInitSignature, UMaterialInstanceDynamic*/*Material*/);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnDemolishStructureSignature, bool/*bCancelDemolish*/, float/*DemolishTime*/);
 
 struct FInputActionValue;
 class UInputAction;
@@ -41,6 +43,9 @@ public:
 
 	UFUNCTION(Client, Reliable)
 	void ClientResetArmorSlot(EArmorType ArmorType);
+
+	UFUNCTION(Client, Reliable)
+	void ClientUpdateDemolishStructureProgress(const bool bCancelDemolish, const float DemolishTime);
 	
 	void ShowItemAdded(UTexture2D* ItemIcon, int32 ItemQuantity, FText ItemName);
 	bool CanCraftItem(const int32 ItemID, const EContainerType ContainerType, const ECraftingType TableType);
@@ -74,6 +79,7 @@ public:
 	FOnUpdateArmorSlotSignature OnUpdateArmorSlotDelegate;
 	FOnResetArmorSlotSignature OnResetArmorSlotDelegate;
 	FOnPlayerWindowInitSignature OnPlayerWindowInitDelegate;
+	FOnDemolishStructureSignature OnDemolishStructureDelegate;
 
 protected:
 	virtual void BeginPlay() override;
@@ -91,6 +97,8 @@ private:
 	void Sprint();
 	void StopSprint();
 	void Build();
+	void DemolishStructure();
+	void StopDemolishStructure();
 
 	UPROPERTY()
 	ASCCharacter* SCCharacter;
@@ -118,6 +126,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> BuildAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> DemolishAction;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UInputMappingContext> InputMappingContext;

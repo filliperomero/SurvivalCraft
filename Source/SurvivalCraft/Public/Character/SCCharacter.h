@@ -60,6 +60,8 @@ public:
 
 	void Interact();
 	bool CanCraftItem(const int32 ItemID, const EContainerType ContainerType, const ECraftingType TableType);
+	void StartDemolish();
+	void StopDemolish();
 	
 	UFUNCTION(BlueprintCallable)
 	void FinishEquipable();
@@ -321,13 +323,26 @@ private:
 	UFUNCTION(Server, Reliable)
 	void ServerLineTraceStorageBox(FRotator ClientCameraRotation);
 
-	bool LineTraceFunction(FRotator ClientCameraRotation, AActor*& HitActor);
+	bool LineTraceFunction(FRotator ClientCameraRotation, AActor*& HitActor, UClass* InterfaceToCheck);
 	
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastPlayEquipableMontage(FName SectionName);
 
 	UFUNCTION(Client, Reliable)
 	void ClientShowItemAdded(UTexture2D* ItemIcon, int32 ItemQuantity, const FText& ItemName);
+
+	UFUNCTION(Server, Reliable)
+	void ServerStartDemolishTimer(FRotator ClientCameraRotation);
+
+	UFUNCTION(Server, Reliable)
+	void ServerStopDemolishTimer();
+
+	float DemolishTime = 5.f;
+	FTimerDelegate DemolishTimerDelegate;
+	FTimerHandle DemolishTimerHandle;
+
+	UFUNCTION()
+	void DemolishTimerFinished(FRotator ClientCameraRotation);
 
 	void HarvestGroundItem(AActor* TargetActor);
 	void PlayHarvestingMontage();

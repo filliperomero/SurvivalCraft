@@ -36,6 +36,8 @@ void ASCPlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &ThisClass::Sprint);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &ThisClass::StopSprint);
 		EnhancedInputComponent->BindAction(BuildAction, ETriggerEvent::Started, this, &ThisClass::Build);
+		EnhancedInputComponent->BindAction(DemolishAction, ETriggerEvent::Started, this, &ThisClass::DemolishStructure);
+		EnhancedInputComponent->BindAction(DemolishAction, ETriggerEvent::Completed, this, &ThisClass::StopDemolishStructure);
 	}
 	else
 	{
@@ -112,6 +114,11 @@ void ASCPlayerController::UpdatePlayerStats(EPlayerStats PlayerStats, float NewV
 void ASCPlayerController::UpdatePlayerWindow(UMaterialInstanceDynamic* Material)
 {
 	OnPlayerWindowInitDelegate.Broadcast(Material);
+}
+
+void ASCPlayerController::ClientUpdateDemolishStructureProgress_Implementation(const bool bCancelDemolish, const float DemolishTime)
+{
+	OnDemolishStructureDelegate.Broadcast(bCancelDemolish, DemolishTime);
 }
 
 float ASCPlayerController::GetHealth()
@@ -227,6 +234,16 @@ void ASCPlayerController::StopSprint()
 void ASCPlayerController::Build()
 {
 	GetSCCharacter()->GetBuildingComponent()->ClientLaunchBuildMode(GetSCCharacter()->StructureID);
+}
+
+void ASCPlayerController::DemolishStructure()
+{
+	GetSCCharacter()->StartDemolish();
+}
+
+void ASCPlayerController::StopDemolishStructure()
+{
+	GetSCCharacter()->StopDemolish();
 }
 
 ASCCharacter* ASCPlayerController::GetSCCharacter()

@@ -110,6 +110,11 @@ void ASCBuildable::DestroyStructure()
 	MulticastDestroyStructure();
 }
 
+void ASCBuildable::DemolishStructure()
+{
+	DestroyStructure();
+}
+
 void ASCBuildable::MulticastDestroyStructure_Implementation()
 {
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);

@@ -22,6 +22,13 @@ void USCOverlayWidgetController::BindCallbacksToDependencies()
 		}
 	);
 
+	GetSCPC()->OnDemolishStructureDelegate.AddLambda(
+		[this](bool bCancelDemolish, float DemolishTime)
+		{
+			OnDemolishStructureWidgetDelegate.Broadcast(bCancelDemolish, DemolishTime);
+		}
+	);
+
 	GetSCPS()->OnXPChangedDelegate.AddLambda(
 		[this](int32 NewXP, int32 EarnedXP)
 		{

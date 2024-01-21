@@ -8,6 +8,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnToggleInventoryWidgetSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnItemAddedWidgetSignature, UTexture2D*, ItemIcon, int32, ItemQuantity, FText, ItemName);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnDemolishStructureWidgetSignature, bool, bCancelDemolish, float, DemolishTime);
 
 UCLASS(BlueprintType, Blueprintable)
 class SURVIVALCRAFT_API USCOverlayWidgetController : public USCWidgetController
@@ -28,4 +29,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnStatsChangedSignature OnLevelChangedDelegate;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnDemolishStructureWidgetSignature OnDemolishStructureWidgetDelegate;
 };

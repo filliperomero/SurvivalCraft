@@ -567,6 +567,20 @@ bool ASCCharacter::CanCraftItem(const int32 ItemID, const EContainerType Contain
 	return false;
 }
 
+void ASCCharacter::StartDemolish()
+{
+	Execute_GetSCPlayerController(this)->ClientUpdateDemolishStructureProgress(false, DemolishTime);
+	
+	ServerStartDemolishTimer(GetFirstPersonCameraComponent()->GetComponentRotation());
+}
+
+void ASCCharacter::StopDemolish()
+{
+	Execute_GetSCPlayerController(this)->ClientUpdateDemolishStructureProgress(true, 0.f);
+	
+	ServerStopDemolishTimer();
+}
+
 void ASCCharacter::FinishEquipable()
 {
 	bCanUseEquipable = true;
@@ -986,13 +1000,13 @@ void ASCCharacter::ServerLineTraceStorageBox_Implementation(FRotator ClientCamer
 {
 	AActor* HitActor;
 	
-	if (LineTraceFunction(ClientCameraRotation, HitActor))
+	if (LineTraceFunction(ClientCameraRotation, HitActor, UInteractInterface::StaticClass()))
 	{
 		IInteractInterface::Execute_InteractEvent(HitActor, this);
 	}
 }
 
-bool ASCCharacter::LineTraceFunction(FRotator ClientCameraRotation, AActor*& HitActor)
+bool ASCCharacter::LineTraceFunction(FRotator ClientCameraRotation, AActor*& HitActor, UClass* InterfaceToCheck)
 {
 	float InteractDistance = 280.f;
 	
@@ -1007,7 +1021,7 @@ bool ASCCharacter::LineTraceFunction(FRotator ClientCameraRotation, AActor*& Hit
 	GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Camera, CollisionQueryParams);
 	// DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Blue, false, 10.f);
 
-	if (HitResult.bBlockingHit && HitResult.GetActor()->Implements<UInteractInterface>())
+	if (HitResult.bBlockingHit && HitResult.GetActor()->GetClass()->ImplementsInterface(InterfaceToCheck))
 	{
 		HitActor = HitResult.GetActor();
 		
@@ -1015,6 +1029,46 @@ bool ASCCharacter::LineTraceFunction(FRotator ClientCameraRotation, AActor*& Hit
 	}
 
 	return false;
+}
+
+void ASCCharacter::ServerStartDemolishTimer_Implementation(FRotator ClientCameraRotation)
+{
+	GetWorldTimerManager().ClearTimer(DemolishTimerHandle);
+	
+	DemolishTimerDelegate.BindUFunction(this, FName("DemolishTimerFinished"), ClientCameraRotation);
+	GetWorldTimerManager().SetTimer(DemolishTimerHandle, DemolishTimerDelegate, DemolishTime, false);
+}
+
+void ASCCharacter::ServerStopDemolishTimer_Implementation()
+{
+	GetWorldTimerManager().ClearTimer(DemolishTimerHandle);
+}
+
+void ASCCharacter::DemolishTimerFinished(FRotator ClientCameraRotation)
+{
+	// TODO: Refactor this to use LineTraceFunction when we have a interface for Buildable's
+	float InteractDistance = 280.f;
+	
+	FVector StartLocation = GetFirstPersonCameraComponent()->GetComponentLocation();
+	FVector EndLocation = StartLocation + (ClientCameraRotation.Vector() * InteractDistance);
+
+	FHitResult HitResult;
+	FCollisionQueryParams CollisionQueryParams;
+	CollisionQueryParams.bTraceComplex = true;
+	CollisionQueryParams.AddIgnoredActor(this);
+
+	GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Camera, CollisionQueryParams);
+
+	if (HitResult.bBlockingHit)
+	{
+		// TODO: Create interface function to demolish
+		if (ASCBuildable* Buildable = Cast<ASCBuildable>(HitResult.GetActor()))
+		{
+			Buildable->DemolishStructure();
+		}
+	}
+
+	Execute_GetSCPlayerController(this)->ClientUpdateDemolishStructureProgress(true, 0.f);
 }
 
 void ASCCharacter::HarvestGroundItem(AActor* TargetActor)

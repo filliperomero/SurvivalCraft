@@ -19,6 +19,7 @@ class SURVIVALCRAFT_API ASCBuildable : public AActor
 public:
 	ASCBuildable();
 	virtual void DestroyStructure();
+	virtual void DemolishStructure();
 
 	UFUNCTION(Client, Reliable)
 	void ClientShowInteractText(ESlateVisibility WidgetVisibility, bool bShowInteractText, bool bShowOptionsText, const FText& InStructureName, const FText& InOwnerName, float CurrentHealth, float InMaxHealth);
