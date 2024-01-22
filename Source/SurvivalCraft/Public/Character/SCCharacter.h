@@ -36,9 +36,6 @@ class SURVIVALCRAFT_API ASCCharacter : public ACharacter, public IPlayerInterfac
 
 public:
 	ASCCharacter();
-	// Provisory
-	UPROPERTY(BlueprintReadWrite)
-	int32 StructureID = 1;
 
 	/** Player Interface */
 	virtual ASCPlayerController* GetSCPlayerController_Implementation() override;
@@ -361,6 +358,8 @@ private:
 
 	bool bCanUseEquipable = true;
 
+	int32 StructureIDToBuild = -1;
+
 public:
 	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
 	UCameraComponent* GetFirstPersonCameraComponent() const { return Camera; }
@@ -374,4 +373,7 @@ public:
 	FORCEINLINE float GetStamina() const { return Stamina; }
 	FORCEINLINE float GetMaxStamina() const { return MaxStamina; }
 	FORCEINLINE USCBuildingComponent* GetBuildingComponent() const { return BuildingComponent; }
+	FORCEINLINE USCPlayerHotbarComponent* GetHotbarComponent() const { return HotbarComponent; }
+	FORCEINLINE int32 GetStructureIDToBuild() const { return StructureIDToBuild; }
+	FORCEINLINE void ResetStructureIDToBuild() { StructureIDToBuild = -1; }
 };

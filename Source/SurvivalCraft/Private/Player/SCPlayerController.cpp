@@ -35,7 +35,6 @@ void ASCPlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &ThisClass::Interact);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &ThisClass::Sprint);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &ThisClass::StopSprint);
-		EnhancedInputComponent->BindAction(BuildAction, ETriggerEvent::Started, this, &ThisClass::Build);
 		EnhancedInputComponent->BindAction(DemolishAction, ETriggerEvent::Started, this, &ThisClass::DemolishStructure);
 		EnhancedInputComponent->BindAction(DemolishAction, ETriggerEvent::Completed, this, &ThisClass::StopDemolishStructure);
 	}
@@ -229,11 +228,6 @@ void ASCPlayerController::StopSprint()
 
 	Char->GetCharacterMovement()->MaxWalkSpeed = 600.f;
 	Char->ServerSprint(false);
-}
-
-void ASCPlayerController::Build()
-{
-	GetSCCharacter()->GetBuildingComponent()->ClientLaunchBuildMode(GetSCCharacter()->StructureID);
 }
 
 void ASCPlayerController::DemolishStructure()

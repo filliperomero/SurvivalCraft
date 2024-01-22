@@ -502,7 +502,7 @@ void ASCCharacter::PlaceBuildable()
 		const FVector CameraVector = GetFirstPersonCameraComponent()->GetForwardVector();
 		const FRotator CameraRotator = GetFirstPersonCameraComponent()->GetComponentRotation();
 
-		BuildingComponent->ServerSpawnBuild(BuildingComponent->GetPreviewTransform(), CameraVector, CameraRotator, StructureID);
+		BuildingComponent->ServerSpawnBuild(BuildingComponent->GetPreviewTransform(), CameraVector, CameraRotator);
 		BuildingComponent->SetBuildMode(false);
 	}
 }
@@ -671,6 +671,8 @@ void ASCCharacter::ServerUseHotBar_Implementation(const int32 Index)
 				break;
 			}
 		case EItemType::EIT_Buildable:
+			StructureIDToBuild = HotbarComponent->GetItems()[Index].ItemID;
+			BuildingComponent->ClientLaunchBuildMode(StructureIDToBuild);
 			break;
 		}
 	}

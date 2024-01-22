@@ -5,6 +5,7 @@
 #include "Camera/CameraComponent.h"
 #include "Character/SCCharacter.h"
 #include "Components/BoxComponent.h"
+#include "Inventory/SCPlayerHotbarComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 /**
@@ -59,13 +60,29 @@ void USCBuildingComponent::ClientLaunchBuildMode_Implementation(const int32 Stru
 	}
 }
 
-void USCBuildingComponent::ServerSpawnBuild_Implementation(FTransform BuildTransform, FVector ClientCameraVector, FRotator ClientCameraRotation, int32 StructureID)
+void USCBuildingComponent::ServerSpawnBuild_Implementation(FTransform BuildTransform, FVector ClientCameraVector, FRotator ClientCameraRotation)
 {
 	PreviewTransform = BuildTransform;
+
+	ASCCharacter* Character = Cast<ASCCharacter>(GetOwner());
+	const int32 StructureID = Character->GetStructureIDToBuild();
 	
-	if (CheckBuildPlacement(StructureID, ClientCameraVector, ClientCameraRotation))
+	TArray<FCraftingItemInfo> RequiredItems;
+	FCraftingItemInfo CraftingItemInfo;
+
+	CraftingItemInfo.ItemID = StructureID;
+	CraftingItemInfo.ItemQuantity = 1;
+	RequiredItems.Add(CraftingItemInfo);
+
+	const bool bHasRequiredItems = Character->GetHotbarComponent()->ContainRequiredItems(RequiredItems);
+
+	if (bHasRequiredItems && CheckBuildPlacement(StructureID, ClientCameraVector, ClientCameraRotation))
 	{
-		GetWorld()->SpawnActor<ASCBuildable>(GetBuildableClass(StructureID), BuildTransform);
+		if (Character->GetHotbarComponent()->RemoveItems(RequiredItems))
+		{
+			GetWorld()->SpawnActor<ASCBuildable>(GetBuildableClass(StructureID), BuildTransform);
+			Character->ResetStructureIDToBuild();
+		}
 	}
 	else
 	{

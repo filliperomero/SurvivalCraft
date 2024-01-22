@@ -22,7 +22,7 @@ public:
 	void ClientLaunchBuildMode(const int32 StructureID);
 
 	UFUNCTION(Server, Reliable)
-	void ServerSpawnBuild(FTransform BuildTransform, FVector ClientCameraVector, FRotator ClientCameraRotation, int32 StructureID);
+	void ServerSpawnBuild(FTransform BuildTransform, FVector ClientCameraVector, FRotator ClientCameraRotation);
 
 private:
 	void BuildModeClient(const int32 StructureID);
