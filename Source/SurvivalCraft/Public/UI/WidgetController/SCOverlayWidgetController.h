@@ -6,7 +6,6 @@
 #include "SCWidgetController.h"
 #include "SCOverlayWidgetController.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnToggleInventoryWidgetSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnItemAddedWidgetSignature, UTexture2D*, ItemIcon, int32, ItemQuantity, FText, ItemName);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnDemolishStructureWidgetSignature, bool, bCancelDemolish, float, DemolishTime);
 

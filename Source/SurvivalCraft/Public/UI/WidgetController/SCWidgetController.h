@@ -6,6 +6,7 @@
 #include "UObject/Object.h"
 #include "SCWidgetController.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnToggleInventoryWidgetSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStatsChangedSignature, float, NewValue);
 
 class ASCPlayerState;

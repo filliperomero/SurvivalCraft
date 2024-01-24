@@ -12,6 +12,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnResetItemSlotWidgetSignature, EC
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUpdateArmorSlotWidgetSignature, EArmorType, ArmorType, const FItemInformation&, Item);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnResetArmorSlotWidgetSignature, EArmorType, ArmorType);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerWindowWidgetSignature, UMaterialInstanceDynamic*, Material);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnToggleStorageWidgetSignature, int32, TotalSlots, ECraftingType, StorageType);
 
 UCLASS(BlueprintType, Blueprintable)
 class SURVIVALCRAFT_API USCInventoryMenuWidgetController : public USCWidgetController
@@ -38,4 +39,10 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnPlayerWindowWidgetSignature OnPlayerWindowWidgetDelegate;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnToggleStorageWidgetSignature OnToggleStorageWidgetDelegate;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnToggleInventoryWidgetSignature OnToggleInventoryWidgetDelegate;
 };

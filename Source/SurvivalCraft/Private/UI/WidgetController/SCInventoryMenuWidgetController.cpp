@@ -43,6 +43,20 @@ void USCInventoryMenuWidgetController::BindCallbacksToDependencies()
 		}
 	);
 
+	GetSCPC()->OnToggleInventoryDelegate.AddLambda(
+		[this]()
+		{
+			OnToggleInventoryWidgetDelegate.Broadcast();
+		}
+	);
+
+	GetSCPC()->OnToggleStorageDelegate.AddLambda(
+		[this](int32 TotalSlots, ECraftingType StorageType)
+		{
+			OnToggleStorageWidgetDelegate.Broadcast(TotalSlots, StorageType);
+		}
+	);
+
 	GetSCPS()->OnLevelChangedDelegate.AddLambda(
 		[this](int32 NewLevel)
 		{

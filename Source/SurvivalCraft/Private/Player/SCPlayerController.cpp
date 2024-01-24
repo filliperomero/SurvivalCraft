@@ -3,7 +3,6 @@
 #include "SurvivalCraft/Public/Player/SCPlayerController.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "BuildingSystem/SCBuildingComponent.h"
 #include "Character/SCCharacter.h"
 #include "Enums/PlayerStats.h"
 #include "GameFramework/Character.h"
@@ -62,6 +61,12 @@ void ASCPlayerController::ClientUpdateArmorSlot_Implementation(EArmorType ArmorT
 void ASCPlayerController::ClientResetArmorSlot_Implementation(EArmorType ArmorType)
 {
 	OnResetArmorSlotDelegate.Broadcast(ArmorType);
+}
+
+void ASCPlayerController::ClientToggleStorage_Implementation(int32 TotalSlots, ECraftingType StorageType)
+{
+	OnToggleInventoryDelegate.Broadcast();
+	OnToggleStorageDelegate.Broadcast(TotalSlots, StorageType);
 }
 
 void ASCPlayerController::ShowItemAdded(UTexture2D* ItemIcon, int32 ItemQuantity, FText ItemName)

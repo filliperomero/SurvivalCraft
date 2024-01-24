@@ -21,6 +21,7 @@ DECLARE_MULTICAST_DELEGATE_TwoParams(FOnUpdateArmorSlotSignature, EArmorType/*Ar
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnResetArmorSlotSignature, EArmorType/*ArmorType*/);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerWindowInitSignature, UMaterialInstanceDynamic*/*Material*/);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnDemolishStructureSignature, bool/*bCancelDemolish*/, float/*DemolishTime*/);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnToggleStorageSignature, int32/*TotalSlots*/, ECraftingType/*StorageType*/);
 
 struct FInputActionValue;
 class UInputAction;
@@ -46,6 +47,9 @@ public:
 
 	UFUNCTION(Client, Reliable)
 	void ClientUpdateDemolishStructureProgress(const bool bCancelDemolish, const float DemolishTime);
+
+	UFUNCTION(Client, Reliable)
+	void ClientToggleStorage(int32 TotalSlots, ECraftingType StorageType);
 	
 	void ShowItemAdded(UTexture2D* ItemIcon, int32 ItemQuantity, FText ItemName);
 	bool CanCraftItem(const int32 ItemID, const EContainerType ContainerType, const ECraftingType TableType);
@@ -80,6 +84,7 @@ public:
 	FOnResetArmorSlotSignature OnResetArmorSlotDelegate;
 	FOnPlayerWindowInitSignature OnPlayerWindowInitDelegate;
 	FOnDemolishStructureSignature OnDemolishStructureDelegate;
+	FOnToggleStorageSignature OnToggleStorageDelegate;
 
 protected:
 	virtual void BeginPlay() override;
