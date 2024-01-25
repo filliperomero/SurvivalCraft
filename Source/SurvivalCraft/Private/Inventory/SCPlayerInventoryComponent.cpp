@@ -36,9 +36,8 @@ void USCPlayerInventoryComponent::HandleSlotDrop(USCItemsContainerComponent* Fro
 	{
 	case EContainerType::ECT_PlayerInventory:
 	case EContainerType::ECT_PlayerHotbar:
-		FromContainer->TransferItem(this, FromIndex, ToIndex);
-		break;
 	case EContainerType::ECT_PlayerStorage:
+		FromContainer->TransferItem(this, FromIndex, ToIndex);
 		break;
 	case EContainerType::ECT_PlayerArmor:
 		break;

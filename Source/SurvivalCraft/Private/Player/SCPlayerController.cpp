@@ -69,6 +69,11 @@ void ASCPlayerController::ClientToggleStorage_Implementation(int32 TotalSlots, E
 	OnToggleStorageDelegate.Broadcast(TotalSlots, StorageType);
 }
 
+void ASCPlayerController::ClientUpdateStorageSlots_Implementation(int32 TotalSlots)
+{
+	OnUpdateStorageSlotsDelegate.Broadcast(TotalSlots);
+}
+
 void ASCPlayerController::ShowItemAdded(UTexture2D* ItemIcon, int32 ItemQuantity, FText ItemName)
 {
 	OnItemAddedDelegate.Broadcast(ItemIcon, ItemQuantity, ItemName);

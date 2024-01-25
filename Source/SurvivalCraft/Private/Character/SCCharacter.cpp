@@ -23,9 +23,11 @@
 #include "UI/HUD/SCHUD.h"
 #include "Items/SCArmor.h"
 #include "BuildingSystem/SCBuildingComponent.h"
+#include "BuildingSystem/SCStorage.h"
 #include "Components/SceneCaptureComponent2D.h"
 #include "Components/SlateWrapperTypes.h"
 #include "Interfaces/InteractInterface.h"
+#include "Inventory/SCStorageContainerComponent.h"
 #include "Kismet/KismetRenderingLibrary.h"
 
 ASCCharacter::ASCCharacter()
@@ -147,7 +149,8 @@ void ASCCharacter::ServerOnSlotDrop_Implementation(EContainerType TargetContaine
 {
 	USCItemsContainerComponent* FromContainer = nullptr;
 
-	switch (FromContainerType) {
+	switch (FromContainerType)
+	{
 	case EContainerType::ECT_PlayerInventory:
 		FromContainer = InventoryComponent;
 		break;
@@ -155,12 +158,17 @@ void ASCCharacter::ServerOnSlotDrop_Implementation(EContainerType TargetContaine
 		FromContainer = HotbarComponent;
 		break;
 	case EContainerType::ECT_PlayerStorage:
+		if (IsValid(StorageBox))
+		{
+			FromContainer = StorageBox->GetStorageComponent();
+		}
 		break;
 	case EContainerType::ECT_PlayerArmor:
 		break;
 	}
 	
-	switch (TargetContainerType) {
+	switch (TargetContainerType)
+	{
 	case EContainerType::ECT_PlayerInventory:
 		InventoryComponent->OnSlotDrop(FromContainer, FromIndex, ToIndex);
 		break;
@@ -168,6 +176,10 @@ void ASCCharacter::ServerOnSlotDrop_Implementation(EContainerType TargetContaine
 		HotbarComponent->OnSlotDrop(FromContainer, FromIndex, ToIndex);
 		break;
 	case EContainerType::ECT_PlayerStorage:
+		if (IsValid(StorageBox))
+		{
+			StorageBox->GetStorageComponent()->OnSlotDrop(FromContainer, FromIndex, ToIndex);
+		}
 		break;
 	case EContainerType::ECT_PlayerArmor:
 		break;
