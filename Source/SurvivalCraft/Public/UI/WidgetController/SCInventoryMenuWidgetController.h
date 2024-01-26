@@ -12,7 +12,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnResetItemSlotWidgetSignature, EC
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUpdateArmorSlotWidgetSignature, EArmorType, ArmorType, const FItemInformation&, Item);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnResetArmorSlotWidgetSignature, EArmorType, ArmorType);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerWindowWidgetSignature, UMaterialInstanceDynamic*, Material);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnToggleStorageWidgetSignature, int32, TotalSlots, ECraftingType, StorageType);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnToggleStorageWidgetSignature, int32, TotalSlots, ECraftingType, StorageType, bool, bCloseStorage);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUpdateStorageWidgetSignature, int32, TotalSlots);
 
 UCLASS(BlueprintType, Blueprintable)
@@ -49,4 +49,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnUpdateStorageWidgetSignature OnUpdateStorageWidgetDelegate;
+
+	UFUNCTION(BlueprintCallable)
+	void CharacterCloseStorage();
 };

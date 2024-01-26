@@ -16,27 +16,39 @@ ASCStorage::ASCStorage()
 
 void ASCStorage::InteractEvent_Implementation(ASCCharacter* Character)
 {
+	ASCPlayerController* SCPlayerController = IPlayerInterface::Execute_GetSCPlayerController(Character);
+	
+	if (AccessingCharacters.Find(Character) != INDEX_NONE)
+	{
+		// Means we're already accessing it and we're trying to close it.
+		SCPlayerController->ClientToggleStorage(StorageSize, StorageType, true);
+		RemoveAccessingCharacter(Character);
+		return;
+	}
+	
+	if (!IsSomeoneAccessing())
+	{
+		OpenStorage();
+	}
+	
 	Character->StorageBox = this;
 
-	if (ASCPlayerController* SCPlayerController = IPlayerInterface::Execute_GetSCPlayerController(Character))
+	SCPlayerController->ClientToggleStorage(StorageSize, StorageType);
+
+	AccessingCharacters.AddUnique(Character);
+
+	TArray<FItemInformation> Items = StorageComponent->GetItems();
+	for (int32 Index = 0; Index < Items.Num(); Index++)
 	{
-		SCPlayerController->ClientToggleStorage(StorageSize, StorageType);
+		FItemInformation& Item = Items[Index];
 
-		AccessingCharacters.AddUnique(Character);
-
-		TArray<FItemInformation> Items = StorageComponent->GetItems();
-		for (int32 Index = 0; Index < Items.Num(); Index++)
+		if (Item.ItemID == 0)
 		{
-			FItemInformation& Item = Items[Index];
-
-			if (Item.ItemID == 0)
-			{
-				SCPlayerController->ClientResetItemSlot(EContainerType::ECT_PlayerStorage, Index);
-			}
-			else
-			{
-				SCPlayerController->ClientUpdateItemSlot(EContainerType::ECT_PlayerStorage, Index, Item);
-			}
+			SCPlayerController->ClientResetItemSlot(EContainerType::ECT_PlayerStorage, Index);
+		}
+		else
+		{
+			SCPlayerController->ClientUpdateItemSlot(EContainerType::ECT_PlayerStorage, Index, Item);
 		}
 	}
 }
@@ -48,6 +60,15 @@ void ASCStorage::BeginPlay()
 	const FItemInformation Item = FItemInformation();
 	StorageComponent->InitializeItems(Item, StorageSize);
 }
+
+bool ASCStorage::IsSomeoneAccessing() const
+{
+	return AccessingCharacters.Num() > 0;
+}
+
+void ASCStorage::OpenStorage() {}
+
+void ASCStorage::CloseStorage() {}
 
 void ASCStorage::UpdateItemSlotToAccessingCharacters(EContainerType ContainerType, int32 Index,const FItemInformation& Item)
 {
@@ -106,4 +127,9 @@ void ASCStorage::UpdateStorageUI()
 void ASCStorage::RemoveAccessingCharacter(ASCCharacter* Character)
 {
 	AccessingCharacters.Remove(Character);
+
+	if (!IsSomeoneAccessing())
+	{
+		CloseStorage();
+	}
 }

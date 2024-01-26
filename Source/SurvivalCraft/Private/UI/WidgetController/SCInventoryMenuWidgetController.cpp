@@ -51,9 +51,9 @@ void USCInventoryMenuWidgetController::BindCallbacksToDependencies()
 	);
 
 	GetSCPC()->OnToggleStorageDelegate.AddLambda(
-		[this](int32 TotalSlots, ECraftingType StorageType)
+		[this](int32 TotalSlots, ECraftingType StorageType, bool bCloseStorage)
 		{
-			OnToggleStorageWidgetDelegate.Broadcast(TotalSlots, StorageType);
+			OnToggleStorageWidgetDelegate.Broadcast(TotalSlots, StorageType, bCloseStorage);
 		}
 	);
 	
@@ -70,4 +70,9 @@ void USCInventoryMenuWidgetController::BindCallbacksToDependencies()
 			OnPlayerLevelChangedDelegate.Broadcast(static_cast<float>(NewLevel));	
 		}
 	);
+}
+
+void USCInventoryMenuWidgetController::CharacterCloseStorage()
+{
+	GetSCPC()->RemoveCharacterStorageBoxReference();
 }

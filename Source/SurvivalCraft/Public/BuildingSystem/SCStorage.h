@@ -45,6 +45,14 @@ protected:
 	bool bIsBag = false;
 
 	TArray<ASCCharacter*> AccessingCharacters;
+
+private:
+	bool IsSomeoneAccessing() const;
+
+	/* To be implemented by the child's */
+	virtual void OpenStorage();
+	virtual void CloseStorage();
+
 public:
 	FORCEINLINE bool IsBag() const { return bIsBag; }
 	FORCEINLINE USCStorageContainerComponent* GetStorageComponent() const { return StorageComponent; }

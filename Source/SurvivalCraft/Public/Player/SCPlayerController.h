@@ -21,7 +21,7 @@ DECLARE_MULTICAST_DELEGATE_TwoParams(FOnUpdateArmorSlotSignature, EArmorType/*Ar
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnResetArmorSlotSignature, EArmorType/*ArmorType*/);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerWindowInitSignature, UMaterialInstanceDynamic*/*Material*/);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnDemolishStructureSignature, bool/*bCancelDemolish*/, float/*DemolishTime*/);
-DECLARE_MULTICAST_DELEGATE_TwoParams(FOnToggleStorageSignature, int32/*TotalSlots*/, ECraftingType/*StorageType*/);
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnToggleStorageSignature, int32/*TotalSlots*/, ECraftingType/*StorageType*/, bool /*bCloseStorage*/);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnUpdateStorageSlotsSignature, int32/*TotalSlots*/)
 
 struct FInputActionValue;
@@ -50,7 +50,7 @@ public:
 	void ClientUpdateDemolishStructureProgress(const bool bCancelDemolish, const float DemolishTime);
 
 	UFUNCTION(Client, Reliable)
-	void ClientToggleStorage(int32 TotalSlots, ECraftingType StorageType);
+	void ClientToggleStorage(int32 TotalSlots, ECraftingType StorageType, bool bCloseStorage = false);
 
 	UFUNCTION(Client, Reliable)
 	void ClientUpdateStorageSlots(int32 TotalSlots);
@@ -68,6 +68,8 @@ public:
 	float GetMaxWater();
 	float GetStamina();
 	float GetMaxStamina();
+	
+	void RemoveCharacterStorageBoxReference();
 
 	UFUNCTION(Server, Reliable)
 	void ServerSpendSkillPoint(EPlayerStats StatToUpgrade);

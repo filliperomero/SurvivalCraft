@@ -63,10 +63,10 @@ void ASCPlayerController::ClientResetArmorSlot_Implementation(EArmorType ArmorTy
 	OnResetArmorSlotDelegate.Broadcast(ArmorType);
 }
 
-void ASCPlayerController::ClientToggleStorage_Implementation(int32 TotalSlots, ECraftingType StorageType)
+void ASCPlayerController::ClientToggleStorage_Implementation(int32 TotalSlots, ECraftingType StorageType, bool bCloseStorage)
 {
 	OnToggleInventoryDelegate.Broadcast();
-	OnToggleStorageDelegate.Broadcast(TotalSlots, StorageType);
+	OnToggleStorageDelegate.Broadcast(TotalSlots, StorageType, bCloseStorage);
 }
 
 void ASCPlayerController::ClientUpdateStorageSlots_Implementation(int32 TotalSlots)
@@ -168,6 +168,11 @@ float ASCPlayerController::GetStamina()
 float ASCPlayerController::GetMaxStamina()
 {
 	return GetSCCharacter()->GetMaxStamina();
+}
+
+void ASCPlayerController::RemoveCharacterStorageBoxReference()
+{
+	GetSCCharacter()->RemoveStorageBoxReference();
 }
 
 void ASCPlayerController::ServerSpendSkillPoint_Implementation(EPlayerStats StatToUpgrade)
