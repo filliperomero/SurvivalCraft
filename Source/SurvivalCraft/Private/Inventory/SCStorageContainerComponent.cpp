@@ -1,8 +1,7 @@
 ﻿// Copyright Fillipe Romero
 
 #include "Inventory/SCStorageContainerComponent.h"
-
-#include "BuildingSystem/SCStorage.h"
+#include "BuildingSystem/Storages/SCStorage.h"
 
 USCStorageContainerComponent::USCStorageContainerComponent()
 {

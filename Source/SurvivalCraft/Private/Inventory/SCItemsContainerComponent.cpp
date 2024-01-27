@@ -1,6 +1,7 @@
 ﻿// Copyright Fillipe Romero
 
 #include "Inventory/SCItemsContainerComponent.h"
+#include "BuildingSystem/Storages/SCStorage.h"
 #include "Interfaces/PlayerInterface.h"
 #include "Player/SCPlayerController.h"
 
@@ -64,18 +65,27 @@ bool USCItemsContainerComponent::IsSlotEmpty(int32 SlotIndex)
 
 void USCItemsContainerComponent::UpdateUI(int32 Index, const FItemInformation& Item, bool bShouldResetSlot)
 {
-	ASCPlayerController* PC = IPlayerInterface::Execute_GetSCPlayerController(GetOwner());
-
 	switch (ContainerType)
 	{
 		case EContainerType::ECT_PlayerInventory:
 		case EContainerType::ECT_PlayerHotbar:
-			if (bShouldResetSlot) PC->ClientResetItemSlot(ContainerType, Index);
-			else PC->ClientUpdateItemSlot(ContainerType, Index, Item);
+			{
+				ASCPlayerController* PC = IPlayerInterface::Execute_GetSCPlayerController(GetOwner());
+			
+				if (bShouldResetSlot) PC->ClientResetItemSlot(ContainerType, Index);
+				else PC->ClientUpdateItemSlot(ContainerType, Index, Item);
 
-			break;
+				break;
+			}
 		case EContainerType::ECT_PlayerStorage:
-			break;
+			{
+				if (ASCStorage* Storage = Cast<ASCStorage>(GetOwner()))
+				{
+					Storage->UpdateItemSlotToAccessingCharacters(EContainerType::ECT_PlayerStorage, Index, Item);
+				}
+			
+				break;
+			}
 		case EContainerType::ECT_PlayerArmor:
 			break;
 	}

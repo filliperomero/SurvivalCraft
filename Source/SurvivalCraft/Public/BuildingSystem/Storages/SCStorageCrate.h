@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BuildingSystem/SCStorage.h"
+#include "SCStorage.h"
 #include "SCStorageCrate.generated.h"
 
 UCLASS()

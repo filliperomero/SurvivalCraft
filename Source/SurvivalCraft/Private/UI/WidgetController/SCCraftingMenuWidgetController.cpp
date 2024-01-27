@@ -10,7 +10,7 @@ void USCCraftingMenuWidgetController::CraftingItemSelected(const int32 ItemID, c
 
 	SelectedCraftingItem= { ItemID, ContainerType, TableType };
 
-	OnCraftingItemSelectedDelegate.Broadcast(ItemID, ContainerType, bCanCraft);
+	OnCraftingItemSelectedDelegate.Broadcast(ItemID, ContainerType, bCanCraft, TableType);
 }
 
 void USCCraftingMenuWidgetController::CraftButtonPressed()

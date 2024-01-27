@@ -23,7 +23,7 @@
 #include "UI/HUD/SCHUD.h"
 #include "Items/SCArmor.h"
 #include "BuildingSystem/SCBuildingComponent.h"
-#include "BuildingSystem/SCStorage.h"
+#include "BuildingSystem/Storages/SCStorage.h"
 #include "Components/SceneCaptureComponent2D.h"
 #include "Components/SlateWrapperTypes.h"
 #include "Interfaces/InteractInterface.h"
@@ -223,7 +223,28 @@ void ASCCharacter::ServerCraftItem_Implementation(const int32 ItemID, const ECon
 	case ECraftingType::ECFT_CookingPot:
 		break;
 	case ECraftingType::ECFT_CraftingBench:
-		break;
+		{
+			if (const FCraftingRecipe* CraftingRecipe = CraftingBenchRecipesDataTable->FindRow<FCraftingRecipe>(RowName, TEXT("")))
+			{
+				if (ContainerComponent->ContainRequiredItems(CraftingRecipe->RequiredItems))
+				{
+					if (CraftingRecipe->CraftingTime <= 0)
+					{
+						CraftTimerFinished(ContainerComponent, *CraftingRecipe);
+					}
+					else
+					{
+						CraftTimerDelegate.BindUFunction(this, FName("CraftTimerFinished"), ContainerComponent, *CraftingRecipe);
+						GetWorldTimerManager().SetTimer(CraftTimerHandle, CraftTimerDelegate, CraftingRecipe->CraftingTime, false);
+					}
+				}
+				else
+				{
+					// We never hit here but... we never know. we should reset the combat state here. so we can craft again.
+				}
+			}
+			break;
+		}
 	case ECraftingType::ECFT_Forge:
 		break;
 	case ECraftingType::ECFT_AdvancedWorkbench:
@@ -576,7 +597,16 @@ bool ASCCharacter::CanCraftItem(const int32 ItemID, const EContainerType Contain
 	case ECraftingType::ECFT_CookingPot:
 		break;
 	case ECraftingType::ECFT_CraftingBench:
-		break;
+		{
+			if (CraftingBenchRecipesDataTable)
+			{
+				if (const FCraftingRecipe* CraftingRecipe = CraftingBenchRecipesDataTable->FindRow<FCraftingRecipe>(RowName, TEXT("")))
+				{
+					return ContainerComponent->ContainRequiredItems(CraftingRecipe->RequiredItems);	
+				}
+			}	
+			break;
+		}
 	case ECraftingType::ECFT_Forge:
 		break;
 	case ECraftingType::ECFT_AdvancedWorkbench:
@@ -1166,6 +1196,7 @@ USCItemsContainerComponent* ASCCharacter::GetContainerComponent(const EContainer
 	case EContainerType::ECT_PlayerHotbar:
 		return HotbarComponent;
 	case EContainerType::ECT_PlayerStorage:
+		if (IsValid(StorageBox)) return StorageBox->GetStorageComponent();
 		break;
 	case EContainerType::ECT_PlayerArmor:
 		break;

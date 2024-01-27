@@ -9,7 +9,7 @@
 
 enum class EContainerType : uint8;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnCraftingItemSelectedSignature, const int32, ItemID, const EContainerType, ContainerType, const bool, bCanCraft);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnCraftingItemSelectedSignature, const int32, ItemID, const EContainerType, ContainerType, const bool, bCanCraft, const ECraftingType, CraftingType);
 
 struct FSelectedItem
 {
