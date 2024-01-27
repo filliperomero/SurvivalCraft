@@ -373,12 +373,20 @@ void ASCCharacter::ClientToggleBuildableInfoWidget_Implementation(ASCBuildable* 
 	Buildable->ClientShowInteractText(WidgetVisibility, bShowInteractText, bShowOptionsText, StructureName, OwnerName, InCurrentHealth, InMaxHealth);
 }
 
-void ASCCharacter::RemoveStorageBoxReference_Implementation()
+void ASCCharacter::ServerRemoveStorageBoxReference_Implementation()
 {
 	if (IsValid(StorageBox))
 	{
 		StorageBox->RemoveAccessingCharacter(this);
 		StorageBox = nullptr;
+	}
+}
+
+void ASCCharacter::ServerRunStorageAction_Implementation()
+{
+	if (IsValid(StorageBox))
+	{
+		StorageBox->RunAction();
 	}
 }
 

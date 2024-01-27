@@ -76,3 +76,10 @@ void USCInventoryMenuWidgetController::CharacterCloseStorage()
 {
 	GetSCPC()->RemoveCharacterStorageBoxReference();
 }
+
+void USCInventoryMenuWidgetController::ActionButtonPressed()
+{
+	if (GetSCPC() == nullptr) return;
+
+	GetSCPC()->RunStorageAction();
+}

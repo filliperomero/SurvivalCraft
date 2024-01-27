@@ -70,6 +70,7 @@ public:
 	float GetMaxStamina();
 	
 	void RemoveCharacterStorageBoxReference();
+	void RunStorageAction();
 
 	UFUNCTION(Server, Reliable)
 	void ServerSpendSkillPoint(EPlayerStats StatToUpgrade);

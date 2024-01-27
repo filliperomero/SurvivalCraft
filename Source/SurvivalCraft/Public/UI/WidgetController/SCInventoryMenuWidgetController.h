@@ -52,4 +52,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void CharacterCloseStorage();
+
+	UFUNCTION(BlueprintCallable)
+	void ActionButtonPressed();
 };

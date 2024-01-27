@@ -98,7 +98,10 @@ public:
 	void ClientToggleBuildableInfoWidget(ASCBuildable* Buildable, ESlateVisibility WidgetVisibility, bool bShowInteractText, bool bShowOptionsText, const FText& StructureName, const FText& OwnerName, float InCurrentHealth, float InMaxHealth);
 
 	UFUNCTION(Server, Reliable)
-	void RemoveStorageBoxReference();
+	void ServerRemoveStorageBoxReference();
+
+	UFUNCTION(Server, Reliable)
+	void ServerRunStorageAction();
 	
 	UPROPERTY()
 	TObjectPtr<ASCStorage> StorageBox;

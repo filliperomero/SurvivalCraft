@@ -133,3 +133,5 @@ void ASCStorage::RemoveAccessingCharacter(ASCCharacter* Character)
 		CloseStorage();
 	}
 }
+
+void ASCStorage::RunAction() {}

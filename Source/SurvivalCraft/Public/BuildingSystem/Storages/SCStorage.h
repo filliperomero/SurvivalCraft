@@ -28,6 +28,7 @@ public:
 	void ResetItemSlotToAccessingCharacters(EContainerType ContainerType, int32 Index); // ResetItemSlot
 	void UpdateStorageUI();
 	void RemoveAccessingCharacter(ASCCharacter* Character);
+	virtual void RunAction();
 
 protected:
 	virtual void BeginPlay() override;

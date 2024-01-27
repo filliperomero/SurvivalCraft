@@ -172,7 +172,12 @@ float ASCPlayerController::GetMaxStamina()
 
 void ASCPlayerController::RemoveCharacterStorageBoxReference()
 {
-	GetSCCharacter()->RemoveStorageBoxReference();
+	GetSCCharacter()->ServerRemoveStorageBoxReference();
+}
+
+void ASCPlayerController::RunStorageAction()
+{
+	return GetSCCharacter()->ServerRunStorageAction();
 }
 
 void ASCPlayerController::ServerSpendSkillPoint_Implementation(EPlayerStats StatToUpgrade)
