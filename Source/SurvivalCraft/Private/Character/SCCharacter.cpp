@@ -248,7 +248,28 @@ void ASCCharacter::ServerCraftItem_Implementation(const int32 ItemID, const ECon
 	case ECraftingType::ECFT_Forge:
 		break;
 	case ECraftingType::ECFT_AdvancedWorkbench:
-		break;
+		{
+			if (const FCraftingRecipe* CraftingRecipe = AdvanceCraftingBenchRecipesDataTable->FindRow<FCraftingRecipe>(RowName, TEXT("")))
+			{
+				if (ContainerComponent->ContainRequiredItems(CraftingRecipe->RequiredItems))
+				{
+					if (CraftingRecipe->CraftingTime <= 0)
+					{
+						CraftTimerFinished(ContainerComponent, *CraftingRecipe);
+					}
+					else
+					{
+						CraftTimerDelegate.BindUFunction(this, FName("CraftTimerFinished"), ContainerComponent, *CraftingRecipe);
+						GetWorldTimerManager().SetTimer(CraftTimerHandle, CraftTimerDelegate, CraftingRecipe->CraftingTime, false);
+					}
+				}
+				else
+				{
+					// We never hit here but... we never know. we should reset the combat state here. so we can craft again.
+				}
+			}
+			break;
+		}
 	case ECraftingType::ECFT_StorageBox:
 		break;
 	}
@@ -610,7 +631,16 @@ bool ASCCharacter::CanCraftItem(const int32 ItemID, const EContainerType Contain
 	case ECraftingType::ECFT_Forge:
 		break;
 	case ECraftingType::ECFT_AdvancedWorkbench:
-		break;
+		{
+			if (AdvanceCraftingBenchRecipesDataTable)
+			{
+				if (const FCraftingRecipe* CraftingRecipe = AdvanceCraftingBenchRecipesDataTable->FindRow<FCraftingRecipe>(RowName, TEXT("")))
+				{
+					return ContainerComponent->ContainRequiredItems(CraftingRecipe->RequiredItems);	
+				}
+			}	
+			break;
+		}
 	case ECraftingType::ECFT_StorageBox:
 		break;
 	}

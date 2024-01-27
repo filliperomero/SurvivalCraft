@@ -166,6 +166,9 @@ private:
 	TObjectPtr<UDataTable> CraftingBenchRecipesDataTable;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Resources", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UDataTable> AdvanceCraftingBenchRecipesDataTable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Resources", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UDataTable> ConsumablesDataTable;
 
 	UPROPERTY()
