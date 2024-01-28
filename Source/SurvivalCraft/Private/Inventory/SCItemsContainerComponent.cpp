@@ -55,6 +55,39 @@ bool USCItemsContainerComponent::RemoveItemByIndex(int32 Index)
 	return true;
 }
 
+bool USCItemsContainerComponent::IsEmpty()
+{
+	if (Items.Num() <= 0) return true;
+
+	bool bIsEmpty = true;
+
+	for (const auto& Item : Items)
+	{
+		if (Item.ItemID != 0)
+		{
+			bIsEmpty = false;
+			break;
+		}
+	}
+
+	return bIsEmpty;
+}
+
+TArray<FItemInformation> USCItemsContainerComponent::GetAvailableItems()
+{
+	TArray<FItemInformation> AvailableItems;
+	
+	for (auto Item : Items)
+	{
+		if (Item.ItemID != 0)
+		{
+			AvailableItems.Add(Item);
+		}	
+	}
+
+	return AvailableItems;
+}
+
 bool USCItemsContainerComponent::IsSlotEmpty(int32 SlotIndex)
 {
 	if (Items.IsValidIndex(SlotIndex) && Items[SlotIndex].ItemID == 0)

@@ -110,12 +110,7 @@ void ASCBuildable::DestroyStructure()
 	MulticastDestroyStructure();
 }
 
-void ASCBuildable::DemolishStructure()
-{
-	DestroyStructure();
-}
-
-void ASCBuildable::MulticastDestroyStructure_Implementation()
+void ASCBuildable::HandleDestroyStructure()
 {
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetVisibility(false);
@@ -124,6 +119,19 @@ void ASCBuildable::MulticastDestroyStructure_Implementation()
 	DestructibleMesh->SetSimulatePhysics(true);
 
 	SetLifeSpan(LifeSpan);
+}
+
+void ASCBuildable::DemolishStructure()
+{
+	if (bCanDemolish)
+	{
+		DestroyStructure();
+	}
+}
+
+void ASCBuildable::MulticastDestroyStructure_Implementation()
+{
+	HandleDestroyStructure();
 }
 
 void ASCBuildable::ClientShowInteractText_Implementation(ESlateVisibility WidgetVisibility, bool bShowInteractText, bool bShowOptionsText, const FText& InStructureName, const FText& InOwnerName, float CurrentHealth, float InMaxHealth)

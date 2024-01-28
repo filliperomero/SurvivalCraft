@@ -19,6 +19,14 @@ void ASCStorageCrate::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	DOREPLIFETIME(ASCStorageCrate, bIsLidOpen);
 }
 
+void ASCStorageCrate::HandleDestroyStructure()
+{
+	StorageLidMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	StorageLidMeshComponent->SetVisibility(false);
+	
+	Super::HandleDestroyStructure();
+}
+
 void ASCStorageCrate::OnRep_IsLidOpen()
 {
 	RotateLidTimeline();

@@ -19,6 +19,7 @@ class SURVIVALCRAFT_API ASCBuildable : public AActor
 public:
 	ASCBuildable();
 	virtual void DestroyStructure();
+	virtual void HandleDestroyStructure();
 	virtual void DemolishStructure();
 
 	UFUNCTION(Client, Reliable)
@@ -69,6 +70,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Buildable Properties")
 	bool bHasOptions = true;
+
+	UPROPERTY(EditAnywhere, Category = "Buildable Properties")
+	bool bCanDemolish = true;
 
 	UPROPERTY(EditAnywhere, Category = "Buildable Properties")
 	FText StructureName = FText();

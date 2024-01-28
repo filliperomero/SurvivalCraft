@@ -30,6 +30,9 @@ public:
 	bool RemoveItemQuantity(int32 Index, int32 AmountToRemove);
 	bool UpdateItemQuantity(int32 Index, int32 NewQuantity);
 	virtual bool RemoveItemByIndex(int32 Index);
+	virtual bool IsEmpty();
+	/* This function will return a list of available items inside our Items Array (it removes the empty structs)*/
+	TArray<FItemInformation> GetAvailableItems();
 
 	TArray<FItemInformation> Items;
 

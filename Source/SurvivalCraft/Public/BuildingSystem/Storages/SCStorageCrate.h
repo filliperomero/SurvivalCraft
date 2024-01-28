@@ -15,6 +15,8 @@ public:
 	ASCStorageCrate();
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	virtual void HandleDestroyStructure() override;
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Mesh)
 	TObjectPtr<UStaticMeshComponent> StorageLidMeshComponent;

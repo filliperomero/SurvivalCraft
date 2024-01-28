@@ -8,6 +8,7 @@
 #include "Interfaces/InteractInterface.h"
 #include "SCStorage.generated.h"
 
+class ASCBag;
 struct FItemInformation;
 enum class EContainerType : uint8;
 class USCStorageContainerComponent;
@@ -19,6 +20,7 @@ class SURVIVALCRAFT_API ASCStorage : public ASCBuildable, public IInteractInterf
 
 public:
 	ASCStorage();
+	virtual void DestroyStructure() override;
 
 	/** Interact Interface */
 	virtual void InteractEvent_Implementation(ASCCharacter* Character) override;
@@ -45,6 +47,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Storage Properties")
 	bool bIsBag = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Storage Properties")
+	TSubclassOf<ASCBag> BagClass;
+
+	bool bIsPendingDestruction = false;
+
+	UPROPERTY()
 	TArray<ASCCharacter*> AccessingCharacters;
 
 private:
