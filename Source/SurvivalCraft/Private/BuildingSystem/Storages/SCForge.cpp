@@ -63,7 +63,7 @@ void ASCForge::OnRep_IsFireOn()
 void ASCForge::ForgeItemsFinished()
 {
 	// If we don't have the requirements items to run the forge, we should stop
-	// Or if we cannot remove the required items for some reason, we should stop aswell
+	// Or if we cannot remove the required items for some reason, we should stop as well
 	if (!GetStorageComponent()->ContainRequiredItems(RequiredItemsToRunAction) || !GetStorageComponent()->RemoveItems(RequiredItemsToRunAction))
 	{
 		bIsFireOn = false;
