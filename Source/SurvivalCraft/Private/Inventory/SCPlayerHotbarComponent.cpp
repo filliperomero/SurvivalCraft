@@ -21,15 +21,15 @@ bool USCPlayerHotbarComponent::HasItemInSlot(const int32 Index, EItemType& ItemT
 	return true;
 }
 
-bool USCPlayerHotbarComponent::AddItemToIndex(const FItemInformation& Item, int32 Index)
+bool USCPlayerHotbarComponent::AddItemToIndex(const FItemInformation& Item, int32 FromIndex, int32 ToIndex, int32& OutRemainingQuantity)
 {
-	const bool bIsSuccess = Super::AddItemToIndex(Item, Index);
-	
-	if (bIsSuccess)
+	const bool bIsSuccess = Super::AddItemToIndex(Item, FromIndex, ToIndex, OutRemainingQuantity);
+
+	if (bIsSuccess && OutRemainingQuantity == -1)
 	{
 		ASCPlayerController* PC = IPlayerInterface::Execute_GetSCPlayerController(GetOwner());
 		
-		PC->ClientUpdateItemSlot(ContainerType, Index, Item);
+		PC->ClientUpdateItemSlot(ContainerType, ToIndex, Item);
 	}
 	
 	return bIsSuccess;

@@ -175,25 +175,65 @@ void USCItemsContainerComponent::OnSlotDrop(USCItemsContainerComponent* FromCont
 
 void USCItemsContainerComponent::TransferItem(USCItemsContainerComponent* ToComponent, int32 FromIndex, int32 ToIndex)
 {
-	if (!IsValid(ToComponent)) return;
+	if (!IsValid(ToComponent) || FromIndex == ToIndex) return;
 
 	const FItemInformation& ItemToTransfer = GetItemByIndex(FromIndex);
 
-	const bool bIsSuccess = ToComponent->AddItemToIndex(ItemToTransfer, ToIndex);
+	int32 OutRemainingQuantity = -1;
 
-	if (bIsSuccess) RemoveItemByIndex(FromIndex);
+	const bool bIsSuccess = ToComponent->AddItemToIndex(ItemToTransfer, FromIndex, ToIndex, OutRemainingQuantity);
+
+	if (OutRemainingQuantity > 0)
+	{
+		UpdateItemQuantity(FromIndex, OutRemainingQuantity);
+	}
+
+	if (bIsSuccess && OutRemainingQuantity <= 0) RemoveItemByIndex(FromIndex);
 }
 
-bool USCItemsContainerComponent::AddItemToIndex(const FItemInformation& Item, int32 Index)
+bool USCItemsContainerComponent::AddItemToIndex(const FItemInformation& Item, int32 FromIndex, int32 ToIndex, int32& OutRemainingQuantity)
 {
-	if (IsSlotEmpty(Index) && Items.IsValidIndex(Index))
+	if (!Items.IsValidIndex(ToIndex)) return false;
+	
+	if (IsSlotEmpty(ToIndex))
 	{
-		Items[Index] = Item;
+		Items[ToIndex] = Item;
+
+		// -1 Indicates we don't have a Stack/Swap
+		OutRemainingQuantity = -1;
 
 		return true;
 	}
 
-	return false;
+	return StackItem(Item, ToIndex, OutRemainingQuantity);
+}
+
+bool USCItemsContainerComponent::StackItem(const FItemInformation& Item, int32 ToIndex, int32& OutRemainingQuantity)
+{
+	if (!Items.IsValidIndex(ToIndex)) return false;
+
+	const FItemInformation TargetItem = GetItems()[ToIndex];
+
+	// Here we can Swap Items if we want
+	if (Item.ItemID != TargetItem.ItemID || !Item.bIsStackable || !TargetItem.bIsStackable) return false;
+
+	if (TargetItem.ItemQuantity >= TargetItem.StackSize) return false;
+
+	const int32 CombinedQuantity = TargetItem.ItemQuantity + Item.ItemQuantity;
+	const int32 TargetStackSize = TargetItem.StackSize;
+
+	if (CombinedQuantity > TargetStackSize)
+	{
+		UpdateItemQuantity(ToIndex, TargetStackSize);
+		OutRemainingQuantity = CombinedQuantity - TargetStackSize;
+		
+		return true;
+	}
+
+	UpdateItemQuantity(ToIndex, CombinedQuantity);
+	OutRemainingQuantity = 0;
+
+	return true;
 }
 
 bool USCItemsContainerComponent::RemoveItems(TArray<FCraftingItemInfo> ItemsToRemove)

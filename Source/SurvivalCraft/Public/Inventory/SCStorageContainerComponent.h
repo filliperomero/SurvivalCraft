@@ -14,7 +14,7 @@ class SURVIVALCRAFT_API USCStorageContainerComponent : public USCItemsContainerC
 public:
 	USCStorageContainerComponent();
 	
-	virtual bool AddItemToIndex(const FItemInformation& Item, int32 Index) override;
+	virtual bool AddItemToIndex(const FItemInformation& Item, int32 FromIndex, int32 ToIndex, int32& OutRemainingQuantity) override;
 	virtual bool RemoveItemByIndex(int32 Index) override;
 	virtual void DropItem(int32 Index) override;
 

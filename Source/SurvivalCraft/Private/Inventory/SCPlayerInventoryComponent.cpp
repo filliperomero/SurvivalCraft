@@ -17,15 +17,15 @@ void USCPlayerInventoryComponent::BeginPlay()
 	Super::BeginPlay();
 }
 
-bool USCPlayerInventoryComponent::AddItemToIndex(const FItemInformation& Item, int32 Index)
+bool USCPlayerInventoryComponent::AddItemToIndex(const FItemInformation& Item, int32 FromIndex, int32 ToIndex, int32& OutRemainingQuantity)
 {
-	const bool bIsSuccess = Super::AddItemToIndex(Item, Index);
+	const bool bIsSuccess = Super::AddItemToIndex(Item, FromIndex, ToIndex, OutRemainingQuantity);
 
-	if (bIsSuccess)
+	if (bIsSuccess && OutRemainingQuantity == -1)
 	{
 		ASCPlayerController* PC = IPlayerInterface::Execute_GetSCPlayerController(GetOwner());
 		
-		PC->ClientUpdateItemSlot(ContainerType, Index, Item);
+		PC->ClientUpdateItemSlot(ContainerType, ToIndex, Item);
 	}
 
 	return bIsSuccess;

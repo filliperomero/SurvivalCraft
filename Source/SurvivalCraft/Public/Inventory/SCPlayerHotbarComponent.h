@@ -15,7 +15,7 @@ public:
 	USCPlayerHotbarComponent();
 
 	bool HasItemInSlot(const int32 Index, EItemType& ItemType);
-	virtual bool AddItemToIndex(const FItemInformation& Item, int32 Index) override;
+	virtual bool AddItemToIndex(const FItemInformation& Item, int32 FromIndex, int32 ToIndex, int32& OutRemainingQuantity) override;
 	virtual bool RemoveItemByIndex(int32 Index) override;
 	virtual void DropItem(int32 Index) override;
 

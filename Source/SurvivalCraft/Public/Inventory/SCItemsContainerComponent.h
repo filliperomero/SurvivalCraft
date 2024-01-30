@@ -26,7 +26,8 @@ public:
 
 	void OnSlotDrop(USCItemsContainerComponent* FromContainer, int32 FromIndex, int32 ToIndex);
 	void TransferItem(USCItemsContainerComponent* ToComponent, int32 FromIndex, int32 ToIndex);
-	virtual bool AddItemToIndex(const FItemInformation& Item, int32 Index);
+	virtual bool AddItemToIndex(const FItemInformation& Item, int32 FromIndex, int32 ToIndex, int32& OutRemainingQuantity);
+	bool StackItem(const FItemInformation& Item, int32 ToIndex, int32& OutRemainingQuantity);
 	bool RemoveItems(TArray<FCraftingItemInfo> ItemsToRemove);
 	bool ContainRequiredItems(TArray<FCraftingItemInfo> RequiredItems);
 	bool RemoveItemQuantity(int32 Index, int32 AmountToRemove);
