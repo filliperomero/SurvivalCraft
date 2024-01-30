@@ -76,6 +76,7 @@ public:
 	void ShowItemOptionsMenu(int32 Index, EContainerType Container);
 	void HideItemOptionsMenu();
 	void DropItem(EContainerType ContainerType, int32 FromIndex);
+	void SplitItemStack(EContainerType ContainerType, int32 FromIndex);
 
 	UFUNCTION(Server, Reliable)
 	void ServerSpendSkillPoint(EPlayerStats StatToUpgrade);

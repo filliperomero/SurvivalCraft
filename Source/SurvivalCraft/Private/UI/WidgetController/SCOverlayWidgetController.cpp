@@ -67,3 +67,8 @@ void USCOverlayWidgetController::DropItem(EContainerType ContainerType, int32 Fr
 {
 	GetSCPC()->DropItem(ContainerType, FromIndex);
 }
+
+void USCOverlayWidgetController::SplitItemStack(EContainerType ContainerType, int32 FromIndex)
+{
+	GetSCPC()->SplitItemStack(ContainerType, FromIndex);
+}

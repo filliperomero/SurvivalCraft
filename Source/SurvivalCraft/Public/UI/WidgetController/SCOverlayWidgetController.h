@@ -47,4 +47,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void DropItem(EContainerType ContainerType, int32 FromIndex);
+
+	UFUNCTION(BlueprintCallable)
+	void SplitItemStack(EContainerType ContainerType, int32 FromIndex);
 };

@@ -73,6 +73,24 @@ bool USCItemsContainerComponent::IsEmpty()
 	return bIsEmpty;
 }
 
+bool USCItemsContainerComponent::IsFull()
+{
+	if (Items.Num() <= 0) return true;
+
+	bool bIsFull = true;
+
+	for (const auto& Item : Items)
+	{
+		if (Item.ItemID == 0)
+		{
+			bIsFull = false;
+			break;
+		}
+	}
+
+	return bIsFull;
+}
+
 TArray<FItemInformation> USCItemsContainerComponent::GetAvailableItems()
 {
 	TArray<FItemInformation> AvailableItems;
@@ -89,6 +107,24 @@ TArray<FItemInformation> USCItemsContainerComponent::GetAvailableItems()
 }
 
 void USCItemsContainerComponent::DropItem(int32 Index) {}
+
+void USCItemsContainerComponent::SplitItemStack(int32 Index)
+{
+	if (IsSlotEmpty(Index) || IsFull()) return;
+
+	FItemInformation ItemInformation = GetItems()[Index];
+
+	const int32 CurrentQuantity = ItemInformation.ItemQuantity;
+
+	if (CurrentQuantity >= 2)
+	{
+		const int32 SplitQuantity = CurrentQuantity / 2;
+
+		UpdateItemQuantity(Index, SplitQuantity);
+		ItemInformation.ItemQuantity = CurrentQuantity - SplitQuantity;
+		AddItem(ItemInformation, true);
+	}
+}
 
 bool USCItemsContainerComponent::IsSlotEmpty(int32 SlotIndex)
 {
@@ -127,9 +163,9 @@ void USCItemsContainerComponent::UpdateUI(int32 Index, const FItemInformation& I
 }
 
 // Suppose to be a bool, lets see if we need to fix it in the future
-void USCItemsContainerComponent::AddItem(FItemInformation Item)
+void USCItemsContainerComponent::AddItem(FItemInformation Item, bool bIsItemSplit)
 {
-	ServerAddItem(Item);
+	ServerAddItem(Item, bIsItemSplit);
 }
 
 void USCItemsContainerComponent::OnSlotDrop(USCItemsContainerComponent* FromContainer, int32 FromIndex, int32 ToIndex)
@@ -362,9 +398,9 @@ void USCItemsContainerComponent::AddRemainingItemQuantity(FItemInformation& Item
 	}
 }
 
-void USCItemsContainerComponent::ServerAddItem_Implementation(FItemInformation Item)
+void USCItemsContainerComponent::ServerAddItem_Implementation(FItemInformation Item, bool bIsItemSplit)
 {
-	if (Item.bIsStackable)
+	if (Item.bIsStackable && !bIsItemSplit)
 	{
 		if (HasItemsToStack(Item))
 		{

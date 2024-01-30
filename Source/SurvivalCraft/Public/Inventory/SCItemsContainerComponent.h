@@ -22,7 +22,7 @@ public:
 	virtual void InitializeItems(const FItemInformation& Item, const int32 Size);
 
 	UFUNCTION(BlueprintCallable) // Provisory UFUNCTION
-	virtual void AddItem(FItemInformation Item);
+	virtual void AddItem(FItemInformation Item, bool bIsItemSplit = false);
 
 	void OnSlotDrop(USCItemsContainerComponent* FromContainer, int32 FromIndex, int32 ToIndex);
 	void TransferItem(USCItemsContainerComponent* ToComponent, int32 FromIndex, int32 ToIndex);
@@ -33,10 +33,12 @@ public:
 	bool UpdateItemQuantity(int32 Index, int32 NewQuantity);
 	virtual bool RemoveItemByIndex(int32 Index);
 	virtual bool IsEmpty();
+	bool IsFull();
 	/* This function will return a list of available items inside our Items Array (it removes the empty structs)*/
 	TArray<FItemInformation> GetAvailableItems();
 	// Override in child classes
 	virtual void DropItem(int32 Index);
+	virtual void SplitItemStack(int32 Index);
 
 	TArray<FItemInformation> Items;
 
@@ -59,7 +61,7 @@ protected:
 	virtual void HandleSlotDrop(USCItemsContainerComponent* FromContainer, int32 FromIndex, int32 ToIndex);
 
 	UFUNCTION(Server, Reliable)
-	void ServerAddItem(FItemInformation Item);
+	void ServerAddItem(FItemInformation Item, bool bIsItemSplit);
 
 public:
 	TArray<FItemInformation> GetItems() const { return Items; }

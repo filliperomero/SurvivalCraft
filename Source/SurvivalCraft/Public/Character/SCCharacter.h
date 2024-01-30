@@ -85,6 +85,9 @@ public:
 	void ServerDropItem(EContainerType TargetContainerType, int32 FromIndex);
 
 	UFUNCTION(Server, Reliable)
+	void ServerSplitItemStack(EContainerType TargetContainerType, int32 FromIndex);
+
+	UFUNCTION(Server, Reliable)
 	void ServerOnEquipArmor(EContainerType FromContainerType, int32 FromIndex, EArmorType ArmorType);
 
 	UFUNCTION(Server, Reliable)

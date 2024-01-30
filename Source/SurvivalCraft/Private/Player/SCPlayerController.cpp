@@ -195,6 +195,11 @@ void ASCPlayerController::DropItem(EContainerType ContainerType, int32 FromIndex
 	GetSCCharacter()->ServerDropItem(ContainerType, FromIndex);
 }
 
+void ASCPlayerController::SplitItemStack(EContainerType ContainerType, int32 FromIndex)
+{
+	GetSCCharacter()->ServerSplitItemStack(ContainerType, FromIndex);
+}
+
 void ASCPlayerController::ServerSpendSkillPoint_Implementation(EPlayerStats StatToUpgrade)
 {
 	IPlayerInterface::Execute_SpendSkillPoint(GetSCCharacter(), StatToUpgrade);
