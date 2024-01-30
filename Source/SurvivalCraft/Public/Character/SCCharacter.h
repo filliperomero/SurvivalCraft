@@ -82,6 +82,9 @@ public:
 	void ServerOnSlotDrop(EContainerType TargetContainerType, EContainerType FromContainerType, int32 FromIndex, int32 ToIndex, EArmorType ArmorType);
 
 	UFUNCTION(Server, Reliable)
+	void ServerDropItem(EContainerType TargetContainerType, int32 FromIndex);
+
+	UFUNCTION(Server, Reliable)
 	void ServerOnEquipArmor(EContainerType FromContainerType, int32 FromIndex, EArmorType ArmorType);
 
 	UFUNCTION(Server, Reliable)
@@ -96,6 +99,9 @@ public:
 	// TODO: Check if we really need to have this function here or we can call it directly from Buildable class
 	UFUNCTION(Client, Reliable)
 	void ClientToggleBuildableInfoWidget(ASCBuildable* Buildable, ESlateVisibility WidgetVisibility, bool bShowInteractText, bool bShowOptionsText, const FText& StructureName, const FText& OwnerName, float InCurrentHealth, float InMaxHealth);
+
+	UFUNCTION(Client, Reliable)
+	void ClientShowItemAdded(UTexture2D* ItemIcon, int32 ItemQuantity, const FText& ItemName);
 
 	UFUNCTION(Server, Reliable)
 	void ServerRemoveStorageBoxReference();
@@ -341,9 +347,6 @@ private:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastPlayEquipableMontage(FName SectionName);
 
-	UFUNCTION(Client, Reliable)
-	void ClientShowItemAdded(UTexture2D* ItemIcon, int32 ItemQuantity, const FText& ItemName);
-
 	UFUNCTION(Server, Reliable)
 	void ServerStartDemolishTimer(FRotator ClientCameraRotation);
 
@@ -390,6 +393,8 @@ public:
 	FORCEINLINE float GetMaxStamina() const { return MaxStamina; }
 	FORCEINLINE USCBuildingComponent* GetBuildingComponent() const { return BuildingComponent; }
 	FORCEINLINE USCPlayerHotbarComponent* GetHotbarComponent() const { return HotbarComponent; }
+	FORCEINLINE USCPlayerInventoryComponent* GetPlayerInventoryComponent() const { return InventoryComponent; }
 	FORCEINLINE int32 GetStructureIDToBuild() const { return StructureIDToBuild; }
 	FORCEINLINE void ResetStructureIDToBuild() { StructureIDToBuild = -1; }
+	FORCEINLINE UArrowComponent* GetPlayerArrow() const { return PlayerArrow; }
 };

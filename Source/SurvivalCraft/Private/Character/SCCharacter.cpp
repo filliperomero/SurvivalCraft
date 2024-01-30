@@ -186,6 +186,15 @@ void ASCCharacter::ServerOnSlotDrop_Implementation(EContainerType TargetContaine
 	}
 }
 
+void ASCCharacter::ServerDropItem_Implementation(EContainerType TargetContainerType, int32 FromIndex)
+{
+	USCItemsContainerComponent* ContainerComponent = GetContainerComponent(TargetContainerType);
+
+	if (!IsValid(ContainerComponent)) return;
+
+	ContainerComponent->DropItem(FromIndex);
+}
+
 void ASCCharacter::ServerCraftItem_Implementation(const int32 ItemID, const EContainerType ContainerType, const ECraftingType TableType)
 {
 	// TODO: Need to create a variable called isCrafting. Probably I can use the CombatState for that

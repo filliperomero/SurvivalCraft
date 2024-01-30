@@ -22,7 +22,9 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnResetArmorSlotSignature, EArmorType/*Armo
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerWindowInitSignature, UMaterialInstanceDynamic*/*Material*/);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnDemolishStructureSignature, bool/*bCancelDemolish*/, float/*DemolishTime*/);
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnToggleStorageSignature, int32/*TotalSlots*/, ECraftingType/*StorageType*/, bool /*bCloseStorage*/);
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnUpdateStorageSlotsSignature, int32/*TotalSlots*/)
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnUpdateStorageSlotsSignature, int32/*TotalSlots*/);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnShowItemOptionsMenuSignature, int32/*Index*/, EContainerType/*Container*/);
+DECLARE_MULTICAST_DELEGATE(FOnHideItemOptionsMenuSignature);
 
 struct FInputActionValue;
 class UInputAction;
@@ -71,6 +73,9 @@ public:
 	
 	void RemoveCharacterStorageBoxReference();
 	void RunStorageAction();
+	void ShowItemOptionsMenu(int32 Index, EContainerType Container);
+	void HideItemOptionsMenu();
+	void DropItem(EContainerType ContainerType, int32 FromIndex);
 
 	UFUNCTION(Server, Reliable)
 	void ServerSpendSkillPoint(EPlayerStats StatToUpgrade);
@@ -93,6 +98,8 @@ public:
 	FOnDemolishStructureSignature OnDemolishStructureDelegate;
 	FOnToggleStorageSignature OnToggleStorageDelegate;
 	FOnUpdateStorageSlotsSignature OnUpdateStorageSlotsDelegate;
+	FOnShowItemOptionsMenuSignature OnShowItemOptionsMenuDelegate;
+	FOnHideItemOptionsMenuSignature OnHideItemOptionsMenuDelegate;
 
 protected:
 	virtual void BeginPlay() override;

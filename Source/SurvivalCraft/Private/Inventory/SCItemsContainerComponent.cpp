@@ -88,6 +88,8 @@ TArray<FItemInformation> USCItemsContainerComponent::GetAvailableItems()
 	return AvailableItems;
 }
 
+void USCItemsContainerComponent::DropItem(int32 Index) {}
+
 bool USCItemsContainerComponent::IsSlotEmpty(int32 SlotIndex)
 {
 	if (Items.IsValidIndex(SlotIndex) && Items[SlotIndex].ItemID == 0)

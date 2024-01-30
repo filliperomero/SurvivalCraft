@@ -9,6 +9,8 @@
 #include "Items/Data/SCItemData.h"
 #include "SCItemsContainerComponent.generated.h"
 
+class ASCWorldItemBag;
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class SURVIVALCRAFT_API USCItemsContainerComponent : public UActorComponent
 {
@@ -33,6 +35,8 @@ public:
 	virtual bool IsEmpty();
 	/* This function will return a list of available items inside our Items Array (it removes the empty structs)*/
 	TArray<FItemInformation> GetAvailableItems();
+	// Override in child classes
+	virtual void DropItem(int32 Index);
 
 	TArray<FItemInformation> Items;
 
@@ -41,6 +45,9 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Items Container Properties")
+	TSubclassOf<ASCWorldItemBag> WorldItemBagClass;
 
 	virtual void FindEmptySlot(bool& bSuccess, int32& OutEmptyIndex);
 	FItemInformation GetItemByIndex(int32 Index);

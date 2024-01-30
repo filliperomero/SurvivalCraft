@@ -16,6 +16,7 @@ public:
 
 	virtual bool AddItemToIndex(const FItemInformation& Item, int32 Index) override;
 	virtual bool RemoveItemByIndex(int32 Index) override;
+	virtual void DropItem(int32 Index) override;
 
 protected:
 	virtual void BeginPlay() override;

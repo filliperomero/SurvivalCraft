@@ -55,4 +55,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void ActionButtonPressed();
+
+	UFUNCTION(BlueprintCallable)
+	void ShowItemOptionsMenu(int32 Index, EContainerType Container);
+
+	UFUNCTION(BlueprintCallable)
+	void HideItemOptionsMenu();
 };

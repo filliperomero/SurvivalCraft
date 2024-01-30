@@ -50,6 +50,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Storage Properties")
 	TSubclassOf<ASCBag> BagClass;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Storage Properties")
+	FVector DropBagOffset = FVector(0.f, 120.f, 0.f);
+
 	bool bIsPendingDestruction = false;
 
 	UPROPERTY()
@@ -65,4 +68,5 @@ private:
 public:
 	FORCEINLINE bool IsBag() const { return bIsBag; }
 	FORCEINLINE USCStorageContainerComponent* GetStorageComponent() const { return StorageComponent; }
+	FORCEINLINE FVector GetDropBagOffset() const { return DropBagOffset; }
 };

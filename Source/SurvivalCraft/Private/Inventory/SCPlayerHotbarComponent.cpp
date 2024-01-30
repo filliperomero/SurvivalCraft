@@ -2,7 +2,9 @@
 
 #include "Inventory/SCPlayerHotbarComponent.h"
 #include "Character/SCCharacter.h"
+#include "Components/ArrowComponent.h"
 #include "Interfaces/PlayerInterface.h"
+#include "Items/SCWorldItemBag.h"
 #include "Player/SCPlayerController.h"
 
 USCPlayerHotbarComponent::USCPlayerHotbarComponent()
@@ -70,4 +72,25 @@ bool USCPlayerHotbarComponent::RemoveItemByIndex(int32 Index)
 	}
 
 	return bIsSuccess;
+}
+
+void USCPlayerHotbarComponent::DropItem(int32 Index)
+{
+	Super::DropItem(Index);
+	checkf(WorldItemBagClass, TEXT("WorldItemBagClass not set. Please fill out WorldItemBagClass property"));
+
+	if (IsSlotEmpty(Index)) return;
+
+	if (const ASCCharacter* Character = Cast<ASCCharacter>(GetOwner()))
+	{
+		FTransform Transform;
+		Transform.SetLocation(Character->GetPlayerArrow()->GetComponentLocation());
+		
+		ASCWorldItemBag* SpawnedWorldItemBag = GetWorld()->SpawnActorDeferred<ASCWorldItemBag>(WorldItemBagClass, Transform);
+
+		SpawnedWorldItemBag->SetBagItemInfo(GetItems()[Index]);
+		SpawnedWorldItemBag->FinishSpawning(Transform);
+
+		RemoveItemByIndex(Index);
+	}
 }

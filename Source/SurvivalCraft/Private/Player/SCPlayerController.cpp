@@ -180,6 +180,21 @@ void ASCPlayerController::RunStorageAction()
 	return GetSCCharacter()->ServerRunStorageAction();
 }
 
+void ASCPlayerController::ShowItemOptionsMenu(int32 Index, EContainerType Container)
+{
+	OnShowItemOptionsMenuDelegate.Broadcast(Index, Container);
+}
+
+void ASCPlayerController::HideItemOptionsMenu()
+{
+	OnHideItemOptionsMenuDelegate.Broadcast();
+}
+
+void ASCPlayerController::DropItem(EContainerType ContainerType, int32 FromIndex)
+{
+	GetSCCharacter()->ServerDropItem(ContainerType, FromIndex);
+}
+
 void ASCPlayerController::ServerSpendSkillPoint_Implementation(EPlayerStats StatToUpgrade)
 {
 	IPlayerInterface::Execute_SpendSkillPoint(GetSCCharacter(), StatToUpgrade);

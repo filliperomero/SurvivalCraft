@@ -22,5 +22,4 @@ private:
 
 	UFUNCTION()
 	void DestroySelfFinished();
-	
 };

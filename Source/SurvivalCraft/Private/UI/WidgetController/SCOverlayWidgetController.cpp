@@ -29,6 +29,20 @@ void USCOverlayWidgetController::BindCallbacksToDependencies()
 		}
 	);
 
+	GetSCPC()->OnShowItemOptionsMenuDelegate.AddLambda(
+		[this](int32 Index, EContainerType Container)
+		{
+			OnShowItemOptionsWidgetDelegate.Broadcast(Index, Container);
+		}
+	);
+
+	GetSCPC()->OnHideItemOptionsMenuDelegate.AddLambda(
+		[this]()
+		{
+			OnHideItemOptionsWidgetDelegate.Broadcast();
+		}
+	);
+
 	GetSCPS()->OnXPChangedDelegate.AddLambda(
 		[this](int32 NewXP, int32 EarnedXP)
 		{
@@ -42,4 +56,14 @@ void USCOverlayWidgetController::BindCallbacksToDependencies()
 			OnLevelChangedDelegate.Broadcast(static_cast<float>(NewLevel));
 		}
 	);
+}
+
+void USCOverlayWidgetController::HideItemOptionsMenu()
+{
+	OnHideItemOptionsWidgetDelegate.Broadcast();
+}
+
+void USCOverlayWidgetController::DropItem(EContainerType ContainerType, int32 FromIndex)
+{
+	GetSCPC()->DropItem(ContainerType, FromIndex);
 }

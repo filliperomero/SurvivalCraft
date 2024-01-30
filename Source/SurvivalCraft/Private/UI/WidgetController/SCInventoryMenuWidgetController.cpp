@@ -83,3 +83,17 @@ void USCInventoryMenuWidgetController::ActionButtonPressed()
 
 	GetSCPC()->RunStorageAction();
 }
+
+void USCInventoryMenuWidgetController::ShowItemOptionsMenu(int32 Index, EContainerType Container)
+{
+	if (GetSCPC() == nullptr) return;
+
+	GetSCPC()->ShowItemOptionsMenu(Index, Container);
+}
+
+void USCInventoryMenuWidgetController::HideItemOptionsMenu()
+{
+	if (GetSCPC() == nullptr) return;
+
+	GetSCPC()->HideItemOptionsMenu();
+}
