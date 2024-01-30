@@ -175,7 +175,7 @@ void USCItemsContainerComponent::OnSlotDrop(USCItemsContainerComponent* FromCont
 
 void USCItemsContainerComponent::TransferItem(USCItemsContainerComponent* ToComponent, int32 FromIndex, int32 ToIndex)
 {
-	if (!IsValid(ToComponent) || FromIndex == ToIndex) return;
+	if (!IsValid(ToComponent) || (FromIndex == ToIndex && ToComponent == this)) return;
 
 	const FItemInformation& ItemToTransfer = GetItemByIndex(FromIndex);
 
