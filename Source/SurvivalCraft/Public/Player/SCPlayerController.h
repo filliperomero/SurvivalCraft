@@ -114,6 +114,7 @@ private:
 	void StopJump();
 	void ToggleInventory();
 	void OnLeftMouse();
+	void OnLeftMouseReleased();
 	void Interact();
 	void Sprint();
 	void StopSprint();

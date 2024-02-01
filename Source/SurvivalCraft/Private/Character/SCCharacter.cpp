@@ -34,6 +34,7 @@ ASCCharacter::ASCCharacter()
 {
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_STRUCTURE, ECR_Block);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Overlap);
 
 	GetMesh()->SetOwnerNoSee(true);
 		
@@ -131,6 +132,31 @@ void ASCCharacter::SpendSkillPoint_Implementation(EPlayerStats StatToUpgrade)
 
 			break;
 	}
+}
+
+bool ASCCharacter::HasArmorInSlot_Implementation(EPhysicalSurface PhysicalSurface)
+{
+	switch (PhysicalSurface)
+	{
+		case SURFACE_HEAD:
+			if (IsValid(HelmetSlot)) return true;
+			break;
+		case SURFACE_CHEST:
+			if (IsValid(ChestSlot)) return true;
+			break;
+		case SURFACE_LEGS:
+			if (IsValid(PantsSlot)) return true;
+			break;
+		case SURFACE_BOOTS:
+			if (IsValid(BootsSlot)) return true;
+			break;
+		case SURFACE_LIMB:
+			return false;
+		default:
+			return false;
+	}
+
+	return false;
 }
 
 int32 ASCCharacter::GetArmorAmount_Implementation()
@@ -502,6 +528,7 @@ void ASCCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ASCCharacter, EquipableState);
+	DOREPLIFETIME(ASCCharacter, EquippedItem);
 	DOREPLIFETIME(ASCCharacter, CombatState);
 	DOREPLIFETIME(ASCCharacter, HelmetSlot);
 	DOREPLIFETIME(ASCCharacter, ChestSlot);
@@ -604,12 +631,18 @@ void ASCCharacter::UseHotBar(const int32 Index)
 void ASCCharacter::UseEquipable()
 {
 	// TODO: Change the name of the function since it does not make sense anymore to be called "UseEquipable
+	if (!bLeftButtonPressed || !bCanUseEquipable || !IsValid(EquippedItem)) return;
+	
 	if (BuildingComponent->IsBuildModeEnabled())
 	{
 		return PlaceBuildable();
 	}
-	// Improvement: We should replicate bCanUseEquipable so we can check this locally instead of checking in the server. This would save improve the lag
-	ServerUseEquipable();
+
+	bCanUseEquipable = false;
+	ServerUseEquipable(GetFirstPersonCameraComponent()->GetComponentRotation());
+
+	const float UseDelay = IEquipableInterface::Execute_GetEquipableDelay(EquippedItem);
+	GetWorldTimerManager().SetTimer(EquipableTimer, this, &ThisClass::EquipableTimerFinished, UseDelay);
 }
 
 void ASCCharacter::Interact()
@@ -1022,11 +1055,12 @@ void ASCCharacter::SpawnEquipable(TSubclassOf<AActor> EquipableItemClass, FItemI
 	EquippedItem = GetWorld()->SpawnActor<ASCEquipableItem>(EquipableItemClass);
 	EquippedItem->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, EquippedItem->GetEquipableItemInfo().SocketName);
 	EquippedItem->SetOwner(this);
+	EquippedItem->ItemInfo = ItemInformation;
 	
 	EquipableState = EquippedItem->GetEquipableItemInfo().EquipableState;
 	
 	// MulticastEquipItem(EquippedItem, EquippedItem->GetEquipableItemInfo().SocketName, EquippedItem->GetEquipableItemInfo().EquipableState);
-	ClientSpawnEquipable(EquippedItem->GetEquipableItemInfo().FirsPersonEquipClass, EquippedItem->GetEquipableItemInfo().SocketName);
+	ClientSpawnEquipable(EquippedItem->GetEquipableItemInfo().FirstPersonEquipClass, EquippedItem->GetEquipableItemInfo().SocketName);
 }
 
 void ASCCharacter::ServerUnequipCurrentItem_Implementation(int32 Index)
@@ -1061,14 +1095,12 @@ void ASCCharacter::ClientUnequipEquipable_Implementation()
 	FP_EquippedItem->Destroy();
 }
 
-void ASCCharacter::ServerUseEquipable_Implementation()
+void ASCCharacter::ServerUseEquipable_Implementation(FRotator ClientCameraRotation)
 {
-	if (!IsValid(EquippedItem) || !bCanUseEquipable) return;
-
-	bCanUseEquipable = false;
+	if (!IsValid(EquippedItem)) return;
 
 	// TODO: since useItem for now only play the montage, we can have a interface to get the MontageName and just call the RPC's from here.
-	EquippedItem->UseItem_Implementation(this);
+	IEquipableInterface::Execute_UseItem(EquippedItem, this, ClientCameraRotation);
 }
 
 void ASCCharacter::ServerInteract_Implementation(FRotator ClientCameraRotation)
@@ -1285,6 +1317,12 @@ void ASCCharacter::CraftTimerFinished(USCItemsContainerComponent* ContainerCompo
 	{
 		// We never hit here but... we never know. we should reset the combat state here. so we can craft again.
 	}
+}
+
+void ASCCharacter::EquipableTimerFinished()
+{
+	bCanUseEquipable = true;
+	UseEquipable();
 }
 
 ASCItemMaster* ASCCharacter::GetArmorSlot(EArmorType ArmorType)

@@ -22,6 +22,10 @@ public:
 	virtual FDamageTiers GetDamageTiers_Implementation() override;
 	/** StructureDamageInterface */
 
+	/** EquipableInterface */
+	virtual float GetEquipableDelay_Implementation() override;
+	/** EquipableInterface */
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -30,6 +34,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipable Properties")
 	FDamageTiers StructureDamageTier;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipable Properties")
+	float UseDelay = 0.4f;
 
 public:
 	FORCEINLINE FEquipableItemInfo GetEquipableItemInfo() { return EquipableItemInfo; }

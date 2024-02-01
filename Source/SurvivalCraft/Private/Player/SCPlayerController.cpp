@@ -31,6 +31,7 @@ void ASCPlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ThisClass::Look);
 		EnhancedInputComponent->BindAction(InventoryAction, ETriggerEvent::Started, this, &ThisClass::ToggleInventory);
 		EnhancedInputComponent->BindAction(LeftMouseAction, ETriggerEvent::Started, this, &ThisClass::OnLeftMouse);
+		EnhancedInputComponent->BindAction(LeftMouseAction, ETriggerEvent::Completed, this, &ThisClass::OnLeftMouseReleased);
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &ThisClass::Interact);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &ThisClass::Sprint);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &ThisClass::StopSprint);
@@ -245,7 +246,13 @@ void ASCPlayerController::ToggleInventory()
 void ASCPlayerController::OnLeftMouse()
 {
 	// TODO: Create a interface for the Character so I don't need to cast.
+	GetSCCharacter()->SetLeftButtonPressed(true);
 	GetSCCharacter()->UseEquipable();
+}
+
+void ASCPlayerController::OnLeftMouseReleased()
+{
+	GetSCCharacter()->SetLeftButtonPressed(false);
 }
 
 void ASCPlayerController::Interact()

@@ -18,7 +18,7 @@ ASCHatchet::ASCHatchet()
 	PrimaryActorTick.bCanEverTick = false;
 }
 
-void ASCHatchet::UseItem_Implementation(ASCCharacter* SCCharacter)
+void ASCHatchet::UseItem_Implementation(ASCCharacter* SCCharacter, FRotator ClientCameraRotation)
 {
 	// TODO: Better to use a Interface here, so we don't need to import SCCharacter
 	SCCharacter->PlayEquipableMontage(FName("Hatchet"));

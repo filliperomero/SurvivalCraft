@@ -35,4 +35,7 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent)
 	void SpendSkillPoint(EPlayerStats StatToUpgrade);
+
+	UFUNCTION(BlueprintNativeEvent)
+	bool HasArmorInSlot(EPhysicalSurface PhysicalSurface);
 };

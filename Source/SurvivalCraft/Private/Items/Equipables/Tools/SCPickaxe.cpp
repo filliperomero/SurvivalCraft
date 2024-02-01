@@ -18,7 +18,7 @@ ASCPickaxe::ASCPickaxe()
 	PrimaryActorTick.bCanEverTick = false;
 }
 
-void ASCPickaxe::UseItem_Implementation(ASCCharacter* SCCharacter)
+void ASCPickaxe::UseItem_Implementation(ASCCharacter* SCCharacter, FRotator ClientCameraRotation)
 {
 	// TODO: Better to use a Interface here, so we don't need to import SCCharacter
 	// We're using the same montage as the Hatchet

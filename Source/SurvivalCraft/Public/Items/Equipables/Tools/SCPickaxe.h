@@ -17,7 +17,7 @@ public:
 	ASCPickaxe();
 
 	/** EquipableInterface */
-	virtual void UseItem_Implementation(ASCCharacter* SCCharacter) override;
+	virtual void UseItem_Implementation(ASCCharacter* SCCharacter, FRotator ClientCameraRotation) override;
 	virtual void Interact_Implementation(const FVector& LocationToCheck, const FRotator& Rotation) override;
 	/** EquipableInterface */
 	

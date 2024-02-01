@@ -12,6 +12,11 @@ FDamageTiers ASCEquipableItem::GetDamageTiers_Implementation()
 	return StructureDamageTier;
 }
 
+float ASCEquipableItem::GetEquipableDelay_Implementation()
+{
+	return UseDelay;
+}
+
 void ASCEquipableItem::BeginPlay()
 {
 	Super::BeginPlay();

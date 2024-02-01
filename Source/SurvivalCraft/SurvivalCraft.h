@@ -23,3 +23,10 @@
 #define ECC_TORCH_TRACE ECollisionChannel::ECC_GameTraceChannel14
 #define ECC_WALL_TRACE ECollisionChannel::ECC_GameTraceChannel15
 #define ECC_RAMP_TRACE ECollisionChannel::ECC_GameTraceChannel16
+
+// Physical Surface
+#define SURFACE_HEAD SurfaceType1
+#define SURFACE_CHEST SurfaceType2
+#define SURFACE_LEGS SurfaceType3
+#define SURFACE_BOOTS SurfaceType4
+#define SURFACE_LIMB SurfaceType5

@@ -20,8 +20,11 @@ class SURVIVALCRAFT_API IEquipableInterface
 
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void UseItem(ASCCharacter* SCCharacter);
+	void UseItem(ASCCharacter* SCCharacter, FRotator ClientCameraRotation);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void Interact(const FVector& LocationToCheck, const FRotator& Rotation);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	float GetEquipableDelay();
 };

@@ -44,6 +44,7 @@ public:
 	virtual void OnEquipArmor_Implementation(EContainerType FromContainerType, int32 FromIndex, EArmorType ArmorType) override;
 	virtual void AddToXP_Implementation(int32 InXP) override;
 	virtual void SpendSkillPoint_Implementation(EPlayerStats StatToUpgrade) override;
+	virtual bool HasArmorInSlot_Implementation(EPhysicalSurface PhysicalSurface) override;
 	/** Player Interface */
 
 	/** Combat Interface */
@@ -183,7 +184,7 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Resources", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UDataTable> ConsumablesDataTable;
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	TObjectPtr<ASCEquipableItem> EquippedItem;
 
 	UPROPERTY(ReplicatedUsing = OnRep_HelmetSlot)
@@ -337,7 +338,7 @@ private:
 	void ClientUnequipEquipable();
 
 	UFUNCTION(Server, Reliable)
-	void ServerUseEquipable();
+	void ServerUseEquipable(FRotator ClientCameraRotation);
 
 	UFUNCTION(Server, Reliable)
 	void ServerInteract(FRotator ClientCameraRotation);
@@ -382,6 +383,12 @@ private:
 
 	int32 StructureIDToBuild = -1;
 
+	bool bLeftButtonPressed = false;
+	FTimerHandle EquipableTimer;
+
+	UFUNCTION()
+	void EquipableTimerFinished();
+
 public:
 	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
 	UCameraComponent* GetFirstPersonCameraComponent() const { return Camera; }
@@ -400,4 +407,6 @@ public:
 	FORCEINLINE int32 GetStructureIDToBuild() const { return StructureIDToBuild; }
 	FORCEINLINE void ResetStructureIDToBuild() { StructureIDToBuild = -1; }
 	FORCEINLINE UArrowComponent* GetPlayerArrow() const { return PlayerArrow; }
+	FORCEINLINE void SetLeftButtonPressed(const bool bPressed) { bLeftButtonPressed = bPressed; }
+	FORCEINLINE int32 GetEquippedItemIndex() const { return EquippedItemIndex; }
 };

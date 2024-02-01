@@ -47,6 +47,6 @@ struct FEquipableItemInfo
 	EEquipableState EquipableState = EEquipableState::EES_Default;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	TSubclassOf<ASCEquipableItem> FirsPersonEquipClass;
+	TSubclassOf<ASCEquipableItem> FirstPersonEquipClass;
 	
 };
