@@ -36,7 +36,7 @@ protected:
 	FDamageTiers StructureDamageTier;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Equipable Properties")
-	float UseDelay = 0.4f;
+	float UseDelay = 0.8f;
 
 public:
 	FORCEINLINE FEquipableItemInfo GetEquipableItemInfo() { return EquipableItemInfo; }

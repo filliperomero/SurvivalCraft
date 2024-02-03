@@ -16,6 +16,8 @@ public:
 
 	/** EquipableInterface */
 	virtual void UseItem_Implementation(ASCCharacter* SCCharacter, FRotator ClientCameraRotation) override;
+	virtual void ReloadItem_Implementation(ASCCharacter* SCCharacter) override;
+	virtual void Interact_Implementation(const FVector& LocationToCheck, const FRotator& Rotation) override;
 	/** EquipableInterface */
 
 protected:
@@ -31,7 +33,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float DamageMultiplier = 0.05f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName AmmoItemID = FName();
+
 private:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastPlayWeaponAnim();
+
+	void SpendRound(ASCCharacter* SCCharacter);
 };

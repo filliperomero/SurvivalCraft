@@ -37,6 +37,7 @@ void ASCPlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &ThisClass::StopSprint);
 		EnhancedInputComponent->BindAction(DemolishAction, ETriggerEvent::Started, this, &ThisClass::DemolishStructure);
 		EnhancedInputComponent->BindAction(DemolishAction, ETriggerEvent::Completed, this, &ThisClass::StopDemolishStructure);
+		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Started, this, &ThisClass::Reload);
 	}
 	else
 	{
@@ -285,6 +286,11 @@ void ASCPlayerController::DemolishStructure()
 void ASCPlayerController::StopDemolishStructure()
 {
 	GetSCCharacter()->StopDemolish();
+}
+
+void ASCPlayerController::Reload()
+{
+	GetSCCharacter()->ServerReload();
 }
 
 ASCCharacter* ASCPlayerController::GetSCCharacter()

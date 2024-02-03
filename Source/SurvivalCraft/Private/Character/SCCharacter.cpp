@@ -723,6 +723,11 @@ void ASCCharacter::StopDemolish()
 
 void ASCCharacter::FinishEquipable()
 {
+	if (HasAuthority() && CombatState != ECombatState::ECS_Unoccupied)
+	{
+		CombatState = ECombatState::ECS_Unoccupied;
+	}
+	
 	bCanUseEquipable = true;
 }
 
@@ -1045,6 +1050,8 @@ void ASCCharacter::OnRep_CombatState()
 			UGameplayStatics::SpawnSoundAtLocation(this, HarvestBushSound, GetActorLocation());
 		
 		break;
+	case ECombatState::ECS_Reloading:
+		break;
 	case ECombatState::ECS_MAX:
 		break;
 	}
@@ -1097,10 +1104,17 @@ void ASCCharacter::ClientUnequipEquipable_Implementation()
 
 void ASCCharacter::ServerUseEquipable_Implementation(FRotator ClientCameraRotation)
 {
-	if (!IsValid(EquippedItem)) return;
+	if (!IsValid(EquippedItem) || CombatState != ECombatState::ECS_Unoccupied) return;
 
 	// TODO: since useItem for now only play the montage, we can have a interface to get the MontageName and just call the RPC's from here.
 	IEquipableInterface::Execute_UseItem(EquippedItem, this, ClientCameraRotation);
+}
+
+void ASCCharacter::ServerReload_Implementation()
+{
+	if (!IsValid(EquippedItem) || CombatState != ECombatState::ECS_Unoccupied) return;
+	
+	IEquipableInterface::Execute_ReloadItem(EquippedItem, this);
 }
 
 void ASCCharacter::ServerInteract_Implementation(FRotator ClientCameraRotation)

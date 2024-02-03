@@ -4,8 +4,11 @@
 #include "Camera/CameraComponent.h"
 #include "Character/SCCharacter.h"
 #include "Inventory/SCPlayerHotbarComponent.h"
+#include "Inventory/SCPlayerInventoryComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/KismetStringLibrary.h"
+#include "Player/SCPlayerController.h"
 #include "SurvivalCraft/SurvivalCraft.h"
 
 ASCRifle::ASCRifle()
@@ -18,10 +21,11 @@ ASCRifle::ASCRifle()
 
 void ASCRifle::UseItem_Implementation(ASCCharacter* SCCharacter, FRotator ClientCameraRotation)
 {
+	// TODO: Why are we doing this? Since the equippedItem is 'this'
 	const int32 EquippedItemIndex = SCCharacter->GetEquippedItemIndex();
 	const FItemInformation EquippedItem = SCCharacter->GetHotbarComponent()->GetItems()[EquippedItemIndex];
 	
-	if (EquippedItem.CurrentAmmo > 1)
+	if (EquippedItem.CurrentAmmo >= 1)
 	{
 		MulticastPlayWeaponAnim();
 
@@ -59,7 +63,7 @@ void ASCRifle::UseItem_Implementation(ASCCharacter* SCCharacter, FRotator Client
 					// No change on the Damage for Boots, Limb and Default
 					case SURFACE_BOOTS:
 					case SURFACE_LIMB:
-					default:
+					default: 
 						break;
 				}
 
@@ -75,7 +79,80 @@ void ASCRifle::UseItem_Implementation(ASCCharacter* SCCharacter, FRotator Client
 			
 			UGameplayStatics::ApplyDamage(HitResult.GetActor(), Damage, SCCharacter->GetController(), this, UDamageType::StaticClass());
 		}
+
+		SpendRound(SCCharacter);
 	}
+}
+
+void ASCRifle::ReloadItem_Implementation(ASCCharacter* SCCharacter)
+{
+	SCCharacter->SetCombatState(ECombatState::ECS_Reloading);
+	
+	const int32 EquippedItemIndex = SCCharacter->GetEquippedItemIndex();
+	const FItemInformation EquippedItem = SCCharacter->GetHotbarComponent()->GetItems()[EquippedItemIndex];
+	
+	if (EquippedItem.CurrentAmmo < EquippedItem.MaxAmmo)
+	{
+		int32 ItemIndex;
+		FItemInformation AmmoItem;
+		if (SCCharacter->GetPlayerInventoryComponent()->FindItem(UKismetStringLibrary::Conv_StringToInt(*AmmoItemID.ToString()), ItemIndex, AmmoItem))
+		{
+			SCCharacter->PlayEquipableMontage(FName("ReloadRifle"));
+		}
+		else
+		{
+			SCCharacter->SetCombatState(ECombatState::ECS_Unoccupied);
+		}
+	}
+	else
+	{
+		SCCharacter->SetCombatState(ECombatState::ECS_Unoccupied);
+	}
+}
+
+void ASCRifle::Interact_Implementation(const FVector& LocationToCheck, const FRotator& Rotation)
+{
+	ASCCharacter* SCCharacter = Cast<ASCCharacter>(GetOwner());
+
+	if (!IsValid(SCCharacter)) return;
+
+	const int32 EquippedItemIndex = SCCharacter->GetEquippedItemIndex();
+	FItemInformation EquippedItem = SCCharacter->GetHotbarComponent()->GetItems()[EquippedItemIndex];
+
+	const int32 CurrentAmmo = EquippedItem.CurrentAmmo;
+	const int32 MaxAmmo = EquippedItem.MaxAmmo;
+
+	if (CurrentAmmo < MaxAmmo)
+	{
+		int32 ItemIndex;
+		FItemInformation AmmoItem;
+		if (SCCharacter->GetPlayerInventoryComponent()->FindItem(UKismetStringLibrary::Conv_StringToInt(*AmmoItemID.ToString()), ItemIndex, AmmoItem))
+		{
+			int32 RoomInMag = MaxAmmo - CurrentAmmo;
+			int32 Least = FMath::Min(RoomInMag, AmmoItem.ItemQuantity);
+			int32 AmountToReload = FMath::Clamp(RoomInMag, 0, Least);
+
+			if (SCCharacter->GetPlayerInventoryComponent()->RemoveItemQuantity(ItemIndex, AmountToReload))
+			{
+				EquippedItem.CurrentAmmo += AmountToReload;
+				SCCharacter->GetHotbarComponent()->Items[EquippedItemIndex] = EquippedItem;
+				
+				SCCharacter->Execute_GetSCPlayerController(SCCharacter)->ClientUpdateItemSlot(EContainerType::ECT_PlayerHotbar, EquippedItemIndex, EquippedItem);
+			}
+		}
+	}
+}
+
+void ASCRifle::SpendRound(ASCCharacter* SCCharacter)
+{
+	const int32 EquippedItemIndex = SCCharacter->GetEquippedItemIndex();
+	FItemInformation EquippedItem = SCCharacter->GetHotbarComponent()->GetItems()[EquippedItemIndex];
+
+	EquippedItem.CurrentAmmo -= 1;
+
+	SCCharacter->GetHotbarComponent()->Items[EquippedItemIndex] = EquippedItem;
+
+	SCCharacter->Execute_GetSCPlayerController(SCCharacter)->ClientUpdateItemSlot(EContainerType::ECT_PlayerHotbar, EquippedItemIndex, EquippedItem);
 }
 
 void ASCRifle::MulticastPlayWeaponAnim_Implementation()

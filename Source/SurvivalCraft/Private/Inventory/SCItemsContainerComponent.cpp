@@ -73,6 +73,24 @@ bool USCItemsContainerComponent::IsEmpty()
 	return bIsEmpty;
 }
 
+bool USCItemsContainerComponent::FindItem(int32 ItemID, int32& OutItemIndex, FItemInformation& OutItem)
+{
+	for (int32 Index = 0; Index < Items.Num(); Index++)
+	{
+		const FItemInformation& Item = Items[Index];
+			
+		if (Item.ItemID == ItemID)
+		{
+			OutItemIndex = Index;
+			OutItem = Item;
+
+			return true;
+		}
+	}
+
+	return false;
+}
+
 bool USCItemsContainerComponent::IsFull()
 {
 	if (Items.Num() <= 0) return true;

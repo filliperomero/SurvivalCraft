@@ -120,6 +120,7 @@ private:
 	void StopSprint();
 	void DemolishStructure();
 	void StopDemolishStructure();
+	void Reload();
 
 	UPROPERTY()
 	ASCCharacter* SCCharacter;
@@ -147,6 +148,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> DemolishAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> ReloadAction;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UInputMappingContext> InputMappingContext;

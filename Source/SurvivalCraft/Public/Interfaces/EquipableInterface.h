@@ -27,4 +27,7 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	float GetEquipableDelay();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void ReloadItem(ASCCharacter* SCCharacter);
 };

@@ -34,6 +34,7 @@ public:
 	bool UpdateItemQuantity(int32 Index, int32 NewQuantity);
 	virtual bool RemoveItemByIndex(int32 Index);
 	virtual bool IsEmpty();
+	bool FindItem(int32 ItemID, int32& OutItemIndex, FItemInformation& OutItem);
 	bool IsFull();
 	/* This function will return a list of available items inside our Items Array (it removes the empty structs)*/
 	TArray<FItemInformation> GetAvailableItems();

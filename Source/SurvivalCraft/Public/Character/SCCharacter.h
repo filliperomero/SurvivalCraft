@@ -112,6 +112,9 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void ServerRunStorageAction();
+
+	UFUNCTION(Server, Reliable)
+	void ServerReload();
 	
 	UPROPERTY()
 	TObjectPtr<ASCStorage> StorageBox;
@@ -409,4 +412,6 @@ public:
 	FORCEINLINE UArrowComponent* GetPlayerArrow() const { return PlayerArrow; }
 	FORCEINLINE void SetLeftButtonPressed(const bool bPressed) { bLeftButtonPressed = bPressed; }
 	FORCEINLINE int32 GetEquippedItemIndex() const { return EquippedItemIndex; }
+	FORCEINLINE ECombatState GetCombatState() const { return CombatState; }
+	FORCEINLINE void SetCombatState(ECombatState InCombatState) { CombatState = InCombatState; }
 };
