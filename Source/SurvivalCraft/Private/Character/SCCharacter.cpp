@@ -1117,6 +1117,27 @@ void ASCCharacter::ServerReload_Implementation()
 	IEquipableInterface::Execute_ReloadItem(EquippedItem, this);
 }
 
+void ASCCharacter::ServerAddToItemDurability_Implementation(int32 Amount)
+{
+	if (!IsValid(EquippedItem)) return;
+	
+	FItemInformation EquippedItemInfo = HotbarComponent->GetItems()[EquippedItemIndex];
+
+	if (EquippedItemInfo.ItemCurrentHP + Amount <= 0)
+	{
+		if (HotbarComponent->RemoveItemByIndex(EquippedItemIndex))
+		{
+			ServerUnequipCurrentItem(EquippedItemIndex);
+		}
+	}
+	else
+	{
+		EquippedItemInfo.ItemCurrentHP += Amount;
+		HotbarComponent->Items[EquippedItemIndex] = EquippedItemInfo;
+		Execute_GetSCPlayerController(this)->ClientUpdateItemSlot(EContainerType::ECT_PlayerHotbar, EquippedItemIndex, EquippedItemInfo);
+	}
+}
+
 void ASCCharacter::ServerInteract_Implementation(FRotator ClientCameraRotation)
 {
 	if (IsValid(EquippedItem)) return;

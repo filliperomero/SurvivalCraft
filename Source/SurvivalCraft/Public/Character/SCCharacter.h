@@ -115,6 +115,9 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void ServerReload();
+
+	UFUNCTION(Server, Reliable)
+	void ServerAddToItemDurability(int32 Amount);
 	
 	UPROPERTY()
 	TObjectPtr<ASCStorage> StorageBox;

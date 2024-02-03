@@ -21,7 +21,6 @@ ASCRifle::ASCRifle()
 
 void ASCRifle::UseItem_Implementation(ASCCharacter* SCCharacter, FRotator ClientCameraRotation)
 {
-	// TODO: Why are we doing this? Since the equippedItem is 'this'
 	const int32 EquippedItemIndex = SCCharacter->GetEquippedItemIndex();
 	const FItemInformation EquippedItem = SCCharacter->GetHotbarComponent()->GetItems()[EquippedItemIndex];
 	
@@ -136,8 +135,9 @@ void ASCRifle::Interact_Implementation(const FVector& LocationToCheck, const FRo
 			{
 				EquippedItem.CurrentAmmo += AmountToReload;
 				SCCharacter->GetHotbarComponent()->Items[EquippedItemIndex] = EquippedItem;
-				
 				SCCharacter->Execute_GetSCPlayerController(SCCharacter)->ClientUpdateItemSlot(EContainerType::ECT_PlayerHotbar, EquippedItemIndex, EquippedItem);
+
+				SCCharacter->ServerAddToItemDurability(-1);
 			}
 		}
 	}
