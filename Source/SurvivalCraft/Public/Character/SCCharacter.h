@@ -61,6 +61,7 @@ public:
 	bool CanCraftItem(const int32 ItemID, const EContainerType ContainerType, const ECraftingType TableType);
 	void StartDemolish();
 	void StopDemolish();
+	void SetLeftButtonPressed(const bool bPressed);
 	
 	UFUNCTION(BlueprintCallable)
 	void FinishEquipable();
@@ -347,6 +348,9 @@ private:
 	void ServerUseEquipable(FRotator ClientCameraRotation);
 
 	UFUNCTION(Server, Reliable)
+	void ServerReleaseLeftButton(FRotator ClientCameraRotation);
+
+	UFUNCTION(Server, Reliable)
 	void ServerInteract(FRotator ClientCameraRotation);
 
 	UFUNCTION(Server, Reliable)
@@ -413,8 +417,8 @@ public:
 	FORCEINLINE int32 GetStructureIDToBuild() const { return StructureIDToBuild; }
 	FORCEINLINE void ResetStructureIDToBuild() { StructureIDToBuild = -1; }
 	FORCEINLINE UArrowComponent* GetPlayerArrow() const { return PlayerArrow; }
-	FORCEINLINE void SetLeftButtonPressed(const bool bPressed) { bLeftButtonPressed = bPressed; }
 	FORCEINLINE int32 GetEquippedItemIndex() const { return EquippedItemIndex; }
 	FORCEINLINE ECombatState GetCombatState() const { return CombatState; }
 	FORCEINLINE void SetCombatState(ECombatState InCombatState) { CombatState = InCombatState; }
+	FORCEINLINE ASCEquipableItem* GetFPEquippedItem() const { return FP_EquippedItem;}
 };

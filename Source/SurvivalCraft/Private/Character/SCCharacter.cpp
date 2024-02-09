@@ -642,7 +642,10 @@ void ASCCharacter::UseEquipable()
 	ServerUseEquipable(GetFirstPersonCameraComponent()->GetComponentRotation());
 
 	const float UseDelay = IEquipableInterface::Execute_GetEquipableDelay(EquippedItem);
-	GetWorldTimerManager().SetTimer(EquipableTimer, this, &ThisClass::EquipableTimerFinished, UseDelay);
+	if (UseDelay > 0.f)
+	{
+		GetWorldTimerManager().SetTimer(EquipableTimer, this, &ThisClass::EquipableTimerFinished, UseDelay);
+	}
 }
 
 void ASCCharacter::Interact()
@@ -719,6 +722,16 @@ void ASCCharacter::StopDemolish()
 	Execute_GetSCPlayerController(this)->ClientUpdateDemolishStructureProgress(true, 0.f);
 	
 	ServerStopDemolishTimer();
+}
+
+void ASCCharacter::SetLeftButtonPressed(const bool bPressed)
+{
+	bLeftButtonPressed = bPressed;
+
+	if (IsValid(EquippedItem) && bPressed == false)
+	{
+		ServerReleaseLeftButton(GetFirstPersonCameraComponent()->GetComponentRotation());
+	}
 }
 
 void ASCCharacter::FinishEquipable()
@@ -1108,6 +1121,14 @@ void ASCCharacter::ServerUseEquipable_Implementation(FRotator ClientCameraRotati
 
 	// TODO: since useItem for now only play the montage, we can have a interface to get the MontageName and just call the RPC's from here.
 	IEquipableInterface::Execute_UseItem(EquippedItem, this, ClientCameraRotation);
+}
+
+void ASCCharacter::ServerReleaseLeftButton_Implementation(FRotator ClientCameraRotation)
+{
+	if (IsValid(EquippedItem))
+	{
+		IEquipableInterface::Execute_LeftButtonReleased(EquippedItem, this, ClientCameraRotation);
+	}
 }
 
 void ASCCharacter::ServerReload_Implementation()

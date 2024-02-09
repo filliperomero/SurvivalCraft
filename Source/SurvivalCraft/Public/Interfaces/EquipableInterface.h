@@ -30,4 +30,7 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void ReloadItem(ASCCharacter* SCCharacter);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void LeftButtonReleased(ASCCharacter* SCCharacter, FRotator ClientCameraRotation);
 };
