@@ -753,6 +753,7 @@ void ASCCharacter::EquipableHit()
 {
 	if (!HasAuthority()) return;
 
+	// TODO: Improve this to get the location/rotation from the client and call a Server RPC
 	IEquipableInterface::Execute_Interact(EquippedItem, PlayerArrow->GetComponentLocation(), PlayerArrow->GetComponentRotation());
 }
 
