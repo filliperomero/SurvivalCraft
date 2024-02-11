@@ -30,7 +30,8 @@ UENUM(BlueprintType)
 enum class EHarvestingToolType : uint8
 {
 	EHTT_Pickaxe UMETA(DisplayName = "Pickaxe"),
-	EHTT_Hatchet UMETA(DisplayName = "Hatchet")
+	EHTT_Hatchet UMETA(DisplayName = "Hatchet"),
+	EHTT_Rock UMETA(DisplayName = "Rock"),
 };
 
 USTRUCT(BlueprintType)
