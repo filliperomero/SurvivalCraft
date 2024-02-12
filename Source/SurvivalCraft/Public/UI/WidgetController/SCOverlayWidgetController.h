@@ -6,12 +6,14 @@
 #include "SCWidgetController.h"
 #include "SCOverlayWidgetController.generated.h"
 
+enum class EMenuOptionsWidgetType : uint8;
 enum class EContainerType : uint8;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnItemAddedWidgetSignature, UTexture2D*, ItemIcon, int32, ItemQuantity, FText, ItemName);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnDemolishStructureWidgetSignature, bool, bCancelDemolish, float, DemolishTime);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnShowItemOptionsWidgetSignature, int32, Index, EContainerType, Container);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHideItemOptionsWidgetSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnToggleMenuOptionsSignature, EMenuOptionsWidgetType, WidgetToShow, bool, bIsInTribe);
 
 UCLASS(BlueprintType, Blueprintable)
 class SURVIVALCRAFT_API USCOverlayWidgetController : public USCWidgetController
@@ -42,6 +44,9 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnHideItemOptionsWidgetSignature OnHideItemOptionsWidgetDelegate;
 
+	UPROPERTY(BlueprintAssignable)
+	FOnToggleMenuOptionsSignature OnToggleMenuOptionsDelegate;
+
 	UFUNCTION(BlueprintCallable)
 	void HideItemOptionsMenu();
 
@@ -50,4 +55,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SplitItemStack(EContainerType ContainerType, int32 FromIndex);
+
+	UFUNCTION(BlueprintCallable)
+	void ToggleMenuOptions(EMenuOptionsWidgetType WidgetToShow);
 };

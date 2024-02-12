@@ -43,6 +43,13 @@ void USCOverlayWidgetController::BindCallbacksToDependencies()
 		}
 	);
 
+	GetSCPC()->OnToggleMenuOptionsWidgetDelegate.AddLambda(
+		[this](EMenuOptionsWidgetType WidgetToShow, bool bIsInTribe)
+		{
+			OnToggleMenuOptionsDelegate.Broadcast(WidgetToShow, bIsInTribe);
+		}
+	);
+
 	GetSCPS()->OnXPChangedDelegate.AddLambda(
 		[this](int32 NewXP, int32 EarnedXP)
 		{
@@ -71,4 +78,9 @@ void USCOverlayWidgetController::DropItem(EContainerType ContainerType, int32 Fr
 void USCOverlayWidgetController::SplitItemStack(EContainerType ContainerType, int32 FromIndex)
 {
 	GetSCPC()->SplitItemStack(ContainerType, FromIndex);
+}
+
+void USCOverlayWidgetController::ToggleMenuOptions(EMenuOptionsWidgetType WidgetToShow)
+{
+	GetSCPC()->ClientToggleMenuOptionsWidget(WidgetToShow);
 }

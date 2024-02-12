@@ -8,6 +8,7 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Items/Data/SCItemData.h"
+#include "Player/SCPlayerState.h"
 
 void ASCPlayerController::BeginPlay()
 {
@@ -74,6 +75,14 @@ void ASCPlayerController::ClientToggleStorage_Implementation(int32 TotalSlots, E
 void ASCPlayerController::ClientUpdateStorageSlots_Implementation(int32 TotalSlots)
 {
 	OnUpdateStorageSlotsDelegate.Broadcast(TotalSlots);
+}
+
+void ASCPlayerController::ClientToggleMenuOptionsWidget_Implementation(EMenuOptionsWidgetType WidgetToShow)
+{
+	if (const ASCPlayerState* SCPlayerState = Cast<ASCPlayerState>(PlayerState))
+	{
+		OnToggleMenuOptionsWidgetDelegate.Broadcast(WidgetToShow, SCPlayerState->IsInTribe());
+	}
 }
 
 void ASCPlayerController::ShowItemAdded(UTexture2D* ItemIcon, int32 ItemQuantity, FText ItemName)

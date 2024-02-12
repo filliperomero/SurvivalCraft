@@ -8,6 +8,7 @@
 #include "GameFramework/PlayerController.h"
 #include "SCPlayerController.generated.h"
 
+enum class EMenuOptionsWidgetType : uint8;
 enum class EArmorType : uint8;
 enum class EPlayerStats : uint8;
 class ASCCharacter;
@@ -25,6 +26,7 @@ DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnToggleStorageSignature, int32/*TotalSl
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnUpdateStorageSlotsSignature, int32/*TotalSlots*/);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnShowItemOptionsMenuSignature, int32/*Index*/, EContainerType/*Container*/);
 DECLARE_MULTICAST_DELEGATE(FOnHideItemOptionsMenuSignature);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnToggleMenuOptionsWidgetSignature, EMenuOptionsWidgetType/*WidgetToShow*/, bool/*bIsInTribe*/);
 
 struct FInputActionValue;
 class UInputAction;
@@ -56,6 +58,9 @@ public:
 
 	UFUNCTION(Client, Reliable)
 	void ClientUpdateStorageSlots(int32 TotalSlots);
+
+	UFUNCTION(Client, Unreliable)
+	void ClientToggleMenuOptionsWidget(EMenuOptionsWidgetType WidgetToShow);
 	
 	void ShowItemAdded(UTexture2D* ItemIcon, int32 ItemQuantity, FText ItemName);
 	bool CanCraftItem(const int32 ItemID, const EContainerType ContainerType, const ECraftingType TableType);
@@ -101,6 +106,7 @@ public:
 	FOnUpdateStorageSlotsSignature OnUpdateStorageSlotsDelegate;
 	FOnShowItemOptionsMenuSignature OnShowItemOptionsMenuDelegate;
 	FOnHideItemOptionsMenuSignature OnHideItemOptionsMenuDelegate;
+	FOnToggleMenuOptionsWidgetSignature OnToggleMenuOptionsWidgetDelegate;
 
 protected:
 	virtual void BeginPlay() override;

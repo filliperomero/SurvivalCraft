@@ -16,6 +16,7 @@ void ASCPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(ASCPlayerState, Level);
 	DOREPLIFETIME(ASCPlayerState, XP);
 	DOREPLIFETIME(ASCPlayerState, SkillPoints);
+	DOREPLIFETIME(ASCPlayerState, bIsInTribe);
 }
 
 void ASCPlayerState::AddToLevel(int32 InLevel)

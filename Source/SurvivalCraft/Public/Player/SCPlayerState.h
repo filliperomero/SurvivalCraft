@@ -41,6 +41,9 @@ private:
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_SkillPoints)
 	int32 SkillPoints = 0;
 
+	UPROPERTY(VisibleAnywhere, Replicated)
+	bool bIsInTribe = false;
+
 	UFUNCTION()
 	void OnRep_Level(int32 OldLevel);
 
@@ -54,4 +57,5 @@ public:
 	FORCEINLINE int32 GetXP() const { return XP; }
 	FORCEINLINE int32 GetPlayerLevel() const { return Level; }
 	FORCEINLINE int32 GetSkillPoints() const { return SkillPoints; }
+	FORCEINLINE bool IsInTribe() const { return bIsInTribe; }
 };
