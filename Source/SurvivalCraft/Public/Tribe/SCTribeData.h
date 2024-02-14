@@ -9,9 +9,9 @@ class ASCPlayerController;
 UENUM(BlueprintType)
 enum class ETribeRank : uint8
 {
-	ETR_Owner UMETA(DisplayName = "Tribe Owner"),
-	ETR_Admin UMETA(DisplayName = "Tribe Admin"),
-	ETR_Member UMETA(DisplayName = "Tribe Member")
+	ETR_Owner UMETA(DisplayName = "Owner"),
+	ETR_Admin UMETA(DisplayName = "Admin"),
+	ETR_Member UMETA(DisplayName = "Member")
 };
 
 UENUM(BlueprintType)

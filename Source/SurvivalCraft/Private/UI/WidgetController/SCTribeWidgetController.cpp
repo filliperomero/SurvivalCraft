@@ -6,6 +6,13 @@
 void USCTribeWidgetController::BindCallbacksToDependencies()
 {
 	Super::BindCallbacksToDependencies();
+
+	GetSCPC()->OnUpdateTribeDelegate.AddLambda(
+		[this](const FTribeInfo& TribeInfo)
+		{
+			OnUpdateTribeWidgetDelegate.Broadcast(TribeInfo);
+		}
+	);
 }
 
 void USCTribeWidgetController::CreateTribe(const FText TribeName)

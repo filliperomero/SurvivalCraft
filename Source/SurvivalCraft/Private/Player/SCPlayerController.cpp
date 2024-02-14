@@ -12,6 +12,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Player/SCPlayerState.h"
 #include "AdvancedSessionsLibrary.h"
+#include "Enums/MenuOptionsWidgetType.h"
 
 void ASCPlayerController::BeginPlay()
 {
@@ -246,7 +247,17 @@ void ASCPlayerController::ServerCreateTribe_Implementation(const FText& TribeNam
 			TribeInfo.Members = Members;
 			
 			SCGameState->CreateTribe(TribeInfo);
+			ClientUpdateTribeInfo(TribeInfo, true);
 		}
+	}
+}
+
+void ASCPlayerController::ClientUpdateTribeInfo_Implementation(const FTribeInfo& TribeInfo, const bool bForceToggleTribeMenu)
+{
+	OnUpdateTribeDelegate.Broadcast(TribeInfo);
+	if (bForceToggleTribeMenu)
+	{
+		OnToggleMenuOptionsWidgetDelegate.Broadcast(EMenuOptionsWidgetType::EMO_TribesWidget, true);
 	}
 }
 
