@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerState.h"
+#include "Tribe/SCTribeData.h"
 #include "SCPlayerState.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChangedSignature, int32 /*StatValue*/)
@@ -44,6 +45,18 @@ private:
 	UPROPERTY(VisibleAnywhere, Replicated)
 	bool bIsInTribe = false;
 
+	UPROPERTY()
+	FText PlayerName = FText::FromString("Player Name");
+
+	UPROPERTY()
+	FString TribeID = FString();
+
+	UPROPERTY()
+	FText TribeName = FText();
+
+	UPROPERTY()
+	ETribeRank TribeRank = ETribeRank::ETR_Member;
+
 	UFUNCTION()
 	void OnRep_Level(int32 OldLevel);
 
@@ -58,4 +71,8 @@ public:
 	FORCEINLINE int32 GetPlayerLevel() const { return Level; }
 	FORCEINLINE int32 GetSkillPoints() const { return SkillPoints; }
 	FORCEINLINE bool IsInTribe() const { return bIsInTribe; }
+	FORCEINLINE FText GetPlayerNickname() const { return PlayerName; }
+	FORCEINLINE void SetIsInTribe(const bool bInIsInTribe) { bIsInTribe = bInIsInTribe; }
+	FORCEINLINE void SetTribeName(const FText& InTribeName)  { TribeName = InTribeName; }
+	FORCEINLINE void SetTribeID(const FString& InTribeID)  { TribeID = InTribeID; }
 };

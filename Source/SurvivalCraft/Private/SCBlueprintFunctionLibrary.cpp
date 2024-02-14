@@ -88,6 +88,19 @@ USCPlayerStatsMenuWidgetController* USCBlueprintFunctionLibrary::GetPlayerStatsM
 	return nullptr;
 }
 
+USCTribeWidgetController* USCBlueprintFunctionLibrary::GetTribeWidgetController(const UObject* WorldContextObject)
+{
+	FWidgetControllerParams WCParams;
+	ASCHUD* SCHUD = nullptr;
+	
+	if (MakeWidgetControllerParams(WorldContextObject, WCParams, SCHUD))
+	{
+		return SCHUD->GetTribeWidgetController(WCParams);
+	}
+	
+	return nullptr;
+}
+
 float USCBlueprintFunctionLibrary::CalculateDamage(AActor* Target, const float BaseDamage)
 {
 	float Damage = BaseDamage * 0.03;

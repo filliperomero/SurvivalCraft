@@ -8,6 +8,7 @@
 #include "UI/WidgetController/SCInventoryMenuWidgetController.h"
 #include "UI/WidgetController/SCOverlayWidgetController.h"
 #include "UI/WidgetController/SCPlayerStatsMenuWidgetController.h"
+#include "UI/WidgetController/SCTribeWidgetController.h"
 #include "UI/WidgetController/SCWidgetController.h"
 
 void ASCHUD::InitOverlay(APlayerController* PC, APlayerState* PS)
@@ -87,4 +88,16 @@ USCPlayerStatsMenuWidgetController* ASCHUD::GetPlayerStatsMenuWidgetController(c
 	}
 
 	return PlayerStatsMenuWidgetController;
+}
+
+USCTribeWidgetController* ASCHUD::GetTribeWidgetController(const FWidgetControllerParams& WCParams)
+{
+	if (TribeWidgetController == nullptr)
+	{
+		TribeWidgetController = NewObject<USCTribeWidgetController>(this, TribeWidgetControllerClass);
+		TribeWidgetController->SetWidgetControllerParams(WCParams);
+		TribeWidgetController->BindCallbacksToDependencies();
+	}
+
+	return TribeWidgetController;
 }

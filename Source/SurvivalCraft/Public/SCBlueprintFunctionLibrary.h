@@ -6,6 +6,8 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "SCBlueprintFunctionLibrary.generated.h"
 
+struct FWidgetControllerParams;
+class USCTribeWidgetController;
 class USCPlayerStatsMenuWidgetController;
 class USCCraftingMenuWidgetController;
 class USCHotbarMenuWidgetController;
@@ -36,6 +38,9 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "SCBlueprintFunctionLibrary|WidgetController", meta = (DefaultToSelf = "WorldContextObject"))
 	static USCPlayerStatsMenuWidgetController* GetPlayerStatsMenuWidgetController(const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintPure, Category = "SCBlueprintFunctionLibrary|WidgetController", meta = (DefaultToSelf = "WorldContextObject"))
+	static USCTribeWidgetController* GetTribeWidgetController(const UObject* WorldContextObject);
 
 	UFUNCTION(BlueprintCallable, Category = "SCBlueprintFunctionLibrary|Damage")
 	static float CalculateDamage(AActor* Target, const float BaseDamage);

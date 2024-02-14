@@ -5,10 +5,13 @@
 #include "EnhancedInputSubsystems.h"
 #include "Character/SCCharacter.h"
 #include "Enums/PlayerStats.h"
+#include "Game/SCGameState.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Items/Data/SCItemData.h"
+#include "Kismet/GameplayStatics.h"
 #include "Player/SCPlayerState.h"
+#include "AdvancedSessionsLibrary.h"
 
 void ASCPlayerController::BeginPlay()
 {
@@ -209,6 +212,42 @@ void ASCPlayerController::DropItem(EContainerType ContainerType, int32 FromIndex
 void ASCPlayerController::SplitItemStack(EContainerType ContainerType, int32 FromIndex)
 {
 	GetSCCharacter()->ServerSplitItemStack(ContainerType, FromIndex);
+}
+
+void ASCPlayerController::ServerCreateTribe_Implementation(const FText& TribeName)
+{
+	if (ASCPlayerState* SCPlayerState = GetPlayerState<ASCPlayerState>())
+	{
+		if (ASCGameState* SCGameState = Cast<ASCGameState>(UGameplayStatics::GetGameState(GetWorld())))
+		{
+			FBPUniqueNetId BPUniqueNetId;
+			FString UniqueIDString = FString();
+					
+			UAdvancedSessionsLibrary::GetUniqueNetID(this, BPUniqueNetId);
+			UAdvancedSessionsLibrary::UniqueNetIdToString(BPUniqueNetId, UniqueIDString);
+			
+			SCPlayerState->SetTribeName(TribeName);
+			SCPlayerState->SetTribeID(UniqueIDString);
+			SCPlayerState->SetIsInTribe(true);
+		
+			TArray<FTribeMemberInfo> Members;
+			FTribeMemberInfo TribeMemberInfo;
+			TribeMemberInfo.PlayerName = SCPlayerState->GetPlayerNickname();
+			TribeMemberInfo.bIsOnline = true;
+			TribeMemberInfo.PlayerController = this;
+			TribeMemberInfo.TribeRank = ETribeRank::ETR_Owner;
+			TribeMemberInfo.PlayerIDOffline = UniqueIDString;
+			
+			Members.Add(TribeMemberInfo);
+			
+			FTribeInfo TribeInfo;
+			TribeInfo.Name = TribeName;
+			TribeInfo.ID = UniqueIDString;
+			TribeInfo.Members = Members;
+			
+			SCGameState->CreateTribe(TribeInfo);
+		}
+	}
 }
 
 void ASCPlayerController::ServerSpendSkillPoint_Implementation(EPlayerStats StatToUpgrade)

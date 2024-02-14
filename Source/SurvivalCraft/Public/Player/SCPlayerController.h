@@ -85,6 +85,9 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void ServerSpendSkillPoint(EPlayerStats StatToUpgrade);
+
+	UFUNCTION(Server, Reliable)
+	void ServerCreateTribe(const FText& TribeName);
 	
 	FOnToggleInventorySignature OnToggleInventoryDelegate;
 	FOnUpdateItemSlotSignature OnUpdateItemSlotDelegate;

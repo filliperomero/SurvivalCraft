@@ -6,6 +6,7 @@
 #include "GameFramework/HUD.h"
 #include "SCHUD.generated.h"
 
+class USCTribeWidgetController;
 class USCPlayerStatsMenuWidgetController;
 class USCCraftingMenuWidgetController;
 class USCHotbarMenuWidgetController;
@@ -27,6 +28,7 @@ public:
 	USCHotbarMenuWidgetController* GetHotbarMenuWidgetController(const FWidgetControllerParams& WCParams);
 	USCCraftingMenuWidgetController* GetCraftingMenuWidgetController(const FWidgetControllerParams& WCParams);
 	USCPlayerStatsMenuWidgetController* GetPlayerStatsMenuWidgetController(const FWidgetControllerParams& WCParams);
+	USCTribeWidgetController* GetTribeWidgetController(const FWidgetControllerParams& WCParams);
 
 private:
 	UPROPERTY()
@@ -65,4 +67,10 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<USCPlayerStatsMenuWidgetController> PlayerStatsMenuWidgetControllerClass;
+
+	UPROPERTY()
+	TObjectPtr<USCTribeWidgetController> TribeWidgetController;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<USCTribeWidgetController> TribeWidgetControllerClass;
 };
