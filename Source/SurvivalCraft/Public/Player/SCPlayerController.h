@@ -29,6 +29,7 @@ DECLARE_MULTICAST_DELEGATE_TwoParams(FOnShowItemOptionsMenuSignature, int32/*Ind
 DECLARE_MULTICAST_DELEGATE(FOnHideItemOptionsMenuSignature);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnToggleMenuOptionsWidgetSignature, EMenuOptionsWidgetType/*WidgetToShow*/, bool/*bIsInTribe*/);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnUpdateTribeSignature, const FTribeInfo&/*TribeInfo*/);
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnReceiveTribeInviteSignature, const FString&/*TribeID*/, const FText&/*TribeName*/, const FText&/*SenderName*/);
 
 struct FInputActionValue;
 class UInputAction;
@@ -66,6 +67,9 @@ public:
 
 	UFUNCTION(Client, Reliable)
 	void ClientUpdateTribeInfo(const FTribeInfo& TribeInfo, const bool bForceToggleTribeMenu = false);
+
+	UFUNCTION(Client, Reliable)
+	void ClientReceiveTribeInvite(const FString& TribeID, const FText& TribeName, const FText& SenderName);
 	
 	void ShowItemAdded(UTexture2D* ItemIcon, int32 ItemQuantity, FText ItemName);
 	bool CanCraftItem(const int32 ItemID, const EContainerType ContainerType, const ECraftingType TableType);
@@ -93,6 +97,9 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void ServerCreateTribe(const FText& TribeName);
+
+	UFUNCTION(Server, Reliable)
+	void ServerJoinTribe(const FString& TribeID, const FText& SenderName);
 	
 	FOnToggleInventorySignature OnToggleInventoryDelegate;
 	FOnUpdateItemSlotSignature OnUpdateItemSlotDelegate;
@@ -116,6 +123,7 @@ public:
 	FOnHideItemOptionsMenuSignature OnHideItemOptionsMenuDelegate;
 	FOnToggleMenuOptionsWidgetSignature OnToggleMenuOptionsWidgetDelegate;
 	FOnUpdateTribeSignature OnUpdateTribeDelegate;
+	FOnReceiveTribeInviteSignature OnReceiveTribeInviteDelegate;
 
 protected:
 	virtual void BeginPlay() override;
@@ -136,6 +144,7 @@ private:
 	void DemolishStructure();
 	void StopDemolishStructure();
 	void Reload();
+	void InviteToTribe();
 
 	UPROPERTY()
 	ASCCharacter* SCCharacter;
@@ -166,6 +175,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> ReloadAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> InviteToTribeAction;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UInputMappingContext> InputMappingContext;

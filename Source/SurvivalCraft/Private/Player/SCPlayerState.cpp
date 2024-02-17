@@ -17,6 +17,10 @@ void ASCPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(ASCPlayerState, XP);
 	DOREPLIFETIME(ASCPlayerState, SkillPoints);
 	DOREPLIFETIME(ASCPlayerState, bIsInTribe);
+	DOREPLIFETIME(ASCPlayerState, PlayerName);
+	DOREPLIFETIME(ASCPlayerState, TribeID);
+	DOREPLIFETIME(ASCPlayerState, TribeName);
+	DOREPLIFETIME(ASCPlayerState, TribeRank);
 }
 
 void ASCPlayerState::AddToLevel(int32 InLevel)

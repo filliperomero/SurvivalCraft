@@ -43,6 +43,7 @@ void ASCPlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(DemolishAction, ETriggerEvent::Started, this, &ThisClass::DemolishStructure);
 		EnhancedInputComponent->BindAction(DemolishAction, ETriggerEvent::Completed, this, &ThisClass::StopDemolishStructure);
 		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Started, this, &ThisClass::Reload);
+		EnhancedInputComponent->BindAction(InviteToTribeAction, ETriggerEvent::Started, this, &ThisClass::InviteToTribe);
 	}
 	else
 	{
@@ -87,6 +88,11 @@ void ASCPlayerController::ClientToggleMenuOptionsWidget_Implementation(EMenuOpti
 	{
 		OnToggleMenuOptionsWidgetDelegate.Broadcast(WidgetToShow, SCPlayerState->IsInTribe());
 	}
+}
+
+void ASCPlayerController::ClientReceiveTribeInvite_Implementation(const FString& TribeID, const FText& TribeName, const FText& SenderName)
+{
+	OnReceiveTribeInviteDelegate.Broadcast(TribeID, TribeName, SenderName);
 }
 
 void ASCPlayerController::ShowItemAdded(UTexture2D* ItemIcon, int32 ItemQuantity, FText ItemName)
@@ -230,6 +236,7 @@ void ASCPlayerController::ServerCreateTribe_Implementation(const FText& TribeNam
 			SCPlayerState->SetTribeName(TribeName);
 			SCPlayerState->SetTribeID(UniqueIDString);
 			SCPlayerState->SetIsInTribe(true);
+			SCPlayerState->SetTribeRank(ETribeRank::ETR_Owner);
 		
 			TArray<FTribeMemberInfo> Members;
 			FTribeMemberInfo TribeMemberInfo;
@@ -248,6 +255,48 @@ void ASCPlayerController::ServerCreateTribe_Implementation(const FText& TribeNam
 			
 			SCGameState->CreateTribe(TribeInfo);
 			ClientUpdateTribeInfo(TribeInfo, true);
+		}
+	}
+}
+
+void ASCPlayerController::ServerJoinTribe_Implementation(const FString& TribeID, const FText& SenderName)
+{
+	if (ASCPlayerState* SCPlayerState = GetPlayerState<ASCPlayerState>())
+	{
+		if (SCPlayerState->IsInTribe()) return;
+		
+		if (ASCGameState* SCGameState = Cast<ASCGameState>(UGameplayStatics::GetGameState(GetWorld())))
+		{
+			const FTribeInfo* TribeInfo = SCGameState->GetTribeByID(TribeID);
+
+			if (TribeInfo == nullptr) return;
+
+			FBPUniqueNetId BPUniqueNetId;
+			FString UniqueIDString = FString();
+					
+			UAdvancedSessionsLibrary::GetUniqueNetID(this, BPUniqueNetId);
+			UAdvancedSessionsLibrary::UniqueNetIdToString(BPUniqueNetId, UniqueIDString);
+
+			SCPlayerState->SetTribeName(TribeInfo->Name);
+			SCPlayerState->SetTribeRank(ETribeRank::ETR_Member);
+			SCPlayerState->SetTribeID(TribeID);
+			SCPlayerState->SetIsInTribe(true);
+
+			FTribeInfo TribeToUpdate = *TribeInfo;
+			
+			FTribeMemberInfo TribeMemberInfo;
+			TribeMemberInfo.PlayerName = SCPlayerState->GetPlayerNickname();
+			TribeMemberInfo.bIsOnline = true;
+			TribeMemberInfo.PlayerController = this;
+			TribeMemberInfo.TribeRank = ETribeRank::ETR_Member;
+			TribeMemberInfo.PlayerIDOffline = UniqueIDString;
+
+			TribeToUpdate.Members.Add(TribeMemberInfo);
+
+			if (SCGameState->UpdateTribeByID(TribeID, TribeToUpdate))
+			{
+				ClientUpdateTribeInfo(TribeToUpdate, true);
+			}
 		}
 	}
 }
@@ -350,6 +399,11 @@ void ASCPlayerController::StopDemolishStructure()
 void ASCPlayerController::Reload()
 {
 	GetSCCharacter()->ServerReload();
+}
+
+void ASCPlayerController::InviteToTribe()
+{
+	GetSCCharacter()->InviteToTribe();
 }
 
 ASCCharacter* ASCPlayerController::GetSCCharacter()

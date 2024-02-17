@@ -14,10 +14,14 @@ class SURVIVALCRAFT_API ASCGameState : public AGameStateBase
 
 public:
 	void CreateTribe(const FTribeInfo& Tribe);
+	FTribeInfo* GetTribeByID(const FString& TribeID);
+	bool UpdateTribeByID(const FString& TribeID, const FTribeInfo& TribeInfo);
 
 protected:
 
 private:
 	UPROPERTY(VisibleAnywhere)
 	TMap<FString, FTribeInfo> TribeMap;
+	
+	void UpdateTribeInfoOnClients(const FTribeInfo& TribeInfo);
 };

@@ -62,6 +62,7 @@ public:
 	void StartDemolish();
 	void StopDemolish();
 	void SetLeftButtonPressed(const bool bPressed);
+	void InviteToTribe();
 	
 	UFUNCTION(BlueprintCallable)
 	void FinishEquipable();
@@ -367,6 +368,9 @@ private:
 	UFUNCTION(Server, Reliable)
 	void ServerStopDemolishTimer();
 
+	UFUNCTION(Server, Reliable)
+	void ServerInviteToTribe(FRotator ClientCameraRotation);
+	
 	float DemolishTime = 5.f;
 	FTimerDelegate DemolishTimerDelegate;
 	FTimerHandle DemolishTimerHandle;

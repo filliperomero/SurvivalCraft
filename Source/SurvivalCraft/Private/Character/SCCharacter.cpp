@@ -26,6 +26,7 @@
 #include "BuildingSystem/Storages/SCStorage.h"
 #include "Components/SceneCaptureComponent2D.h"
 #include "Components/SlateWrapperTypes.h"
+#include "Game/SCGameState.h"
 #include "Interfaces/InteractInterface.h"
 #include "Inventory/SCStorageContainerComponent.h"
 #include "Kismet/KismetRenderingLibrary.h"
@@ -731,6 +732,42 @@ void ASCCharacter::SetLeftButtonPressed(const bool bPressed)
 	if (IsValid(EquippedItem) && bPressed == false)
 	{
 		ServerReleaseLeftButton(GetFirstPersonCameraComponent()->GetComponentRotation());
+	}
+}
+
+void ASCCharacter::InviteToTribe()
+{
+	ServerInviteToTribe(GetFirstPersonCameraComponent()->GetComponentRotation());
+}
+
+void ASCCharacter::ServerInviteToTribe_Implementation(FRotator ClientCameraRotation)
+{
+	if (const ASCPlayerState* SCPlayerState = GetPlayerState<ASCPlayerState>())
+	{
+		if (!SCPlayerState->IsInTribe() || SCPlayerState->GetTribeRank() == ETribeRank::ETR_Member) return;
+
+		AActor* HitActor;
+	
+		if (LineTraceFunction(ClientCameraRotation, HitActor, UPlayerInterface::StaticClass()))
+		{
+			if (ASCCharacter* SCHitActor = Cast<ASCCharacter>(HitActor))
+			{
+				if (const ASCPlayerState* HitActorPlayerState = SCHitActor->GetPlayerState<ASCPlayerState>())
+				{
+					// Cannot invite if the player is in a tribe
+					if (HitActorPlayerState->IsInTribe()) return;
+
+					if (ASCGameState* SCGameState = Cast<ASCGameState>(UGameplayStatics::GetGameState(GetWorld())))
+					{
+						const FTribeInfo* TribeInfo = SCGameState->GetTribeByID(SCPlayerState->GetTribeID());
+
+						if (TribeInfo == nullptr) return;
+						
+						Execute_GetSCPlayerController(SCHitActor)->ClientReceiveTribeInvite(SCPlayerState->GetTribeID(), TribeInfo->Name, SCPlayerState->GetPlayerNickname());
+					}
+				}
+			}
+		}
 	}
 }
 

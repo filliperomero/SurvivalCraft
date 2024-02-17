@@ -45,16 +45,16 @@ private:
 	UPROPERTY(VisibleAnywhere, Replicated)
 	bool bIsInTribe = false;
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	FText PlayerName = FText::FromString("Player Name");
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	FString TribeID = FString();
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	FText TribeName = FText();
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	ETribeRank TribeRank = ETribeRank::ETR_Member;
 
 	UFUNCTION()
@@ -72,7 +72,11 @@ public:
 	FORCEINLINE int32 GetSkillPoints() const { return SkillPoints; }
 	FORCEINLINE bool IsInTribe() const { return bIsInTribe; }
 	FORCEINLINE FText GetPlayerNickname() const { return PlayerName; }
+	FORCEINLINE FString GetTribeID() const { return TribeID; }
+	FORCEINLINE FText GetTribeName() const { return TribeName; }
+	FORCEINLINE ETribeRank GetTribeRank() const { return TribeRank; }
 	FORCEINLINE void SetIsInTribe(const bool bInIsInTribe) { bIsInTribe = bInIsInTribe; }
-	FORCEINLINE void SetTribeName(const FText& InTribeName)  { TribeName = InTribeName; }
-	FORCEINLINE void SetTribeID(const FString& InTribeID)  { TribeID = InTribeID; }
+	FORCEINLINE void SetTribeName(const FText& InTribeName) { TribeName = InTribeName; }
+	FORCEINLINE void SetTribeID(const FString& InTribeID) { TribeID = InTribeID; }
+	FORCEINLINE void SetTribeRank(const ETribeRank InTribeRank) { TribeRank = InTribeRank; }
 };

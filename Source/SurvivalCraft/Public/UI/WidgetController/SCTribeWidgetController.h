@@ -22,4 +22,14 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void CreateTribe(const FText TribeName);
+
+	UFUNCTION(BlueprintCallable)
+	void AcceptTribeInvite();
+
+private:
+	UPROPERTY()
+	FString InviteTribeID = FString();
+
+	UPROPERTY()
+	FText InviteSenderName = FText();
 };

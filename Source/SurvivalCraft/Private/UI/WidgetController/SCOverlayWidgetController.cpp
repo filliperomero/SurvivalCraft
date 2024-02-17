@@ -50,6 +50,13 @@ void USCOverlayWidgetController::BindCallbacksToDependencies()
 		}
 	);
 
+	GetSCPC()->OnReceiveTribeInviteDelegate.AddLambda(
+		[this](const FString& TribeID, const FText& TribeName, const FText& SenderName)
+		{
+			OnReceiveTribeInviteWidgetDelegate.Broadcast(TribeName, SenderName);
+		}
+	);
+
 	GetSCPS()->OnXPChangedDelegate.AddLambda(
 		[this](int32 NewXP, int32 EarnedXP)
 		{

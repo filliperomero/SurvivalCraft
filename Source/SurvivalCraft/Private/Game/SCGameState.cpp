@@ -1,6 +1,7 @@
 ﻿// Copyright Fillipe Romero
 
 #include "Game/SCGameState.h"
+#include "Player/SCPlayerController.h"
 
 void ASCGameState::CreateTribe(const FTribeInfo& Tribe)
 {
@@ -12,4 +13,36 @@ void ASCGameState::CreateTribe(const FTribeInfo& Tribe)
 	}
 	
 	TribeMap.Add(Tribe.ID, Tribe);
+}
+
+FTribeInfo* ASCGameState::GetTribeByID(const FString& TribeID)
+{
+	return TribeMap.Find(TribeID);
+}
+
+bool ASCGameState::UpdateTribeByID(const FString& TribeID, const FTribeInfo& TribeInfo)
+{
+	FTribeInfo* Tribe = GetTribeByID(TribeID);
+
+	if (Tribe == nullptr) return false;
+
+	Tribe->Logs = TribeInfo.Logs;
+	Tribe->Members = TribeInfo.Members;
+	Tribe->Name = TribeInfo.Name;
+	Tribe->DayMessage = TribeInfo.DayMessage;
+
+	UpdateTribeInfoOnClients(TribeInfo);
+
+	return true;
+}
+
+void ASCGameState::UpdateTribeInfoOnClients(const FTribeInfo& TribeInfo)
+{
+	for (const FTribeMemberInfo& Member : TribeInfo.Members)
+	{
+		if (IsValid(Member.PlayerController))
+		{
+			Member.PlayerController->ClientUpdateTribeInfo(TribeInfo, false);
+		}
+	}
 }
