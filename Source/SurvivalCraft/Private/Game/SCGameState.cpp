@@ -36,11 +36,24 @@ bool ASCGameState::UpdateTribeByID(const FString& TribeID, const FTribeInfo& Tri
 	return true;
 }
 
+void ASCGameState::AddLogToTribe(const FString& TribeID, const FTribeLogEntry& LogEntry)
+{
+	const FTribeInfo* Tribe = GetTribeByID(TribeID);
+
+	if (Tribe == nullptr) return;
+	
+	FTribeInfo TribeToUpdate = *Tribe;
+
+	TribeToUpdate.Logs.Add(LogEntry);
+
+	UpdateTribeByID(TribeID, TribeToUpdate);
+}
+
 void ASCGameState::UpdateTribeInfoOnClients(const FTribeInfo& TribeInfo)
 {
 	for (const FTribeMemberInfo& Member : TribeInfo.Members)
 	{
-		if (IsValid(Member.PlayerController))
+		if (IsValid(Member.PlayerController) && Member.bIsOnline)
 		{
 			Member.PlayerController->ClientUpdateTribeInfo(TribeInfo, false);
 		}
