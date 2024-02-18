@@ -28,6 +28,15 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void DemoteTribeMember();
+
+	UFUNCTION(BlueprintCallable)
+	void PromoteTribeMember();
+
+	UFUNCTION(BlueprintCallable)
+	void KickTribeMember();
+
+	UFUNCTION(BlueprintCallable)
+	void LeaveTribe();
 	
 	UFUNCTION(BlueprintCallable)
 	void MemberSlotSelected(const FString& MemberID);

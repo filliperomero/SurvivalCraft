@@ -44,6 +44,21 @@ void USCTribeWidgetController::DemoteTribeMember()
 	GetSCPC()->ServerDemoteTribeMember(SelectedMemberID);
 }
 
+void USCTribeWidgetController::PromoteTribeMember()
+{
+	GetSCPC()->ServerPromoteTribeMember(SelectedMemberID);
+}
+
+void USCTribeWidgetController::KickTribeMember()
+{
+	GetSCPC()->ServerKickTribeMember(SelectedMemberID);
+}
+
+void USCTribeWidgetController::LeaveTribe()
+{
+	GetSCPC()->ServerLeaveTribe();
+}
+
 void USCTribeWidgetController::MemberSlotSelected(const FString& MemberID)
 {
 	SelectedMemberID = MemberID;

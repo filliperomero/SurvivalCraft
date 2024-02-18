@@ -334,14 +334,53 @@ void ASCPlayerController::ServerDemoteTribeMember_Implementation(const FString& 
 
 void ASCPlayerController::ServerKickTribeMember_Implementation(const FString& TribeMemberID)
 {
+	if (const ASCPlayerState* SCPlayerState = GetPlayerState<ASCPlayerState>())
+	{
+		const ETribeRank PlayerRank = SCPlayerState->GetTribeRank();
+		if (PlayerRank == ETribeRank::ETR_Admin || PlayerRank == ETribeRank::ETR_Owner)
+		{
+			if (ASCGameState* SCGameState = Cast<ASCGameState>(UGameplayStatics::GetGameState(GetWorld())))
+			{
+				SCGameState->KickTribeMember(SCPlayerState->GetTribeID(), TribeMemberID, SCPlayerState->GetPlayerNickname());
+			}
+		}
+	}
 }
 
 void ASCPlayerController::ServerPromoteTribeMember_Implementation(const FString& TribeMemberID)
 {
+	if (const ASCPlayerState* SCPlayerState = GetPlayerState<ASCPlayerState>())
+	{
+		const ETribeRank PlayerRank = SCPlayerState->GetTribeRank();
+		if (PlayerRank == ETribeRank::ETR_Admin || PlayerRank == ETribeRank::ETR_Owner)
+		{
+			if (ASCGameState* SCGameState = Cast<ASCGameState>(UGameplayStatics::GetGameState(GetWorld())))
+			{
+				SCGameState->PromoteTribeMember(SCPlayerState->GetTribeID(), TribeMemberID, SCPlayerState->GetPlayerNickname());
+			}
+		}
+	}
 }
 
 void ASCPlayerController::ServerLeaveTribe_Implementation()
 {
+	if (const ASCPlayerState* SCPlayerState = GetPlayerState<ASCPlayerState>())
+	{
+		const ETribeRank PlayerRank = SCPlayerState->GetTribeRank();
+		if (PlayerRank == ETribeRank::ETR_Admin || PlayerRank == ETribeRank::ETR_Member)
+		{
+			if (ASCGameState* SCGameState = Cast<ASCGameState>(UGameplayStatics::GetGameState(GetWorld())))
+			{
+				FBPUniqueNetId BPUniqueNetId;
+				FString UniqueIDString = FString();
+					
+				UAdvancedSessionsLibrary::GetUniqueNetID(this, BPUniqueNetId);
+				UAdvancedSessionsLibrary::UniqueNetIdToString(BPUniqueNetId, UniqueIDString);
+				
+				SCGameState->LeaveTribe(SCPlayerState->GetTribeID(), UniqueIDString);
+			}
+		}
+	}
 }
 
 void ASCPlayerController::ClientUpdateTribeInfo_Implementation(const FTribeInfo& TribeInfo, const bool bForceToggleTribeMenu)
