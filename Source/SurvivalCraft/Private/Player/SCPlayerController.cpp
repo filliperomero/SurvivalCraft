@@ -317,6 +317,33 @@ void ASCPlayerController::ServerJoinTribe_Implementation(const FString& TribeID,
 	}
 }
 
+void ASCPlayerController::ServerDemoteTribeMember_Implementation(const FString& TribeMemberID)
+{
+	if (const ASCPlayerState* SCPlayerState = GetPlayerState<ASCPlayerState>())
+	{
+		const ETribeRank PlayerRank = SCPlayerState->GetTribeRank();
+		if (PlayerRank == ETribeRank::ETR_Admin || PlayerRank == ETribeRank::ETR_Owner)
+		{
+			if (ASCGameState* SCGameState = Cast<ASCGameState>(UGameplayStatics::GetGameState(GetWorld())))
+			{
+				SCGameState->DemoteTribeMember(SCPlayerState->GetTribeID(), TribeMemberID, SCPlayerState->GetPlayerNickname());
+			}
+		}
+	}
+}
+
+void ASCPlayerController::ServerKickTribeMember_Implementation(const FString& TribeMemberID)
+{
+}
+
+void ASCPlayerController::ServerPromoteTribeMember_Implementation(const FString& TribeMemberID)
+{
+}
+
+void ASCPlayerController::ServerLeaveTribe_Implementation()
+{
+}
+
 void ASCPlayerController::ClientUpdateTribeInfo_Implementation(const FTribeInfo& TribeInfo, const bool bForceToggleTribeMenu)
 {
 	OnUpdateTribeDelegate.Broadcast(TribeInfo);

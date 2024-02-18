@@ -26,10 +26,17 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void AcceptTribeInvite();
 
-private:
-	UPROPERTY()
-	FString InviteTribeID = FString();
+	UFUNCTION(BlueprintCallable)
+	void DemoteTribeMember();
+	
+	UFUNCTION(BlueprintCallable)
+	void MemberSlotSelected(const FString& MemberID);
 
-	UPROPERTY()
+	UFUNCTION(BlueprintCallable)
+	void MemberSlotDeselected();
+
+private:
+	FString InviteTribeID = FString();
 	FText InviteSenderName = FText();
+	FString SelectedMemberID = FString();
 };

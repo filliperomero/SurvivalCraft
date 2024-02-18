@@ -34,6 +34,22 @@ void USCTribeWidgetController::AcceptTribeInvite()
 	
 	GetSCPC()->ServerJoinTribe(InviteTribeID, InviteSenderName);
 
+	// Reset variables
 	InviteTribeID = FString();
 	InviteSenderName = FText();
+}
+
+void USCTribeWidgetController::DemoteTribeMember()
+{
+	GetSCPC()->ServerDemoteTribeMember(SelectedMemberID);
+}
+
+void USCTribeWidgetController::MemberSlotSelected(const FString& MemberID)
+{
+	SelectedMemberID = MemberID;
+}
+
+void USCTribeWidgetController::MemberSlotDeselected()
+{
+	SelectedMemberID = FString();
 }

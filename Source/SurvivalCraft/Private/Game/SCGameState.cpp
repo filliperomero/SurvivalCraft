@@ -2,6 +2,7 @@
 
 #include "Game/SCGameState.h"
 #include "Player/SCPlayerController.h"
+#include "Player/SCPlayerState.h"
 
 void ASCGameState::CreateTribe(const FTribeInfo& Tribe)
 {
@@ -47,6 +48,54 @@ void ASCGameState::AddLogToTribe(const FString& TribeID, const FTribeLogEntry& L
 	TribeToUpdate.Logs.Add(LogEntry);
 
 	UpdateTribeByID(TribeID, TribeToUpdate);
+}
+
+bool ASCGameState::DemoteTribeMember(const FString& TribeID, const FString& MemberIDToDemote, const FText& PlayerWhoInitiated)
+{
+	if (!HasAuthority()) return false;
+	
+	const FTribeInfo* Tribe = GetTribeByID(TribeID);
+
+	if (Tribe == nullptr) return false;
+
+	FTribeInfo LocalTribe = *Tribe;
+	int32 IndexToUpdate = -1;
+
+	for (int32 Index = 0; Index < LocalTribe.Members.Num(); Index++)
+	{
+		if (LocalTribe.Members[Index].PlayerIDOffline.Equals(MemberIDToDemote) && LocalTribe.Members[Index].TribeRank == ETribeRank::ETR_Admin)
+		{
+			IndexToUpdate = Index;
+			break;
+		}
+	}
+
+	if (IndexToUpdate == -1) return false;
+
+	LocalTribe.Members[IndexToUpdate].TribeRank = ETribeRank::ETR_Member;
+
+	FTribeLogEntry LogEntry;
+	LogEntry.Day = FText::FromString(FString::Printf(TEXT("1")));
+	LogEntry.Time = FText::FromString(FString::SanitizeFloat(GetGameTimeSinceCreation()));
+	LogEntry.LogColor = ETribeLogColor::ETL_Yellow;
+	LogEntry.LogText = FText::FromString(FString::Printf(TEXT("%s Demoted %s to Member Rank"), *PlayerWhoInitiated.ToString(), *LocalTribe.Members[IndexToUpdate].PlayerName.ToString()));
+
+	LocalTribe.Logs.Add(LogEntry);
+	
+	if (UpdateTribeByID(TribeID, LocalTribe))
+	{
+		if (IsValid(LocalTribe.Members[IndexToUpdate].PlayerController))
+		{
+			if (ASCPlayerState* DemotedPlayerState = LocalTribe.Members[IndexToUpdate].PlayerController->GetPlayerState<ASCPlayerState>())
+			{
+				DemotedPlayerState->SetTribeRank(ETribeRank::ETR_Member);
+			}
+		}
+		
+		return true;
+	}
+
+	return false;
 }
 
 void ASCGameState::UpdateTribeInfoOnClients(const FTribeInfo& TribeInfo)

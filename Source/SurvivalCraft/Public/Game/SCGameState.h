@@ -17,6 +17,7 @@ public:
 	FTribeInfo* GetTribeByID(const FString& TribeID);
 	bool UpdateTribeByID(const FString& TribeID, const FTribeInfo& TribeInfo);
 	void AddLogToTribe(const FString& TribeID, const FTribeLogEntry& LogEntry);
+	bool DemoteTribeMember(const FString& TribeID, const FString& MemberIDToDemote, const FText& PlayerWhoInitiated);
 
 protected:
 

@@ -100,6 +100,18 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void ServerJoinTribe(const FString& TribeID, const FText& SenderName);
+
+	UFUNCTION(Server, Reliable)
+	void ServerDemoteTribeMember(const FString& TribeMemberID);
+
+	UFUNCTION(Server, Reliable)
+	void ServerKickTribeMember(const FString& TribeMemberID);
+
+	UFUNCTION(Server, Reliable)
+	void ServerPromoteTribeMember(const FString& TribeMemberID);
+
+	UFUNCTION(Server, Reliable)
+	void ServerLeaveTribe();
 	
 	FOnToggleInventorySignature OnToggleInventoryDelegate;
 	FOnUpdateItemSlotSignature OnUpdateItemSlotDelegate;
