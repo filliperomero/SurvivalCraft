@@ -21,6 +21,7 @@ public:
 	bool PromoteTribeMember(const FString& TribeID, const FString& MemberIDToPromote, const FText& PlayerWhoInitiated);
 	bool KickTribeMember(const FString& TribeID, const FString& MemberIDToKick, const FText& PlayerWhoInitiated);
 	void LeaveTribe(const FString& TribeID, const FString& MemberLeavingID);
+	void SetTribeMessage(const FString& TribeID, const FText& Message, const FText& PlayerWhoInitiated);
 
 protected:
 

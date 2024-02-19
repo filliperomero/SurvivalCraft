@@ -175,7 +175,7 @@ bool ASCGameState::KickTribeMember(const FString& TribeID, const FString& Member
 	FTribeLogEntry LogEntry;
 	LogEntry.Day = FText::FromString(FString::Printf(TEXT("1")));
 	LogEntry.Time = FText::FromString(FString::SanitizeFloat(GetGameTimeSinceCreation()));
-	LogEntry.LogColor = ETribeLogColor::ETL_Yellow;
+	LogEntry.LogColor = ETribeLogColor::ETL_Red;
 	LogEntry.LogText = FText::FromString(FString::Printf(TEXT("%s Kicked %s"), *PlayerWhoInitiated.ToString(), *MemberKicked.PlayerName.ToString()));
 
 	LocalTribe.Logs.Add(LogEntry);
@@ -228,7 +228,7 @@ void ASCGameState::LeaveTribe(const FString& TribeID, const FString& MemberLeavi
 	FTribeLogEntry LogEntry;
 	LogEntry.Day = FText::FromString(FString::Printf(TEXT("1")));
 	LogEntry.Time = FText::FromString(FString::SanitizeFloat(GetGameTimeSinceCreation()));
-	LogEntry.LogColor = ETribeLogColor::ETL_Yellow;
+	LogEntry.LogColor = ETribeLogColor::ETL_Red;
 	LogEntry.LogText = FText::FromString(FString::Printf(TEXT("%s has left the Tribe!"), *MemberLeaving.PlayerName.ToString()));
 
 	LocalTribe.Logs.Add(LogEntry);
@@ -246,6 +246,29 @@ void ASCGameState::LeaveTribe(const FString& TribeID, const FString& MemberLeavi
 			}
 		}
 	}
+}
+
+void ASCGameState::SetTribeMessage(const FString& TribeID, const FText& Message, const FText& PlayerWhoInitiated)
+{
+	if (!HasAuthority()) return;
+
+	const FTribeInfo* Tribe = GetTribeByID(TribeID);
+
+	if (Tribe == nullptr) return;
+
+	FTribeInfo LocalTribe = *Tribe;
+
+	LocalTribe.DayMessage = Message;
+
+	FTribeLogEntry LogEntry;
+	LogEntry.Day = FText::FromString(FString::Printf(TEXT("1")));
+	LogEntry.Time = FText::FromString(FString::SanitizeFloat(GetGameTimeSinceCreation()));
+	LogEntry.LogColor = ETribeLogColor::ETL_Green;
+	LogEntry.LogText = FText::FromString(FString::Printf(TEXT("%s Updated the Message of the Day!"), *PlayerWhoInitiated.ToString()));
+
+	LocalTribe.Logs.Add(LogEntry);
+
+	UpdateTribeByID(TribeID, LocalTribe);
 }
 
 void ASCGameState::UpdateTribeInfoOnClients(const FTribeInfo& TribeInfo)

@@ -112,6 +112,9 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void ServerLeaveTribe();
+
+	UFUNCTION(Server, Reliable)
+	void ServerSetTribeMessage(const FText& Message);
 	
 	FOnToggleInventorySignature OnToggleInventoryDelegate;
 	FOnUpdateItemSlotSignature OnUpdateItemSlotDelegate;

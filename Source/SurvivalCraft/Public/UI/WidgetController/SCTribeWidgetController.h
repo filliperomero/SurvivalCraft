@@ -37,6 +37,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void LeaveTribe();
+
+	UFUNCTION(BlueprintCallable)
+	void SetTribeMessage(const FText& Message);
 	
 	UFUNCTION(BlueprintCallable)
 	void MemberSlotSelected(const FString& MemberID);

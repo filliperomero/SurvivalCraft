@@ -383,6 +383,23 @@ void ASCPlayerController::ServerLeaveTribe_Implementation()
 	}
 }
 
+void ASCPlayerController::ServerSetTribeMessage_Implementation(const FText& Message)
+{
+	if (const ASCPlayerState* SCPlayerState = GetPlayerState<ASCPlayerState>())
+	{
+		if (!SCPlayerState->IsInTribe()) return;
+
+		const ETribeRank PlayerRank = SCPlayerState->GetTribeRank();
+		if (PlayerRank == ETribeRank::ETR_Owner || PlayerRank == ETribeRank::ETR_Admin)
+		{
+			if (ASCGameState* SCGameState = Cast<ASCGameState>(UGameplayStatics::GetGameState(GetWorld())))
+			{
+				SCGameState->SetTribeMessage(SCPlayerState->GetTribeID(), Message, SCPlayerState->GetPlayerNickname());
+			}
+		}
+	}
+}
+
 void ASCPlayerController::ClientUpdateTribeInfo_Implementation(const FTribeInfo& TribeInfo, const bool bForceToggleTribeMenu)
 {
 	OnUpdateTribeDelegate.Broadcast(TribeInfo);

@@ -59,6 +59,11 @@ void USCTribeWidgetController::LeaveTribe()
 	GetSCPC()->ServerLeaveTribe();
 }
 
+void USCTribeWidgetController::SetTribeMessage(const FText& Message)
+{
+	GetSCPC()->ServerSetTribeMessage(Message);
+}
+
 void USCTribeWidgetController::MemberSlotSelected(const FString& MemberID)
 {
 	SelectedMemberID = MemberID;
