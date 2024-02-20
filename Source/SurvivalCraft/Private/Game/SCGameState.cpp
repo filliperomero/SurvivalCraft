@@ -1,6 +1,7 @@
 ﻿// Copyright Fillipe Romero
 
 #include "Game/SCGameState.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Player/SCPlayerController.h"
 #include "Player/SCPlayerState.h"
 
@@ -74,13 +75,8 @@ bool ASCGameState::DemoteTribeMember(const FString& TribeID, const FString& Memb
 
 	LocalTribe.Members[IndexToUpdate].TribeRank = ETribeRank::ETR_Member;
 
-	FTribeLogEntry LogEntry;
-	LogEntry.Day = FText::FromString(FString::Printf(TEXT("1")));
-	LogEntry.Time = FText::FromString(FString::SanitizeFloat(GetGameTimeSinceCreation()));
-	LogEntry.LogColor = ETribeLogColor::ETL_Yellow;
-	LogEntry.LogText = FText::FromString(FString::Printf(TEXT("%s Demoted %s to Member Rank"), *PlayerWhoInitiated.ToString(), *LocalTribe.Members[IndexToUpdate].PlayerName.ToString()));
-
-	LocalTribe.Logs.Add(LogEntry);
+	const FText LogMessage = FText::FromString(FString::Printf(TEXT("%s Demoted %s to Member Rank"), *PlayerWhoInitiated.ToString(), *LocalTribe.Members[IndexToUpdate].PlayerName.ToString()));
+	LocalTribe.Logs.Add(MakeLogEntry(LogMessage));
 	
 	if (UpdateTribeByID(TribeID, LocalTribe))
 	{
@@ -122,13 +118,8 @@ bool ASCGameState::PromoteTribeMember(const FString& TribeID, const FString& Mem
 
 	LocalTribe.Members[IndexToUpdate].TribeRank = ETribeRank::ETR_Admin;
 
-	FTribeLogEntry LogEntry;
-	LogEntry.Day = FText::FromString(FString::Printf(TEXT("1")));
-	LogEntry.Time = FText::FromString(FString::SanitizeFloat(GetGameTimeSinceCreation()));
-	LogEntry.LogColor = ETribeLogColor::ETL_Yellow;
-	LogEntry.LogText = FText::FromString(FString::Printf(TEXT("%s Promoted %s to Admin Rank"), *PlayerWhoInitiated.ToString(), *LocalTribe.Members[IndexToUpdate].PlayerName.ToString()));
-
-	LocalTribe.Logs.Add(LogEntry);
+	const FText LogMessage = FText::FromString(FString::Printf(TEXT("%s Promoted %s to Admin Rank"), *PlayerWhoInitiated.ToString(), *LocalTribe.Members[IndexToUpdate].PlayerName.ToString()));
+	LocalTribe.Logs.Add(MakeLogEntry(LogMessage));
 	
 	if (UpdateTribeByID(TribeID, LocalTribe))
 	{
@@ -172,13 +163,8 @@ bool ASCGameState::KickTribeMember(const FString& TribeID, const FString& Member
 
 	LocalTribe.Members.RemoveAt(IndexToUpdate);
 
-	FTribeLogEntry LogEntry;
-	LogEntry.Day = FText::FromString(FString::Printf(TEXT("1")));
-	LogEntry.Time = FText::FromString(FString::SanitizeFloat(GetGameTimeSinceCreation()));
-	LogEntry.LogColor = ETribeLogColor::ETL_Red;
-	LogEntry.LogText = FText::FromString(FString::Printf(TEXT("%s Kicked %s"), *PlayerWhoInitiated.ToString(), *MemberKicked.PlayerName.ToString()));
-
-	LocalTribe.Logs.Add(LogEntry);
+	const FText LogMessage = FText::FromString(FString::Printf(TEXT("%s Kicked %s"), *PlayerWhoInitiated.ToString(), *MemberKicked.PlayerName.ToString()));
+	LocalTribe.Logs.Add(MakeLogEntry(LogMessage, ETribeLogColor::ETL_Red));
 	
 	if (UpdateTribeByID(TribeID, LocalTribe))
 	{
@@ -225,13 +211,8 @@ void ASCGameState::LeaveTribe(const FString& TribeID, const FString& MemberLeavi
 
 	LocalTribe.Members.RemoveAt(IndexToUpdate);
 
-	FTribeLogEntry LogEntry;
-	LogEntry.Day = FText::FromString(FString::Printf(TEXT("1")));
-	LogEntry.Time = FText::FromString(FString::SanitizeFloat(GetGameTimeSinceCreation()));
-	LogEntry.LogColor = ETribeLogColor::ETL_Red;
-	LogEntry.LogText = FText::FromString(FString::Printf(TEXT("%s has left the Tribe!"), *MemberLeaving.PlayerName.ToString()));
-
-	LocalTribe.Logs.Add(LogEntry);
+	const FText LogMessage = FText::FromString(FString::Printf(TEXT("%s has left the Tribe!"), *MemberLeaving.PlayerName.ToString()));
+	LocalTribe.Logs.Add(MakeLogEntry(LogMessage, ETribeLogColor::ETL_Red));
 	
 	if (UpdateTribeByID(TribeID, LocalTribe))
 	{
@@ -260,15 +241,23 @@ void ASCGameState::SetTribeMessage(const FString& TribeID, const FText& Message,
 
 	LocalTribe.DayMessage = Message;
 
-	FTribeLogEntry LogEntry;
-	LogEntry.Day = FText::FromString(FString::Printf(TEXT("1")));
-	LogEntry.Time = FText::FromString(FString::SanitizeFloat(GetGameTimeSinceCreation()));
-	LogEntry.LogColor = ETribeLogColor::ETL_Green;
-	LogEntry.LogText = FText::FromString(FString::Printf(TEXT("%s Updated the Message of the Day!"), *PlayerWhoInitiated.ToString()));
-
-	LocalTribe.Logs.Add(LogEntry);
+	const FText LogMessage = FText::FromString(FString::Printf(TEXT("%s Updated the Message of the Day!"), *PlayerWhoInitiated.ToString()));
+	LocalTribe.Logs.Add(MakeLogEntry(LogMessage, ETribeLogColor::ETL_Green));
 
 	UpdateTribeByID(TribeID, LocalTribe);
+}
+
+FTribeLogEntry ASCGameState::MakeLogEntry(const FText& LogMessage, const ETribeLogColor LogColor)
+{
+	const FDateTime LocalDateTime = UKismetMathLibrary::Now();
+	
+	FTribeLogEntry LogEntry;
+	LogEntry.Day = FText::FromString(FString::Printf(TEXT("%d/%d/%d"), LocalDateTime.GetMonth(), LocalDateTime.GetDay(), LocalDateTime.GetYear()));
+	LogEntry.Time = FText::FromString(FString::Printf(TEXT("%d:%d"), LocalDateTime.GetHour(), LocalDateTime.GetMinute()));
+	LogEntry.LogColor = LogColor;
+	LogEntry.LogText = LogMessage;
+
+	return LogEntry;
 }
 
 void ASCGameState::UpdateTribeInfoOnClients(const FTribeInfo& TribeInfo)

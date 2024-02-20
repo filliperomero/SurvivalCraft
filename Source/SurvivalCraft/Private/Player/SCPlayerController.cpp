@@ -247,14 +247,10 @@ void ASCPlayerController::ServerCreateTribe_Implementation(const FText& TribeNam
 			TribeMemberInfo.PlayerIDOffline = UniqueIDString;
 
 			TArray<FTribeLogEntry> Logs;
-			FTribeLogEntry LogEntry;
-			LogEntry.Day = FText::FromString(FString::Printf(TEXT("1")));
-			LogEntry.Time = FText::FromString(FString::SanitizeFloat(GetGameTimeSinceCreation()));
-			LogEntry.LogColor = ETribeLogColor::ETL_Green;
-			LogEntry.LogText = FText::FromString(FString::Printf(TEXT("%s created the tribe!"), *SCPlayerState->GetPlayerNickname().ToString()));
+			const FText LogMessage = FText::FromString(FString::Printf(TEXT("%s created the tribe!"), *SCPlayerState->GetPlayerNickname().ToString()));
 			
 			Members.Add(TribeMemberInfo);
-			Logs.Add(LogEntry);
+			Logs.Add(ASCGameState::MakeLogEntry(LogMessage, ETribeLogColor::ETL_Green));
 			
 			FTribeInfo TribeInfo;
 			TribeInfo.Name = TribeName;
@@ -300,14 +296,10 @@ void ASCPlayerController::ServerJoinTribe_Implementation(const FString& TribeID,
 			TribeMemberInfo.TribeRank = ETribeRank::ETR_Member;
 			TribeMemberInfo.PlayerIDOffline = UniqueIDString;
 			
-			FTribeLogEntry LogEntry;
-			LogEntry.Day = FText::FromString(FString::Printf(TEXT("1")));
-			LogEntry.Time = FText::FromString(FString::SanitizeFloat(GetGameTimeSinceCreation()));
-			LogEntry.LogColor = ETribeLogColor::ETL_Green;
-			LogEntry.LogText = FText::FromString(FString::Printf(TEXT("%s Added %s to the tribe"), *SenderName.ToString(), *SCPlayerState->GetPlayerNickname().ToString()));
+			const FText LogMessage = FText::FromString(FString::Printf(TEXT("%s Added %s to the tribe"), *SenderName.ToString(), *SCPlayerState->GetPlayerNickname().ToString()));
 
 			TribeToUpdate.Members.Add(TribeMemberInfo);
-			TribeToUpdate.Logs.Add(LogEntry);
+			TribeToUpdate.Logs.Add(ASCGameState::MakeLogEntry(LogMessage, ETribeLogColor::ETL_Green));
 
 			if (SCGameState->UpdateTribeByID(TribeID, TribeToUpdate))
 			{
