@@ -89,11 +89,17 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Buildable Properties")
 	float MaxHealth = 100.f;
 
+	FString TribeID = FString();
+	FString OwnerNetID = FString();
+
 public:
 	FORCEINLINE UStaticMeshComponent* GetMesh() const { return Mesh; }
 	FORCEINLINE FBuildableInfo GetBuildableInfo() const { return BuildableInfo; }
 	FORCEINLINE UBoxComponent* GetOverlapBox() const { return OverlapBox; }
 	FORCEINLINE TArray<UBoxComponent*> GetSnapBoxes() const { return SnapBoxes; }
+	FORCEINLINE void SetTribeID(const FString& InTribeID) { TribeID = InTribeID; }
+	FORCEINLINE void SetOwnerNetID(const FString& InOwnerNetID) { OwnerNetID = InOwnerNetID; }
+	FORCEINLINE void SetOwnerName(const FText& InOwnerName) { OwnerName = InOwnerName; }
 
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void SetSnapBoxes(const TArray<UBoxComponent*>& InSnapBoxes) { SnapBoxes = InSnapBoxes; }

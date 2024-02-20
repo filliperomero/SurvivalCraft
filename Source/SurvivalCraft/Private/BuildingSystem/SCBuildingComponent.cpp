@@ -1,12 +1,14 @@
 ﻿// Copyright Fillipe Romero
 
 #include "BuildingSystem/SCBuildingComponent.h"
+#include "AdvancedSessionsLibrary.h"
 #include "BuildingSystem/SCBuildable.h"
 #include "Camera/CameraComponent.h"
 #include "Character/SCCharacter.h"
 #include "Components/BoxComponent.h"
 #include "Inventory/SCPlayerHotbarComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Player/SCPlayerState.h"
 
 /**
  * Improvements to make:
@@ -78,15 +80,37 @@ void USCBuildingComponent::ServerSpawnBuild_Implementation(FTransform BuildTrans
 
 	if (bHasRequiredItems && CheckBuildPlacement(StructureID, ClientCameraVector, ClientCameraRotation))
 	{
-		if (Character->GetHotbarComponent()->RemoveItems(RequiredItems))
+		if (ASCPlayerState* PlayerState = Character->GetPlayerState<ASCPlayerState>())
 		{
-			GetWorld()->SpawnActor<ASCBuildable>(GetBuildableClass(StructureID), BuildTransform);
-			Character->ResetStructureIDToBuild();
+			if (Character->GetHotbarComponent()->RemoveItems(RequiredItems))
+			{
+				ASCBuildable* SpawnedBuildable = GetWorld()->SpawnActorDeferred<ASCBuildable>(GetBuildableClass(StructureID), BuildTransform);
+				if (PlayerState->IsInTribe())
+				{
+					SpawnedBuildable->SetTribeID(PlayerState->GetTribeID());
+					SpawnedBuildable->SetOwnerName(PlayerState->GetTribeName());
+				}
+				else
+				{
+					SpawnedBuildable->SetOwnerName(PlayerState->GetPlayerNickname());
+				}
+
+				FBPUniqueNetId BPUniqueNetId;
+				FString UniqueIDString = FString();
+					
+				UAdvancedSessionsLibrary::GetUniqueNetIDFromPlayerState(PlayerState, BPUniqueNetId);
+				UAdvancedSessionsLibrary::UniqueNetIdToString(BPUniqueNetId, UniqueIDString);
+				
+				SpawnedBuildable->SetOwnerNetID(UniqueIDString);
+				SpawnedBuildable->FinishSpawning(BuildTransform);
+				
+				Character->ResetStructureIDToBuild();
+			}
 		}
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("CAN't PLACE!!!!"))
+		UE_LOG(LogTemp, Warning, TEXT("CAN'T PLACE!!!!"))
 	}
 
 	if (IsValid(BuildablePreview)) BuildablePreview->Destroy();

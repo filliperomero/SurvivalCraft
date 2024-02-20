@@ -1,6 +1,7 @@
 ﻿// Copyright Fillipe Romero
 
 #include "BuildingSystem/SCBuildable.h"
+#include "AdvancedSessionsLibrary.h"
 #include "Character/SCCharacter.h"
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
@@ -8,6 +9,7 @@
 #include "GeometryCollection/GeometryCollectionComponent.h"
 #include "Interfaces/PlayerInterface.h"
 #include "Interfaces/StructureDamageInterface.h"
+#include "Player/SCPlayerState.h"
 #include "SurvivalCraft/SurvivalCraft.h"
 #include "UI/Widget/SCBuildableInteractTextWidget.h"
 
@@ -66,7 +68,32 @@ void ASCBuildable::OnTextSphereOverlap(UPrimitiveComponent* OverlappedComponent,
 	// TODO: Create a function inside the interface for that
 	if (ASCCharacter* Character = Cast<ASCCharacter>(OtherActor))
 	{
-		Character->ClientToggleBuildableInfoWidget(this, ESlateVisibility::Visible, bIsInteractable, bHasOptions, StructureName, OwnerName, Health, MaxHealth);
+		bool bShowOptionsText = false;
+
+		if (TribeID.IsEmpty())
+		{
+			FBPUniqueNetId BPUniqueNetId;
+			FString UniqueIDString = FString();
+					
+			UAdvancedSessionsLibrary::GetUniqueNetIDFromPlayerState(Character->GetPlayerState(), BPUniqueNetId);
+			UAdvancedSessionsLibrary::UniqueNetIdToString(BPUniqueNetId, UniqueIDString);
+
+			if (!UniqueIDString.IsEmpty() && !OwnerNetID.IsEmpty() && UniqueIDString.Equals(OwnerNetID))
+			{
+				bShowOptionsText = bHasOptions;
+			}
+		}
+		else
+		{
+			if (const ASCPlayerState* PlayerState = Character->GetPlayerState<ASCPlayerState>())
+			{
+				if (!PlayerState->GetTribeID().IsEmpty() && !TribeID.IsEmpty() && PlayerState->GetTribeID().Equals(TribeID))
+				{
+					bShowOptionsText = bHasOptions;
+				}
+			}
+		}
+		Character->ClientToggleBuildableInfoWidget(this, ESlateVisibility::Visible, bIsInteractable, bShowOptionsText, StructureName, OwnerName, Health, MaxHealth);
 	}
 }
 
