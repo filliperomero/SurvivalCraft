@@ -632,12 +632,12 @@ void ASCCharacter::UseHotBar(const int32 Index)
 void ASCCharacter::UseEquipable()
 {
 	// TODO: Change the name of the function since it does not make sense anymore to be called "UseEquipable
-	if (!bLeftButtonPressed || !bCanUseEquipable || !IsValid(EquippedItem)) return;
-	
 	if (BuildingComponent->IsBuildModeEnabled())
 	{
 		return PlaceBuildable();
 	}
+	
+	if (!bLeftButtonPressed || !bCanUseEquipable || !IsValid(EquippedItem)) return;
 
 	bCanUseEquipable = false;
 	ServerUseEquipable(GetFirstPersonCameraComponent()->GetComponentRotation());
