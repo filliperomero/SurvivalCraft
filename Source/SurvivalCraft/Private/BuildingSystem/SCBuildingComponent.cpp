@@ -9,6 +9,7 @@
 #include "Inventory/SCPlayerHotbarComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Player/SCPlayerState.h"
+#include "SurvivalCraft/SurvivalCraft.h"
 
 /**
  * Improvements to make:
@@ -360,6 +361,8 @@ bool USCBuildingComponent::CheckBuildPlacement(const int32 StructureID, FVector 
 	HitActor = HitResult.GetActor();
 	HitComponent = HitResult.GetComponent();
 
+	if (!CheckFoundationRange()) return false;
+
 	bool bIsBuildFloating = false;
 
 	FTransform SnappingTransform;
@@ -388,4 +391,57 @@ bool USCBuildingComponent::CheckBuildPlacement(const int32 StructureID, FVector 
 	}
 
 	return !CheckForOverlap() && !bIsBuildFloating;
+}
+
+bool USCBuildingComponent::CheckFoundationRange()
+{
+	if (!IsValid(BuildablePreview)) return false;
+
+	SCCharacter = SCCharacter == nullptr ? Cast<ASCCharacter>(GetOwner()) : SCCharacter;
+	const FVector LocationToCheck = BuildablePreview->GetActorLocation();
+
+	TArray<AActor*> ActorsToIgnore;
+	TArray<AActor*> OutActors;
+	TArray<TEnumAsByte<EObjectTypeQuery>> TraceObjects;
+
+	TraceObjects.Add(UEngineTypes::ConvertToObjectType(ECC_STRUCTURE));
+	ActorsToIgnore.Add(BuildablePreview);
+
+	const ASCPlayerState* SCPlayerState = SCCharacter->GetPlayerState<ASCPlayerState>();
+
+	bool bCanPlace = true;
+	
+	if (UKismetSystemLibrary::SphereOverlapActors(GetWorld(), LocationToCheck, 1000.f, TraceObjects, ASCBuildable::StaticClass(), ActorsToIgnore, OutActors))
+	{
+		FBPUniqueNetId BPUniqueNetId;
+		FString UniqueIDString = FString();
+					
+		UAdvancedSessionsLibrary::GetUniqueNetIDFromPlayerState(SCCharacter->GetPlayerState(), BPUniqueNetId);
+		UAdvancedSessionsLibrary::UniqueNetIdToString(BPUniqueNetId, UniqueIDString);
+		
+		for (AActor* OutActor : OutActors)
+		{
+			if (const ASCBuildable* Buildable = Cast<ASCBuildable>(OutActor))
+			{
+				if (SCPlayerState->IsInTribe() && !Buildable->GetTribeID().IsEmpty())
+				{
+					if (!SCPlayerState->GetTribeID().Equals(Buildable->GetTribeID()))
+					{
+						bCanPlace = false;
+					}
+				}
+				else
+				{
+					if (UniqueIDString.IsEmpty() || Buildable->GetOwnerNetID().IsEmpty() || !UniqueIDString.Equals(Buildable->GetOwnerNetID()))
+					{
+						bCanPlace = false;	
+					}
+				}
+			}
+
+			if (!bCanPlace) break;
+		}
+	}
+
+	return bCanPlace;
 }

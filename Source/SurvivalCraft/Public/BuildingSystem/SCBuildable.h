@@ -97,6 +97,8 @@ public:
 	FORCEINLINE FBuildableInfo GetBuildableInfo() const { return BuildableInfo; }
 	FORCEINLINE UBoxComponent* GetOverlapBox() const { return OverlapBox; }
 	FORCEINLINE TArray<UBoxComponent*> GetSnapBoxes() const { return SnapBoxes; }
+	FORCEINLINE FString GetTribeID() const { return TribeID; }
+	FORCEINLINE FString GetOwnerNetID() const { return OwnerNetID; }
 	FORCEINLINE void SetTribeID(const FString& InTribeID) { TribeID = InTribeID; }
 	FORCEINLINE void SetOwnerNetID(const FString& InOwnerNetID) { OwnerNetID = InOwnerNetID; }
 	FORCEINLINE void SetOwnerName(const FText& InOwnerName) { OwnerName = InOwnerName; }
