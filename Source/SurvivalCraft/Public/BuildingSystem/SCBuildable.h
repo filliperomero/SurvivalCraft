@@ -7,6 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "SCBuildable.generated.h"
 
+class ASCCharacter;
 class USphereComponent;
 class UWidgetComponent;
 class UBoxComponent;
@@ -39,6 +40,8 @@ protected:
 
 	UFUNCTION(NetMulticast, Unreliable)
 	void MulticastDestroyStructure();
+
+	virtual bool CanInteract(ASCCharacter* Character);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Mesh)
 	TObjectPtr<UStaticMeshComponent> Mesh;

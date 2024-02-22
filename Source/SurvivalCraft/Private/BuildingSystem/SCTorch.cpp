@@ -32,6 +32,8 @@ void ASCTorch::DestroyStructure(const bool bLog)
 
 void ASCTorch::InteractEvent_Implementation(ASCCharacter* Character)
 {
+	if (!CanInteract(Character)) return;
+	
 	bIsTorchLit = !bIsTorchLit;
 
 	ToggleTorch();

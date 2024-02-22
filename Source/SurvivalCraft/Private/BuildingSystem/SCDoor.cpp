@@ -24,6 +24,8 @@ void ASCDoor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 
 void ASCDoor::InteractEvent_Implementation(ASCCharacter* Character)
 {
+	if (!CanInteract(Character)) return;
+
 	bIsDoorOpen = !bIsDoorOpen;
 
 	RotateDoorTimeline();

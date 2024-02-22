@@ -134,6 +134,37 @@ void ASCBuildable::ReceiveDamage(AActor* DamagedActor, float Damage, const UDama
 	if (Health <= 0.f) DestroyStructure(true);
 }
 
+bool ASCBuildable::CanInteract(ASCCharacter* Character)
+{
+	bool bCanInteract = false;
+	
+	if (const ASCPlayerState* SCPlayerState = Character->GetPlayerState<ASCPlayerState>())
+	{
+		if (!GetTribeID().IsEmpty())
+		{
+			if (SCPlayerState->IsInTribe() && SCPlayerState->GetTribeID().Equals(GetTribeID()))
+			{
+				bCanInteract = true;
+			}
+		}
+		else
+		{
+			FBPUniqueNetId BPUniqueNetId;
+			FString UniqueIDString = FString();
+					
+			UAdvancedSessionsLibrary::GetUniqueNetIDFromPlayerState(Character->GetPlayerState(), BPUniqueNetId);
+			UAdvancedSessionsLibrary::UniqueNetIdToString(BPUniqueNetId, UniqueIDString);
+			
+			if (UniqueIDString.Equals(GetOwnerNetID()))
+			{
+				bCanInteract = true;
+			}
+		}
+	}
+
+	return bCanInteract;
+}
+
 void ASCBuildable::DestroyStructure(const bool bLog)
 {
 	MulticastDestroyStructure();
