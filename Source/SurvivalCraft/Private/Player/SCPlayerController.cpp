@@ -12,6 +12,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Player/SCPlayerState.h"
 #include "AdvancedSessionsLibrary.h"
+#include "BuildingSystem/SCBuildable.h"
 #include "Enums/MenuOptionsWidgetType.h"
 
 void ASCPlayerController::BeginPlay()
@@ -260,6 +261,8 @@ void ASCPlayerController::ServerCreateTribe_Implementation(const FText& TribeNam
 			
 			SCGameState->CreateTribe(TribeInfo);
 			ClientUpdateTribeInfo(TribeInfo, true);
+
+			MergeTribeStructures(UniqueIDString, TribeName);
 		}
 	}
 }
@@ -305,6 +308,8 @@ void ASCPlayerController::ServerJoinTribe_Implementation(const FString& TribeID,
 			{
 				ClientUpdateTribeInfo(TribeToUpdate, true);
 			}
+
+			MergeTribeStructures(TribeID, TribeInfo->Name);
 		}
 	}
 }
@@ -495,6 +500,43 @@ void ASCPlayerController::Reload()
 void ASCPlayerController::InviteToTribe()
 {
 	GetSCCharacter()->InviteToTribe();
+}
+
+void ASCPlayerController::MergeTribeStructures(const FString& TribeID, const FText& OwnerName)
+{
+	TArray<AActor*> OutActors;
+	// TODO: Very expensive function to run, we need to improve this by probably holding the reference of all buildings we put in the world
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASCBuildable::StaticClass(), OutActors);
+
+	if (OutActors.Num() <= 0) return;
+
+	FBPUniqueNetId BPUniqueNetId;
+	FString UniqueIDString = FString();
+					
+	UAdvancedSessionsLibrary::GetUniqueNetID(this, BPUniqueNetId);
+	UAdvancedSessionsLibrary::UniqueNetIdToString(BPUniqueNetId, UniqueIDString);
+
+	TArray<ASCBuildable*> OwningBuildables;
+	for (AActor* OutActor : OutActors)
+	{
+		if (ASCBuildable* Buildable = Cast<ASCBuildable>(OutActor))
+		{
+			if (!Buildable->GetTribeID().IsEmpty()) continue;
+
+			if (!UniqueIDString.IsEmpty() && !Buildable->GetOwnerNetID().IsEmpty() && UniqueIDString.Equals(Buildable->GetOwnerNetID()))
+			{
+				OwningBuildables.Add(Buildable);
+			}
+		}
+	}
+
+	if (OwningBuildables.Num() <= 0) return;
+
+	for (ASCBuildable* Buildable : OwningBuildables)
+	{
+		Buildable->SetTribeID(TribeID);
+		Buildable->SetOwnerName(OwnerName);
+	}
 }
 
 ASCCharacter* ASCPlayerController::GetSCCharacter()

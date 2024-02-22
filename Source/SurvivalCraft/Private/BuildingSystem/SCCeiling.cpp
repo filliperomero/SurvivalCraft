@@ -140,9 +140,9 @@ void ASCCeiling::BeginPlay()
 	SetSnapBoxes(BoxesToSnap);
 }
 
-void ASCCeiling::DestroyStructure()
+void ASCCeiling::DestroyStructure(const bool bLog)
 {
-	Super::DestroyStructure();
+	Super::DestroyStructure(bLog);
 
 	TArray<AActor*> OverlappingActors;
 	CheckWallsTraceBox->GetOverlappingActors(OverlappingActors, ASCBuildable::StaticClass());
@@ -155,7 +155,7 @@ void ASCCeiling::DestroyStructure()
 		{
 			if (ASCBuildable* Buildable = Cast<ASCBuildable>(OverlappingActor))
 			{
-				Buildable->DestroyStructure();
+				Buildable->DestroyStructure(bLog);
 			}
 		}
 	}

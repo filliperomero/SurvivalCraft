@@ -39,9 +39,9 @@ void ASCRoofTriangle::BeginPlay()
 	SetSnapBoxes(BoxesToSnap);
 }
 
-void ASCRoofTriangle::DestroyStructure()
+void ASCRoofTriangle::DestroyStructure(const bool bLog)
 {
-	Super::DestroyStructure();
+	Super::DestroyStructure(bLog);
 
 	TArray<AActor*> OverlappingActors;
 	OverlapBox->GetOverlappingActors(OverlappingActors, ASCBuildable::StaticClass());
@@ -52,7 +52,7 @@ void ASCRoofTriangle::DestroyStructure()
 		{
 			if (ASCBuildable* Buildable = Cast<ASCBuildable>(OverlappingActor))
 			{
-				Buildable->DestroyStructure();
+				Buildable->DestroyStructure(bLog);
 			}
 		}
 	}

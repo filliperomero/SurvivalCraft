@@ -13,7 +13,7 @@ class SURVIVALCRAFT_API ASCDoorFrame : public ASCBuildable
 
 public:
 	ASCDoorFrame();
-	virtual void DestroyStructure() override;
+	virtual void DestroyStructure(const bool bLog) override;
 
 protected:
 	virtual void BeginPlay() override;

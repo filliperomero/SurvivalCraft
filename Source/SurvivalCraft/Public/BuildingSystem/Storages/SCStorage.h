@@ -20,7 +20,7 @@ class SURVIVALCRAFT_API ASCStorage : public ASCBuildable, public IInteractInterf
 
 public:
 	ASCStorage();
-	virtual void DestroyStructure() override;
+	virtual void DestroyStructure(const bool bLog) override;
 
 	/** Interact Interface */
 	virtual void InteractEvent_Implementation(ASCCharacter* Character) override;

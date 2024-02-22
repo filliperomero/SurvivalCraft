@@ -13,7 +13,7 @@ class SURVIVALCRAFT_API ASCFoundation : public ASCBuildable
 
 public:
 	ASCFoundation();
-	virtual void DestroyStructure() override;
+	virtual void DestroyStructure(const bool bLog) override;
 
 protected:
 	virtual void BeginPlay() override;

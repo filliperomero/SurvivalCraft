@@ -15,7 +15,7 @@ ASCStorage::ASCStorage()
 	StorageComponent->ContainerType = EContainerType::ECT_PlayerStorage;
 }
 
-void ASCStorage::DestroyStructure()
+void ASCStorage::DestroyStructure(const bool bLog)
 {
 	bIsPendingDestruction = true;
 	
@@ -40,7 +40,7 @@ void ASCStorage::DestroyStructure()
 		SpawnedBag->StorageSize = GetStorageComponent()->GetAvailableItems().Num();
 	}
 	
-	Super::DestroyStructure();
+	Super::DestroyStructure(bLog);
 }
 
 void ASCStorage::InteractEvent_Implementation(ASCCharacter* Character)
@@ -158,7 +158,7 @@ void ASCStorage::UpdateStorageUI()
 		}
 	}
 
-	if (IsBag() && StorageComponent->IsEmpty()) DestroyStructure();
+	if (IsBag() && StorageComponent->IsEmpty()) DestroyStructure(false);
 }
 
 void ASCStorage::RemoveAccessingCharacter(ASCCharacter* Character)

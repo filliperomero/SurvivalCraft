@@ -6,9 +6,11 @@
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Game/SCGameState.h"
 #include "GeometryCollection/GeometryCollectionComponent.h"
 #include "Interfaces/PlayerInterface.h"
 #include "Interfaces/StructureDamageInterface.h"
+#include "Kismet/GameplayStatics.h"
 #include "Player/SCPlayerState.h"
 #include "SurvivalCraft/SurvivalCraft.h"
 #include "UI/Widget/SCBuildableInteractTextWidget.h"
@@ -129,12 +131,23 @@ void ASCBuildable::ReceiveDamage(AActor* DamagedActor, float Damage, const UDama
 	
 	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
 
-	if (Health <= 0.f) DestroyStructure();
+	if (Health <= 0.f) DestroyStructure(true);
 }
 
-void ASCBuildable::DestroyStructure()
+void ASCBuildable::DestroyStructure(const bool bLog)
 {
 	MulticastDestroyStructure();
+
+	if (bLog && !GetTribeID().IsEmpty())
+	{
+		if (ASCGameState* SCGameState = Cast<ASCGameState>(UGameplayStatics::GetGameState(GetWorld())))
+		{
+			const FText LogMessage = FText::FromString(FString::Printf(TEXT("Your %s was destroyed!"), *StructureName.ToString()));
+
+			const FTribeLogEntry LogEntry = ASCGameState::MakeLogEntry(LogMessage, ETribeLogColor::ETL_Red);
+			SCGameState->AddLogToTribe(GetTribeID(), LogEntry);
+		}
+	}
 }
 
 void ASCBuildable::HandleDestroyStructure()
@@ -148,12 +161,22 @@ void ASCBuildable::HandleDestroyStructure()
 	SetLifeSpan(LifeSpan);
 }
 
-void ASCBuildable::DemolishStructure()
+void ASCBuildable::DemolishStructure(const FText& PlayerName)
 {
-	if (bCanDemolish)
+	if (!bCanDemolish) return;
+
+	if (!GetTribeID().IsEmpty())
 	{
-		DestroyStructure();
+		if (ASCGameState* SCGameState = Cast<ASCGameState>(UGameplayStatics::GetGameState(GetWorld())))
+		{
+			const FText LogMessage = FText::FromString(FString::Printf(TEXT("%s has demolished %s"), *PlayerName.ToString(), *StructureName.ToString()));
+
+			const FTribeLogEntry LogEntry = ASCGameState::MakeLogEntry(LogMessage, ETribeLogColor::ETL_Red);
+			SCGameState->AddLogToTribe(GetTribeID(), LogEntry);
+		}
 	}
+
+	DestroyStructure(false);
 }
 
 void ASCBuildable::MulticastDestroyStructure_Implementation()

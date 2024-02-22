@@ -1,6 +1,8 @@
 ﻿// Copyright Fillipe Romero
 
 #include "SurvivalCraft/Public/Character/SCCharacter.h"
+
+#include "AdvancedSessionsLibrary.h"
 #include "BuildingSystem/SCBuildable.h"
 #include "Camera/CameraComponent.h"
 #include "Components/ArrowComponent.h"
@@ -1299,7 +1301,31 @@ void ASCCharacter::DemolishTimerFinished(FRotator ClientCameraRotation)
 		// TODO: Create interface function to demolish
 		if (ASCBuildable* Buildable = Cast<ASCBuildable>(HitResult.GetActor()))
 		{
-			Buildable->DemolishStructure();
+			bool bCanDemolish = false;
+			const ASCPlayerState* SCPlayerState = GetPlayerState<ASCPlayerState>();
+
+			if (!Buildable->GetTribeID().IsEmpty() && SCPlayerState->IsInTribe())
+			{
+				if (SCPlayerState->GetTribeID().Equals(Buildable->GetTribeID()))
+				{
+					bCanDemolish = true;
+				}
+			}
+			else
+			{
+				FBPUniqueNetId BPUniqueNetId;
+				FString UniqueIDString = FString();
+					
+				UAdvancedSessionsLibrary::GetUniqueNetIDFromPlayerState(GetPlayerState(), BPUniqueNetId);
+				UAdvancedSessionsLibrary::UniqueNetIdToString(BPUniqueNetId, UniqueIDString);
+				
+				if (!Buildable->GetOwnerNetID().IsEmpty() && !UniqueIDString.IsEmpty() && UniqueIDString.Equals(Buildable->GetOwnerNetID()))
+				{
+					bCanDemolish = true;
+				}
+			}
+
+			if (bCanDemolish) Buildable->DemolishStructure(SCPlayerState->GetPlayerNickname());
 		}
 	}
 

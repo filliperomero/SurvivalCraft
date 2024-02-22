@@ -14,5 +14,5 @@ void ASCBag::BeginPlay()
 
 void ASCBag::DestroySelfFinished()
 {
-	DestroyStructure();
+	DestroyStructure(false);
 }

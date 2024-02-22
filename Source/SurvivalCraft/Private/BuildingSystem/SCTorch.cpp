@@ -22,12 +22,12 @@ void ASCTorch::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetime
 	DOREPLIFETIME(ASCTorch, bIsTorchLit);
 }
 
-void ASCTorch::DestroyStructure()
+void ASCTorch::DestroyStructure(const bool bLog)
 {
 	bIsTorchLit = false;
 	ToggleTorch();
 	
-	Super::DestroyStructure();
+	Super::DestroyStructure(bLog);
 }
 
 void ASCTorch::InteractEvent_Implementation(ASCCharacter* Character)

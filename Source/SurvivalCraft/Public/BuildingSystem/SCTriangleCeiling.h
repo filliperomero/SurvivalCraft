@@ -13,7 +13,7 @@ class SURVIVALCRAFT_API ASCTriangleCeiling : public ASCBuildable
 
 public:
 	ASCTriangleCeiling();
-	virtual void DestroyStructure() override;
+	virtual void DestroyStructure(const bool bLog) override;
 
 protected:
 	virtual void BeginPlay() override;

@@ -15,7 +15,7 @@ class SURVIVALCRAFT_API ASCTorch : public ASCBuildable, public IInteractInterfac
 public:
 	ASCTorch();
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	virtual void DestroyStructure() override;
+	virtual void DestroyStructure(const bool bLog) override;
 	
 	/** Interact Interface */
 	virtual void InteractEvent_Implementation(ASCCharacter* Character) override;

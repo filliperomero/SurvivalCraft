@@ -160,6 +160,7 @@ private:
 	void StopDemolishStructure();
 	void Reload();
 	void InviteToTribe();
+	void MergeTribeStructures(const FString& TribeID, const FText& OwnerName);
 
 	UPROPERTY()
 	ASCCharacter* SCCharacter;

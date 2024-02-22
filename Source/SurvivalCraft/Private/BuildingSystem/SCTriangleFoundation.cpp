@@ -124,9 +124,9 @@ void ASCTriangleFoundation::BeginPlay()
 	SetSnapBoxes(BoxesToSnap);
 }
 
-void ASCTriangleFoundation::DestroyStructure()
+void ASCTriangleFoundation::DestroyStructure(const bool bLog)
 {
-	Super::DestroyStructure();
+	Super::DestroyStructure(bLog);
 
 	TArray<AActor*> OverlappingActors;
 	CheckStructureTraceBox->GetOverlappingActors(OverlappingActors, ASCBuildable::StaticClass());
@@ -139,7 +139,7 @@ void ASCTriangleFoundation::DestroyStructure()
 		{
 			if (ASCBuildable* Buildable = Cast<ASCBuildable>(OverlappingActor))
 			{
-				Buildable->DestroyStructure();
+				Buildable->DestroyStructure(bLog);
 			}
 		}
 	}

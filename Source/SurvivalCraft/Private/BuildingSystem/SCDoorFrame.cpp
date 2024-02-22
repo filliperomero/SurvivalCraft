@@ -114,9 +114,9 @@ void ASCDoorFrame::BeginPlay()
 	SetSnapBoxes(BoxesToSnap);
 }
 
-void ASCDoorFrame::DestroyStructure()
+void ASCDoorFrame::DestroyStructure(const bool bLog)
 {
-	Super::DestroyStructure();
+	Super::DestroyStructure(bLog);
 
 	TArray<AActor*> OverlappingActors;
 	DoorBox->GetOverlappingActors(OverlappingActors, ASCDoor::StaticClass());
@@ -127,7 +127,7 @@ void ASCDoorFrame::DestroyStructure()
 		{
 			if (ASCBuildable* Buildable = Cast<ASCBuildable>(OverlappingActor))
 			{
-				Buildable->DestroyStructure();
+				Buildable->DestroyStructure(bLog);
 			}
 		}
 	}
@@ -140,7 +140,7 @@ void ASCDoorFrame::DestroyStructure()
 		{
 			if (ASCBuildable* Buildable = Cast<ASCBuildable>(OverlappingActor))
 			{
-				Buildable->DestroyStructure();
+				Buildable->DestroyStructure(bLog);
 			}
 		}
 	}
@@ -153,7 +153,7 @@ void ASCDoorFrame::DestroyStructure()
 		{
 			if (ASCBuildable* Buildable = Cast<ASCBuildable>(OverlappingActor))
 			{
-				Buildable->DestroyStructure();
+				Buildable->DestroyStructure(bLog);
 			}
 		}
 	}
@@ -166,7 +166,7 @@ void ASCDoorFrame::DestroyStructure()
 		{
 			if (ASCBuildable* Buildable = Cast<ASCBuildable>(OverlappingActor))
 			{
-				Buildable->DestroyStructure();
+				Buildable->DestroyStructure(bLog);
 			}
 		}
 	}
@@ -179,7 +179,7 @@ void ASCDoorFrame::DestroyStructure()
 		{
 			if (ASCBuildable* Buildable = Cast<ASCBuildable>(OverlappingActor))
 			{
-				Buildable->DestroyStructure();
+				Buildable->DestroyStructure(bLog);
 			}
 		}
 	}
