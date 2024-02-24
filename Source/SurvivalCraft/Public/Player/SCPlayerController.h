@@ -30,6 +30,8 @@ DECLARE_MULTICAST_DELEGATE(FOnHideItemOptionsMenuSignature);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnToggleMenuOptionsWidgetSignature, EMenuOptionsWidgetType/*WidgetToShow*/, bool/*bIsInTribe*/);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnUpdateTribeSignature, const FTribeInfo&/*TribeInfo*/);
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnReceiveTribeInviteSignature, const FString&/*TribeID*/, const FText&/*TribeName*/, const FText&/*SenderName*/);
+DECLARE_MULTICAST_DELEGATE(FOnEnterKeyPressedSignature);
+DECLARE_MULTICAST_DELEGATE_FourParams(FOnReceiveChatMessageSignature, const FString&/*Message*/, const FText&/*TribeName*/, const FText&/*PlayerName*/, bool/*bIsGlobalMessage*/)
 
 struct FInputActionValue;
 class UInputAction;
@@ -70,6 +72,9 @@ public:
 
 	UFUNCTION(Client, Reliable)
 	void ClientReceiveTribeInvite(const FString& TribeID, const FText& TribeName, const FText& SenderName);
+
+	UFUNCTION(Client, Reliable)
+	void ClientReceiveChatMessage(const FString& Message, const FText& TribeName, const FText& PlayerName, bool bIsGlobalMessage);
 	
 	void ShowItemAdded(UTexture2D* ItemIcon, int32 ItemQuantity, FText ItemName);
 	bool CanCraftItem(const int32 ItemID, const EContainerType ContainerType, const ECraftingType TableType);
@@ -115,6 +120,9 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void ServerSetTribeMessage(const FText& Message);
+
+	UFUNCTION(Server, Reliable)
+	void ServerSendChatMessage(const FString& Message,  bool bIsGlobalMessage);
 	
 	FOnToggleInventorySignature OnToggleInventoryDelegate;
 	FOnUpdateItemSlotSignature OnUpdateItemSlotDelegate;
@@ -139,6 +147,8 @@ public:
 	FOnToggleMenuOptionsWidgetSignature OnToggleMenuOptionsWidgetDelegate;
 	FOnUpdateTribeSignature OnUpdateTribeDelegate;
 	FOnReceiveTribeInviteSignature OnReceiveTribeInviteDelegate;
+	FOnEnterKeyPressedSignature OnEnterKeyPressedDelegate;
+	FOnReceiveChatMessageSignature OnReceiveChatMessageDelegate;
 
 protected:
 	virtual void BeginPlay() override;
@@ -161,6 +171,7 @@ private:
 	void Reload();
 	void InviteToTribe();
 	void MergeTribeStructures(const FString& TribeID, const FText& OwnerName);
+	void OnEnterKey();
 
 	UPROPERTY()
 	ASCCharacter* SCCharacter;
@@ -194,6 +205,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> InviteToTribeAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> EnterKeyAction;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UInputMappingContext> InputMappingContext;

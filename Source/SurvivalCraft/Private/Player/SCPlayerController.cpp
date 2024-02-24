@@ -14,6 +14,7 @@
 #include "AdvancedSessionsLibrary.h"
 #include "BuildingSystem/SCBuildable.h"
 #include "Enums/MenuOptionsWidgetType.h"
+#include "Game/SCGameMode.h"
 
 void ASCPlayerController::BeginPlay()
 {
@@ -45,6 +46,7 @@ void ASCPlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(DemolishAction, ETriggerEvent::Completed, this, &ThisClass::StopDemolishStructure);
 		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Started, this, &ThisClass::Reload);
 		EnhancedInputComponent->BindAction(InviteToTribeAction, ETriggerEvent::Started, this, &ThisClass::InviteToTribe);
+		EnhancedInputComponent->BindAction(EnterKeyAction, ETriggerEvent::Started, this, &ThisClass::OnEnterKey);
 	}
 	else
 	{
@@ -94,6 +96,11 @@ void ASCPlayerController::ClientToggleMenuOptionsWidget_Implementation(EMenuOpti
 void ASCPlayerController::ClientReceiveTribeInvite_Implementation(const FString& TribeID, const FText& TribeName, const FText& SenderName)
 {
 	OnReceiveTribeInviteDelegate.Broadcast(TribeID, TribeName, SenderName);
+}
+
+void ASCPlayerController::ClientReceiveChatMessage_Implementation(const FString& Message, const FText& TribeName, const FText& PlayerName, bool bIsGlobalMessage)
+{
+	OnReceiveChatMessageDelegate.Broadcast(Message, TribeName, PlayerName, bIsGlobalMessage);
 }
 
 void ASCPlayerController::ShowItemAdded(UTexture2D* ItemIcon, int32 ItemQuantity, FText ItemName)
@@ -220,6 +227,17 @@ void ASCPlayerController::DropItem(EContainerType ContainerType, int32 FromIndex
 void ASCPlayerController::SplitItemStack(EContainerType ContainerType, int32 FromIndex)
 {
 	GetSCCharacter()->ServerSplitItemStack(ContainerType, FromIndex);
+}
+
+void ASCPlayerController::ServerSendChatMessage_Implementation(const FString& Message, bool bIsGlobalMessage)
+{
+	if (const ASCPlayerState* SCPlayerState = GetPlayerState<ASCPlayerState>())
+	{
+		if (ASCGameMode* SCGameMode = Cast<ASCGameMode>(UGameplayStatics::GetGameMode(GetWorld())))
+		{
+			SCGameMode->SendMessageToPlayers(Message, SCPlayerState->GetTribeName(), SCPlayerState->GetPlayerNickname(), bIsGlobalMessage, SCPlayerState->GetTribeID());
+		}
+	}
 }
 
 void ASCPlayerController::ServerCreateTribe_Implementation(const FText& TribeName)
@@ -537,6 +555,11 @@ void ASCPlayerController::MergeTribeStructures(const FString& TribeID, const FTe
 		Buildable->SetTribeID(TribeID);
 		Buildable->SetOwnerName(OwnerName);
 	}
+}
+
+void ASCPlayerController::OnEnterKey()
+{
+	OnEnterKeyPressedDelegate.Broadcast();
 }
 
 ASCCharacter* ASCPlayerController::GetSCCharacter()

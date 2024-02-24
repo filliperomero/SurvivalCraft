@@ -22,6 +22,8 @@ public:
 	bool KickTribeMember(const FString& TribeID, const FString& MemberIDToKick, const FText& PlayerWhoInitiated);
 	void LeaveTribe(const FString& TribeID, const FString& MemberLeavingID);
 	void SetTribeMessage(const FString& TribeID, const FText& Message, const FText& PlayerWhoInitiated);
+	void SendTribeMessageChat(const FString& Message, const FString& TribeID, const FText& PlayerName);
+	
 	static FTribeLogEntry MakeLogEntry(const FText& LogMessage, const ETribeLogColor LogColor = ETribeLogColor::ETL_Yellow);
 
 protected:

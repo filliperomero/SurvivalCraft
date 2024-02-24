@@ -3,6 +3,7 @@
 #include "UI/HUD/SCHUD.h"
 #include "Blueprint/UserWidget.h"
 #include "UI/Widget/SCUserWidget.h"
+#include "UI/WidgetController/SCChatWidgetController.h"
 #include "UI/WidgetController/SCCraftingMenuWidgetController.h"
 #include "UI/WidgetController/SCHotbarMenuWidgetController.h"
 #include "UI/WidgetController/SCInventoryMenuWidgetController.h"
@@ -100,4 +101,16 @@ USCTribeWidgetController* ASCHUD::GetTribeWidgetController(const FWidgetControll
 	}
 
 	return TribeWidgetController;
+}
+
+USCChatWidgetController* ASCHUD::GetChatWidgetController(const FWidgetControllerParams& WCParams)
+{
+	if (ChatWidgetController == nullptr)
+	{
+		ChatWidgetController = NewObject<USCChatWidgetController>(this, ChatWidgetControllerClass);
+		ChatWidgetController->SetWidgetControllerParams(WCParams);
+		ChatWidgetController->BindCallbacksToDependencies();
+	}
+
+	return ChatWidgetController;
 }

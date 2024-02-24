@@ -101,6 +101,19 @@ USCTribeWidgetController* USCBlueprintFunctionLibrary::GetTribeWidgetController(
 	return nullptr;
 }
 
+USCChatWidgetController* USCBlueprintFunctionLibrary::GetChatWidgetController(const UObject* WorldContextObject)
+{
+	FWidgetControllerParams WCParams;
+	ASCHUD* SCHUD = nullptr;
+	
+	if (MakeWidgetControllerParams(WorldContextObject, WCParams, SCHUD))
+	{
+		return SCHUD->GetChatWidgetController(WCParams);
+	}
+	
+	return nullptr;
+}
+
 float USCBlueprintFunctionLibrary::CalculateDamage(AActor* Target, const float BaseDamage)
 {
 	float Damage = BaseDamage * 0.03;

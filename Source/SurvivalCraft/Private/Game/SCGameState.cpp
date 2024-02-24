@@ -247,6 +247,23 @@ void ASCGameState::SetTribeMessage(const FString& TribeID, const FText& Message,
 	UpdateTribeByID(TribeID, LocalTribe);
 }
 
+void ASCGameState::SendTribeMessageChat(const FString& Message, const FString& TribeID, const FText& PlayerName)
+{
+	if (!HasAuthority()) return;
+	
+	const FTribeInfo* Tribe = GetTribeByID(TribeID);
+
+	if (Tribe == nullptr) return;
+
+	for (const FTribeMemberInfo& Member : Tribe->Members)
+	{
+		if (IsValid(Member.PlayerController) && Member.bIsOnline)
+		{
+			Member.PlayerController->ClientReceiveChatMessage(Message, Tribe->Name, PlayerName, false);
+		}
+	}
+}
+
 FTribeLogEntry ASCGameState::MakeLogEntry(const FText& LogMessage, const ETribeLogColor LogColor)
 {
 	const FDateTime LocalDateTime = UKismetMathLibrary::Now();
