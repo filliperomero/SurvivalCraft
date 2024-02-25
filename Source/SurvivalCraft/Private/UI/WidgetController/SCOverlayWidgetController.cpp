@@ -56,20 +56,30 @@ void USCOverlayWidgetController::BindCallbacksToDependencies()
 			OnReceiveTribeInviteWidgetDelegate.Broadcast(TribeName, SenderName);
 		}
 	);
-
-	GetSCPS()->OnXPChangedDelegate.AddLambda(
-		[this](int32 NewXP, int32 EarnedXP)
+	
+	GetSCPC()->OnTogglePlayerNameTagDelegate.AddLambda(
+		[this](const FText& PlayerName, const FText& TribeName, const bool bIsVisible, const bool bIsFriendly)
 		{
-			OnXPChangedDelegate.Broadcast(static_cast<float>(EarnedXP));
+			OnTogglePlayerNameWidgetDelegate.Broadcast(PlayerName, TribeName, bIsVisible, bIsFriendly);
 		}
 	);
 
-	GetSCPS()->OnLevelChangedDelegate.AddLambda(
-		[this](int32 NewLevel)
-		{
-			OnLevelChangedDelegate.Broadcast(static_cast<float>(NewLevel));
-		}
-	);
+	if (GetSCPS() != nullptr)
+	{
+		GetSCPS()->OnXPChangedDelegate.AddLambda(
+			[this](int32 NewXP, int32 EarnedXP)
+			{
+				OnXPChangedDelegate.Broadcast(static_cast<float>(EarnedXP));
+			}
+		);
+
+		GetSCPS()->OnLevelChangedDelegate.AddLambda(
+			[this](int32 NewLevel)
+			{
+				OnLevelChangedDelegate.Broadcast(static_cast<float>(NewLevel));
+			}
+		);
+	}
 }
 
 void USCOverlayWidgetController::HideItemOptionsMenu()

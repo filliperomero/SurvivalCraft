@@ -28,6 +28,8 @@
 #include "BuildingSystem/Storages/SCStorage.h"
 #include "Components/SceneCaptureComponent2D.h"
 #include "Components/SlateWrapperTypes.h"
+#include "Components/SphereComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Game/SCGameState.h"
 #include "Interfaces/InteractInterface.h"
 #include "Inventory/SCStorageContainerComponent.h"
@@ -72,6 +74,19 @@ ASCCharacter::ASCCharacter()
 	HotbarComponent->ContainerType = EContainerType::ECT_PlayerHotbar;
 
 	BuildingComponent = CreateDefaultSubobject<USCBuildingComponent>(TEXT("BuildingComponent"));
+
+	PlayerNameWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerNameWidgetComponent"));
+	PlayerNameWidgetComponent->SetupAttachment(GetMesh());
+	PlayerNameWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
+	PlayerNameWidgetComponent->SetDrawSize(FVector2D(100.f, 100.f));
+	PlayerNameWidgetComponent->SetRelativeLocation(FVector(0.f, 0.f, 200.f));
+
+	PlayerNameSphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("PlayerNameSphereComponent"));
+	PlayerNameSphereComponent->SetupAttachment(GetMesh());
+	PlayerNameSphereComponent->SetSphereRadius(640.f);
+	PlayerNameSphereComponent->SetRelativeLocation(FVector(0.f, 0.f, 105.f));
+	PlayerNameSphereComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
+	PlayerNameSphereComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 }
 
 ASCPlayerController* ASCCharacter::GetSCPlayerController_Implementation()
@@ -451,6 +466,9 @@ void ASCCharacter::BeginPlay()
 	{
 		OnTakeAnyDamage.AddDynamic(this, &ThisClass::ReceiveDamage);
 		GetWorldTimerManager().SetTimer(StatDrainTimer, this, &ThisClass::PassiveStatDrain, StatDrainDelay, true);
+
+		PlayerNameSphereComponent->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnPlayerNameSphereOverlap);
+		PlayerNameSphereComponent->OnComponentEndOverlap.AddDynamic(this, &ThisClass::OnPlayerNameSphereEndOverlap);
 	}
 }
 
@@ -591,6 +609,41 @@ void ASCCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDama
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Character just died"));
 		bDead = true;
+	}
+}
+
+void ASCCharacter::OnPlayerNameSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (!OtherActor->Implements<UPlayerInterface>() || bDead) return;
+
+	const ASCPlayerState* CharacterPS = GetPlayerState<ASCPlayerState>();
+
+	if (CharacterPS == nullptr) return;
+
+	if (const ASCCharacter* OtherCharacter = Cast<ASCCharacter>(OtherActor))
+	{
+		ASCPlayerController* OtherPC = OtherCharacter->GetController<ASCPlayerController>();
+		const ASCPlayerState* OtherPS = OtherCharacter->GetPlayerState<ASCPlayerState>();
+
+		if (OtherPC == nullptr || OtherPS == nullptr) return;
+
+		const bool bIsFriendly = CharacterPS->IsInTribe() && OtherPS->IsInTribe() && OtherPS->GetTribeID() == CharacterPS->GetTribeID();
+
+		OtherPC->ClientTogglePlayerNameWidget(CharacterPS->GetPlayerNickname(), CharacterPS->GetTribeName(), true, bIsFriendly);
+	}
+}
+
+void ASCCharacter::OnPlayerNameSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (!OtherActor->Implements<UPlayerInterface>() || bDead) return;
+	
+	if (const ASCCharacter* OtherCharacter = Cast<ASCCharacter>(OtherActor))
+	{
+		ASCPlayerController* OtherPC = OtherCharacter->GetController<ASCPlayerController>();
+
+		if (OtherPC == nullptr) return;
+
+		OtherPC->ClientTogglePlayerNameWidget(FText(), FText(), false, false);
 	}
 }
 

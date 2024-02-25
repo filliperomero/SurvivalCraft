@@ -103,6 +103,11 @@ void ASCPlayerController::ClientReceiveChatMessage_Implementation(const FString&
 	OnReceiveChatMessageDelegate.Broadcast(Message, TribeName, PlayerName, bIsGlobalMessage);
 }
 
+void ASCPlayerController::ClientTogglePlayerNameWidget_Implementation(const FText& PlayerName, const FText& TribeName, const bool bIsVisible, const bool bIsFriendly)
+{
+	OnTogglePlayerNameTagDelegate.Broadcast(PlayerName, TribeName, bIsVisible, bIsFriendly);
+}
+
 void ASCPlayerController::ShowItemAdded(UTexture2D* ItemIcon, int32 ItemQuantity, FText ItemName)
 {
 	OnItemAddedDelegate.Broadcast(ItemIcon, ItemQuantity, ItemName);

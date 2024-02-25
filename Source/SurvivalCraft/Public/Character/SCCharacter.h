@@ -13,6 +13,8 @@
 #include "Logging/LogMacros.h"
 #include "SCCharacter.generated.h"
 
+class USphereComponent;
+class UWidgetComponent;
 class ASCStorage;
 class ASCBuildable;
 class USCBuildingComponent;
@@ -134,9 +136,21 @@ protected:
 	UFUNCTION()
 	void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, class AController* InstigatorController, AActor* DamageCauser);
 
+	UFUNCTION()
+	void OnPlayerNameSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnPlayerNameSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
 private:
 	UPROPERTY(VisibleDefaultsOnly, Category=Mesh)
 	TObjectPtr<USkeletalMeshComponent> Mesh1P;
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<UWidgetComponent> PlayerNameWidgetComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USphereComponent> PlayerNameSphereComponent;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UCameraComponent> Camera;

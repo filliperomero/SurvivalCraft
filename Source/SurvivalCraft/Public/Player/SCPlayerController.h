@@ -32,6 +32,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnUpdateTribeSignature, const FTribeInfo&/*
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnReceiveTribeInviteSignature, const FString&/*TribeID*/, const FText&/*TribeName*/, const FText&/*SenderName*/);
 DECLARE_MULTICAST_DELEGATE(FOnEnterKeyPressedSignature);
 DECLARE_MULTICAST_DELEGATE_FourParams(FOnReceiveChatMessageSignature, const FString&/*Message*/, const FText&/*TribeName*/, const FText&/*PlayerName*/, bool/*bIsGlobalMessage*/)
+DECLARE_MULTICAST_DELEGATE_FourParams(FOnTogglePlayerNameTagSignature, const FText&/*PlayerName*/, const FText&/*TribeName*/, const bool/*bIsVisible*/, const bool/*bIsFriendly*/)
 
 struct FInputActionValue;
 class UInputAction;
@@ -75,6 +76,9 @@ public:
 
 	UFUNCTION(Client, Reliable)
 	void ClientReceiveChatMessage(const FString& Message, const FText& TribeName, const FText& PlayerName, bool bIsGlobalMessage);
+
+	UFUNCTION(Client, Reliable)
+	void ClientTogglePlayerNameWidget(const FText& PlayerName, const FText& TribeName, const bool bIsVisible, const bool bIsFriendly);
 	
 	void ShowItemAdded(UTexture2D* ItemIcon, int32 ItemQuantity, FText ItemName);
 	bool CanCraftItem(const int32 ItemID, const EContainerType ContainerType, const ECraftingType TableType);
@@ -149,6 +153,7 @@ public:
 	FOnReceiveTribeInviteSignature OnReceiveTribeInviteDelegate;
 	FOnEnterKeyPressedSignature OnEnterKeyPressedDelegate;
 	FOnReceiveChatMessageSignature OnReceiveChatMessageDelegate;
+	FOnTogglePlayerNameTagSignature OnTogglePlayerNameTagDelegate;
 
 protected:
 	virtual void BeginPlay() override;
