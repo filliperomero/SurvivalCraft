@@ -47,6 +47,8 @@ void ASCPlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Started, this, &ThisClass::Reload);
 		EnhancedInputComponent->BindAction(InviteToTribeAction, ETriggerEvent::Started, this, &ThisClass::InviteToTribe);
 		EnhancedInputComponent->BindAction(EnterKeyAction, ETriggerEvent::Started, this, &ThisClass::OnEnterKey);
+		EnhancedInputComponent->BindAction(VOIPAction, ETriggerEvent::Started, this, &ThisClass::EnableVOIP);
+		EnhancedInputComponent->BindAction(VOIPAction, ETriggerEvent::Completed, this, &ThisClass::DisableVOIP);
 	}
 	else
 	{
@@ -565,6 +567,18 @@ void ASCPlayerController::MergeTribeStructures(const FString& TribeID, const FTe
 void ASCPlayerController::OnEnterKey()
 {
 	OnEnterKeyPressedDelegate.Broadcast();
+}
+
+void ASCPlayerController::EnableVOIP()
+{
+	UKismetSystemLibrary::ExecuteConsoleCommand(this, FString::Printf(TEXT("ToggleSpeaking 1")));
+	OnToggleVOIPDelegate.Broadcast(true);
+}
+
+void ASCPlayerController::DisableVOIP()
+{
+	UKismetSystemLibrary::ExecuteConsoleCommand(this, FString::Printf(TEXT("ToggleSpeaking 0")));
+	OnToggleVOIPDelegate.Broadcast(false);
 }
 
 ASCCharacter* ASCPlayerController::GetSCCharacter()

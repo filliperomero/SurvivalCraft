@@ -16,6 +16,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHideItemOptionsWidgetSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnToggleMenuOptionsSignature, EMenuOptionsWidgetType, WidgetToShow, bool, bIsInTribe);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnReceiveTribeInviteWidgetSignature, const FText&, TribeName, const FText&, SenderName);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnTogglePlayerNameWidgetSignature, const FText&, PlayerName, const FText&, TribeName, const bool, bIsVisible, const bool, bIsFriendly);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnToggleVOIPWidgetSignature, const bool, bIsEnable);
 
 UCLASS(BlueprintType, Blueprintable)
 class SURVIVALCRAFT_API USCOverlayWidgetController : public USCWidgetController
@@ -54,6 +55,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnTogglePlayerNameWidgetSignature OnTogglePlayerNameWidgetDelegate;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnToggleVOIPWidgetSignature OnToggleVOIPWidgetDelegate;
 
 	UFUNCTION(BlueprintCallable)
 	void HideItemOptionsMenu();

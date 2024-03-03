@@ -34,6 +34,7 @@
 #include "Interfaces/InteractInterface.h"
 #include "Inventory/SCStorageContainerComponent.h"
 #include "Kismet/KismetRenderingLibrary.h"
+#include "Net/VoiceConfig.h"
 
 ASCCharacter::ASCCharacter()
 {
@@ -542,6 +543,10 @@ void ASCCharacter::OnRep_PlayerState()
 	}
 
 	InitializePlayerWindow();
+	if (IsLocallyControlled())
+	{
+		InitializeVOIP();
+	}
 }
 
 void ASCCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -677,6 +682,18 @@ void ASCCharacter::PlaceBuildable()
 		BuildingComponent->ServerSpawnBuild(BuildingComponent->GetPreviewTransform(), CameraVector, CameraRotator);
 		BuildingComponent->SetBuildMode(false);
 	}
+}
+
+void ASCCharacter::InitializeVOIP()
+{
+	if (IsValid(VOIPTalker)) return;
+	
+	VOIPTalker = UVOIPTalker::CreateTalkerForPlayer(GetPlayerState());
+	
+	UVOIPStatics::SetMicThreshold(-1.f);
+	
+	VOIPTalker->Settings.ComponentToAttachTo = GetCapsuleComponent();
+	VOIPTalker->Settings.AttenuationSettings = VOIPAttenuationSettings;
 }
 
 void ASCCharacter::UseHotBar(const int32 Index)

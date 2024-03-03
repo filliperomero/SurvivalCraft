@@ -33,6 +33,7 @@ DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnReceiveTribeInviteSignature, const FSt
 DECLARE_MULTICAST_DELEGATE(FOnEnterKeyPressedSignature);
 DECLARE_MULTICAST_DELEGATE_FourParams(FOnReceiveChatMessageSignature, const FString&/*Message*/, const FText&/*TribeName*/, const FText&/*PlayerName*/, bool/*bIsGlobalMessage*/)
 DECLARE_MULTICAST_DELEGATE_FourParams(FOnTogglePlayerNameTagSignature, const FText&/*PlayerName*/, const FText&/*TribeName*/, const bool/*bIsVisible*/, const bool/*bIsFriendly*/)
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnToggleVOIPSignature, const bool/*bIsEnable*/);
 
 struct FInputActionValue;
 class UInputAction;
@@ -154,6 +155,7 @@ public:
 	FOnEnterKeyPressedSignature OnEnterKeyPressedDelegate;
 	FOnReceiveChatMessageSignature OnReceiveChatMessageDelegate;
 	FOnTogglePlayerNameTagSignature OnTogglePlayerNameTagDelegate;
+	FOnToggleVOIPSignature OnToggleVOIPDelegate;
 
 protected:
 	virtual void BeginPlay() override;
@@ -177,6 +179,8 @@ private:
 	void InviteToTribe();
 	void MergeTribeStructures(const FString& TribeID, const FText& OwnerName);
 	void OnEnterKey();
+	void EnableVOIP();
+	void DisableVOIP();
 
 	UPROPERTY()
 	ASCCharacter* SCCharacter;
@@ -213,6 +217,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> EnterKeyAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> VOIPAction;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UInputMappingContext> InputMappingContext;

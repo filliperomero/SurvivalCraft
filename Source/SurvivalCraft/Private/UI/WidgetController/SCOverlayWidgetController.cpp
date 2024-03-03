@@ -64,6 +64,13 @@ void USCOverlayWidgetController::BindCallbacksToDependencies()
 		}
 	);
 
+	GetSCPC()->OnToggleVOIPDelegate.AddLambda(
+		[this](const bool bIsEnable)
+		{
+			OnToggleVOIPWidgetDelegate.Broadcast(bIsEnable);
+		}
+	);
+
 	if (GetSCPS() != nullptr)
 	{
 		GetSCPS()->OnXPChangedDelegate.AddLambda(

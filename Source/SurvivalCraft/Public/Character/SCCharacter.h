@@ -13,6 +13,7 @@
 #include "Logging/LogMacros.h"
 #include "SCCharacter.generated.h"
 
+class UVOIPTalker;
 class USphereComponent;
 class UWidgetComponent;
 class ASCStorage;
@@ -205,6 +206,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Resources", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UDataTable> ConsumablesDataTable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "VOIP", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USoundAttenuation> VOIPAttenuationSettings;
 
 	UPROPERTY(Replicated)
 	TObjectPtr<ASCEquipableItem> EquippedItem;
@@ -400,6 +404,11 @@ private:
 	void InitializePlayerWindow();
 	void DamageArmorSlot(const float Damage, ASCItemMaster* ArmorSlot, EArmorType ArmorType);
 	void PlaceBuildable();
+
+	UPROPERTY()
+	TObjectPtr<UVOIPTalker> VOIPTalker;
+	
+	void InitializeVOIP();
 
 	FTimerDelegate CraftTimerDelegate;
 	FTimerHandle CraftTimerHandle;
