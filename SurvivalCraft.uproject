@@ -26,6 +26,10 @@
 		{
 			"Name": "AdvancedSessions",
 			"Enabled": true
+		},
+		{
+			"Name": "Water",
+			"Enabled": true
 		}
 	]
 }
