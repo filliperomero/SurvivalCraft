@@ -298,7 +298,7 @@ bool USCBuildingComponent::IsBuildFloating()
 	FCollisionQueryParams CollisionQueryParams;
 	CollisionQueryParams.AddIgnoredActor(BuildablePreview);
 
-	return !GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, CollisionQueryParams);
+	return !GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_LANDSCAPE_TRACE, CollisionQueryParams);
 }
 
 bool USCBuildingComponent::IsBuildOnFoundation()
