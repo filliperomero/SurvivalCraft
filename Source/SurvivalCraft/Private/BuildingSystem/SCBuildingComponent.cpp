@@ -291,7 +291,7 @@ bool USCBuildingComponent::IsBuildFloating()
 {
 	if (!IsValid(BuildablePreview)) return false;
 	
-	FVector StartLocation = PreviewTransform.GetLocation();
+	FVector StartLocation = PreviewTransform.GetLocation() + FVector(0.f, 0.f, 20.f);
 	FVector EndLocation = PreviewTransform.GetLocation() - FVector(0.f, 0.f, 50.f);
 
 	FHitResult HitResult;
